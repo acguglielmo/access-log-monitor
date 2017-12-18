@@ -1,61 +1,46 @@
 package com.ef.analysis;
 
-import com.ef.dto.ThresholdDto;
+import com.ef.dto.BlockOccurrencesDto;
 import com.ef.enums.Duration;
 import com.ef.gateway.ThresholdGateway;
 import com.ef.gateway.sql.impl.ThresholdGatewaySqlImpl;
-import com.ef.util.DateFormatter;
+import com.ef.util.DateUtils;
 
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
-public class Analyzer {
+public final class Analyzer {
+
+    private static Analyzer instance;
+
+    private Analyzer(){}
+
+    public static Analyzer getInstance() {
+        if (instance == null) {
+            synchronized (Analyzer.class) {
+                if (instance == null) {
+                    instance = new Analyzer();
+                }
+            }
+        }
+        return instance;
+    }
+
 
     public void blockByThresold(final String startDate,
                                 final String duration,
-                                final String threshold) {
+                                final Integer threshold) {
 
         final ThresholdGateway gateway = new ThresholdGatewaySqlImpl();
 
-        final Date start = getInitialDate(startDate);
-        final Date end = getFinalDate(start, Duration.getByName(duration));
+        final DateUtils dateUtil = DateUtils.getInstance();
 
-        final List<ThresholdDto> thresholdDtoList = gateway.find(start, end, threshold);
+        final LocalDateTime start = dateUtil.getStartDate(startDate);
+        final LocalDateTime end = dateUtil.getEndDate(start, Duration.getByName(duration));
 
-        thresholdDtoList.forEach(System.out::println);
-        gateway.insert(thresholdDtoList);
-    }
+        final List<BlockOccurrencesDto> blockOccurrencesDtoList = gateway.find(start, end, threshold);
 
-    private Date getInitialDate(final String date) {
-        if (date != null) {
-            try {
-                return DateFormatter.DATE_FORMAT_ARGS.parse(date);
-            } catch (final ParseException e) {
-                e.printStackTrace();
-            }
-        }
-        final Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(0);
-        return calendar.getTime();
-    }
-
-    private Date getFinalDate(final Date initialDate, final Duration duration) {
-
-        if (duration == null) {
-            return new Date();
-        }
-
-        final Calendar calendar = Calendar.getInstance();
-        calendar.setTime(initialDate);
-
-        switch (duration) {
-            case HOURLY: calendar.add(Calendar.HOUR, 1);
-                break;
-            case DAILY: calendar.add(Calendar.DAY_OF_YEAR, 1);
-                break;
-        }
-        return calendar.getTime();
+        blockOccurrencesDtoList.forEach(System.out::println);
+        gateway.insert(blockOccurrencesDtoList);
     }
 }

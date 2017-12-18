@@ -9,22 +9,24 @@ import java.util.Arrays;
 public class ChoiceOption extends Option {
     private final String[] choices;
 
-    public ChoiceOption(
+    ChoiceOption(
             final String opt,
             final String longOpt,
             final boolean hasArg,
             final String description,
+            boolean isRequired,
             final String... choices) throws IllegalArgumentException {
         super(opt, longOpt, hasArg, description + ' ' + Arrays.toString(choices));
+        super.setRequired(isRequired);
         this.choices = choices;
     }
 
-    public void checkChoiceValue() throws RuntimeException {
+    void checkChoiceValue() throws RuntimeException {
         final String value = super.getValue();
         if (value == null) {
             throw new RuntimeException("A value must be informed for the option " + this.getLongOpt());
         }
-        if (!Arrays.stream(choices).anyMatch(s -> s.equals(value))) {
+        if (Arrays.stream(choices).noneMatch(s -> s.equals(value))) {
             throw new RuntimeException( "Invalid choice for the option " + this.getLongOpt() + ":" + value);
         }
     }

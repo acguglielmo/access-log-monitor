@@ -17,9 +17,10 @@ public abstract class SqlGateway {
     protected PreparedStatement preparedStatement;
 
     public SqlGateway() {
-        dbConnectionString = PropertiesHolder.getInstance().getProperty(PropertiesHolder.DB_CONNECTION) + "?useTimezone=true&serverTimezone=UTC&useSSL=false";
-        dbUser = PropertiesHolder.getInstance().getProperty(PropertiesHolder.DB_USER);
-        dbPassword = PropertiesHolder.getInstance().getProperty(PropertiesHolder.DB_PASSWORD);
+        final PropertiesHolder propertiesHolder = PropertiesHolder.getInstance();
+        dbConnectionString = propertiesHolder.getProperty(PropertiesHolder.DB_CONNECTION) + "?useTimezone=true&serverTimezone=UTC&useSSL=false";
+        dbUser = propertiesHolder.getProperty(PropertiesHolder.DB_USER);
+        dbPassword = propertiesHolder.getProperty(PropertiesHolder.DB_PASSWORD);
     }
 
     protected Connection getConnection() {
@@ -29,7 +30,7 @@ public abstract class SqlGateway {
                         dbConnectionString, dbUser, dbPassword);
                 return dbConnection;
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             System.out.println(e.getMessage());
         }
         return dbConnection;
@@ -43,7 +44,7 @@ public abstract class SqlGateway {
             if (dbConnection != null) {
                 dbConnection.close();
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             System.out.println(e.getMessage());
         }
     }

@@ -14,35 +14,26 @@ import java.util.Date;
  */
 public class Parser {
 
-	private static final String DEFAULT_LOG_FILENAME = "access.log";
+
 
 	public static void main(final String[] args) {
 
 		final Date startTime = new Date();
 
 		final CommandLine commandLine = new CliHelper().configureCliOptions(args);
-
 		if (commandLine ==  null) {
 			return;
 		}
 
-		final Path path = getPath(commandLine);
+		final Path path = Paths.get(commandLine.getOptionValue(CliHelper.ACCESS_LOG, CliHelper.FILENAME_DEFAULT_VALUE));
 
-        new FileParser().parseFile(path);
+        FileParser.getInstance().parseFile(path);
 
-        new Analyzer().blockByThresold(
+        Analyzer.getInstance().blockByThresold(
                 commandLine.getOptionValue(CliHelper.START_DATE),
                 commandLine.getOptionValue(CliHelper.DURATION),
-                commandLine.getOptionValue(CliHelper.THRESHOLD));
+                Integer.parseInt(commandLine.getOptionValue(CliHelper.THRESHOLD, CliHelper.THRESHOLD_DEFAULT_VALUE)));
 
         System.out.println("Time elapsed: " + (new Date().getTime() - startTime.getTime()));
-	}
-
-	private static Path getPath(final CommandLine commandLine) {
-		if (commandLine.hasOption(CliHelper.ACCESS_LOG)) {
-			return Paths.get(commandLine.getOptionValue(CliHelper.ACCESS_LOG));
-		} else {
-			return Paths.get(DEFAULT_LOG_FILENAME);
-		}
 	}
 }

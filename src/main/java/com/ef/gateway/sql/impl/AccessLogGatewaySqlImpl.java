@@ -21,7 +21,7 @@ public class AccessLogGatewaySqlImpl extends SqlGateway implements AccessLogGate
                     + "(?,?,?,?,?)";
             preparedStatement = getConnection().prepareStatement(statement);
 
-            for (String data[] : dataList){
+            for (final String data[] : dataList){
                 preparedStatement.setString(1, data[0]);
                 preparedStatement.setString(2, data[1]);
                 preparedStatement.setString(3, data[2]);

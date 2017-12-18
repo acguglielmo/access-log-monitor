@@ -7,7 +7,7 @@ public enum Duration {
 
     private String name;
 
-    private Duration(final String name) {
+    Duration(final String name) {
         this.name = name;
     }
 

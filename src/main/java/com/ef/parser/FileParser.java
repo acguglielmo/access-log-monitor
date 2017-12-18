@@ -2,9 +2,9 @@ package com.ef.parser;
 
 import com.ef.gateway.AccessLogGateway;
 import com.ef.gateway.sql.impl.AccessLogGatewaySqlImpl;
+import com.ef.util.PropertiesHolder;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -13,7 +13,22 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 
-public class FileParser {
+public final class FileParser {
+
+    private static FileParser instance;
+
+    private FileParser(){}
+
+    public static FileParser getInstance() {
+        if (instance == null) {
+            synchronized (FileParser.class) {
+                if (instance == null) {
+                    instance = new FileParser();
+                }
+            }
+        }
+        return instance;
+    }
 
     /**
      * Parses the file.
@@ -21,25 +36,25 @@ public class FileParser {
      * @param path the path
      */
     public void parseFile(final Path path) {
-
         try {
 
             final File file = new File(path.toUri());
-            final BufferedReader b = new BufferedReader(new FileReader(file));
+            final BufferedReader reader = new BufferedReader(new FileReader(file));
             final ExecutorService executor = Executors.newFixedThreadPool(10);
 
-            String readLine = "";
+            String readLine;
             List<String[]> dataList = new ArrayList<>();
 
-            while ((readLine = b.readLine()) != null) {
+            while ((readLine = reader.readLine()) != null) {
                 dataList.add(parseLine(readLine));
 
                 if(dataList.size() > 999) {
-                    executor.submit(new Inserter(dataList));
+                    executor.submit(new GatewayClient(dataList));
                     dataList = new ArrayList<>();
                 }
             }
-            executor.submit(new Inserter(dataList));
+            reader.close();
+            executor.submit(new GatewayClient(dataList));
             executor.shutdown();
 
             while (!executor.isTerminated()) {}
@@ -55,11 +70,11 @@ public class FileParser {
         return string.split(Pattern.quote("|"));
     }
 
-    class Inserter implements Runnable {
+    class GatewayClient implements Runnable {
         private List<String[]> dataList;
         private AccessLogGateway gateway;
 
-        public Inserter(final List<String[]> dataList){
+        private GatewayClient(final List<String[]> dataList){
             this.gateway = new AccessLogGatewaySqlImpl();
             this.dataList = dataList;
         }
