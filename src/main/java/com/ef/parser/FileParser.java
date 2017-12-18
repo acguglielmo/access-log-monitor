@@ -1,13 +1,14 @@
 package com.ef.parser;
 
-import com.ef.dto.AccessLogDto;
 import com.ef.gateway.AccessLogGateway;
 import com.ef.gateway.sql.impl.AccessLogGatewaySqlImpl;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class FileParser {
@@ -22,8 +23,26 @@ public class FileParser {
         final AccessLogGateway gateway = new AccessLogGatewaySqlImpl();
 
         try {
-            Files.lines(path).map(this::parseLine)
-                    .forEach(gateway::insert);
+            gateway.open();
+            //Files.lines(path).map(this::parseLine)
+               //     .forEach(gateway::insert);
+
+            File file = new File(path.toUri());
+            BufferedReader b = new BufferedReader(new FileReader(file));
+            String readLine = "";
+
+            List<String[]> dataList = new ArrayList<>();
+
+            while ((readLine = b.readLine()) != null) {
+                dataList.add(parseLine(readLine));
+
+                if(dataList.size() > 999) {
+                    gateway.insert(dataList);
+                    dataList = new ArrayList<>();
+                }
+            }
+            gateway.insert(dataList);
+
             gateway.close();
         } catch (final NoSuchFileException e) {
             System.out.println("File " + path.getFileName() + " not found");
@@ -32,21 +51,7 @@ public class FileParser {
         }
     }
 
-    /**
-     * Parses a line to a AccessLogDto.
-     *
-     * @param string the string
-     * @return a dto containing the information
-     */
-    private AccessLogDto parseLine(final String string) {
-        final String[] data = string.split(Pattern.quote("|"));
-
-        final AccessLogDto accessLogDto = new AccessLogDto();
-        accessLogDto.setDate(data[0]);
-        accessLogDto.setIp(data[1]);
-        accessLogDto.setRequest(data[2]);
-        accessLogDto.setStatus(Integer.parseInt(data[3]));
-        accessLogDto.setUserAgent(data[4]);
-        return accessLogDto;
+    private String[] parseLine(final String string) {
+        return string.split(Pattern.quote("|"));
     }
 }
