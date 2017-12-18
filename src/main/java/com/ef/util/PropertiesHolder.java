@@ -1,5 +1,6 @@
 package com.ef.util;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -11,7 +12,7 @@ public final class PropertiesHolder {
 
     private static final String PROPERTIES_FILENAME = "config.properties";
 
-    private Properties prop = new Properties();
+    private Properties prop;
 
     private static PropertiesHolder instance;
 
@@ -30,13 +31,20 @@ public final class PropertiesHolder {
         return instance;
     }
 
+    /**
+     * Loads the properties from the file {@link PropertiesHolder#PROPERTIES_FILENAME}
+     * located in the working directory.
+     */
     private void load(){
         InputStream input = null;
         try {
-            input = PropertiesHolder.class.getClassLoader().getResourceAsStream(PROPERTIES_FILENAME);
+            input = new FileInputStream(PROPERTIES_FILENAME);
+            prop = new Properties();
             prop.load(input);
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (final IOException ex) {
+           System.out.println(ex.getMessage());
+           System.out.println("The application will now exit.");
+           System.exit(1);
         } finally {
             if (input != null) {
                 try {
