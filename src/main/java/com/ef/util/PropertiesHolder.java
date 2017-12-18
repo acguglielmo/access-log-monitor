@@ -1,9 +1,12 @@
 package com.ef.util;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.*;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 public final class PropertiesHolder {
@@ -38,9 +41,10 @@ public final class PropertiesHolder {
      */
     private void load(){
         InputStream input = null;
+        final Path path = Paths.get(PROPERTIES_FILENAME);
         boolean shouldExit = false;
         try {
-            input = new FileInputStream(PROPERTIES_FILENAME);
+            input = new FileInputStream(new File(path.toUri()));
             prop = new Properties();
             prop.load(input);
         } catch (final NoSuchFileException e) {
