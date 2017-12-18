@@ -27,6 +27,8 @@ public class Parser {
 
 		final Path path = Paths.get(commandLine.getOptionValue(CliHelper.ACCESS_LOG, CliHelper.FILENAME_DEFAULT_VALUE));
 
+		//TODO: Trunc access_log table.
+
         FileParser.getInstance().parseFile(path);
 
         Analyzer.getInstance().blockByThresold(

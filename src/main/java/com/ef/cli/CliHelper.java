@@ -9,7 +9,7 @@ import java.util.List;
 
 public class CliHelper {
 
-    public static final String ACCESS_LOG = "accesslog";
+    public static final String ACCESS_LOG = "accessLog";
     public static final String START_DATE = "startDate";
     public static final String DURATION = "duration";
     public static final String THRESHOLD = "threshold";
@@ -24,7 +24,7 @@ public class CliHelper {
      */
     public CommandLine configureCliOptions(final String[] args) {
         final Options options = new Options();
-        options.addOption("a", ACCESS_LOG, true, "Path to log file. Default value is \"access.log.\"");
+        options.addOption("a", ACCESS_LOG, true, "Path to log file. Default value is \"access.log\" (in the working directory)");
         options.addOption("t", THRESHOLD, true, "Threshold value to block. Only integer values. Default value is 100.");
 
         final Option startDateOption = new Option("s", START_DATE, true,

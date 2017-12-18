@@ -3,6 +3,7 @@ package com.ef.util;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.*;
 import java.util.Properties;
 
 public final class PropertiesHolder {
@@ -37,14 +38,17 @@ public final class PropertiesHolder {
      */
     private void load(){
         InputStream input = null;
+        boolean shouldExit = false;
         try {
             input = new FileInputStream(PROPERTIES_FILENAME);
             prop = new Properties();
             prop.load(input);
+        } catch (final NoSuchFileException e) {
+            System.out.println("File " + PROPERTIES_FILENAME + " not found");
+            shouldExit = true;
         } catch (final IOException ex) {
-           System.out.println(ex.getMessage());
-           System.out.println("The application will now exit.");
-           System.exit(1);
+            System.out.println(ex.getMessage());
+            shouldExit = true;
         } finally {
             if (input != null) {
                 try {
@@ -53,7 +57,15 @@ public final class PropertiesHolder {
                     e.printStackTrace();
                 }
             }
+            if (shouldExit) {
+                exit();
+            }
         }
+    }
+
+    private void exit() {
+        System.out.println("The application will now exit.");
+        System.exit(1);
     }
 
     public String getProperty(final String propertyName) {
