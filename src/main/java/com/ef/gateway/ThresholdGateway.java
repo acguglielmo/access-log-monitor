@@ -7,6 +7,5 @@ import java.util.List;
 
 public interface ThresholdGateway {
     List<ThresholdDto> find(Date start, Date end, String threshold);
-    void insert(ThresholdDto thresholdDto);
-    void close();
+    void insert(List<ThresholdDto> thresholdDto);
 }

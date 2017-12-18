@@ -8,17 +8,19 @@ import java.util.List;
 
 public class AccessLogGatewaySqlImpl extends SqlGateway implements AccessLogGateway {
 
-    private PreparedStatement preparedStatement;
-
     public AccessLogGatewaySqlImpl() {
         super();
     }
-
 
     @Override
     public void insert(final List<String[]> dataList) {
 
         try {
+            final String statement = "INSERT INTO usr_log.access_log"
+                    + "(date, ip, request, status, user_agent) VALUES"
+                    + "(?,?,?,?,?)";
+            preparedStatement = getConnection().prepareStatement(statement);
+
             for (String data[] : dataList){
                 preparedStatement.setString(1, data[0]);
                 preparedStatement.setString(2, data[1]);
@@ -31,30 +33,8 @@ public class AccessLogGatewaySqlImpl extends SqlGateway implements AccessLogGate
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        } finally {
+            super.closeDbConnection();
         }
-    }
-
-    @Override
-    public void open() {
-        final String statement = "INSERT INTO usr_log.access_log"
-                + "(date, ip, request, status, user_agent) VALUES"
-                + "(?,?,?,?,?)";
-        try {
-            preparedStatement = getConnection().prepareStatement(statement);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    @Override
-    public void close() {
-        try {
-            if (preparedStatement != null) {
-                preparedStatement.close();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        super.closeDbConnection();
     }
 }

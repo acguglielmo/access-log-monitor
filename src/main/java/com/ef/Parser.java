@@ -30,7 +30,7 @@ public class Parser {
 
         new FileParser().parseFile(path);
 
-        new Analyzer().analyze(
+        new Analyzer().blockByThresold(
                 commandLine.getOptionValue(CliHelper.START_DATE),
                 commandLine.getOptionValue(CliHelper.DURATION),
                 commandLine.getOptionValue(CliHelper.THRESHOLD));

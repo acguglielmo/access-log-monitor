@@ -14,18 +14,17 @@ import java.util.List;
 
 public class ThresholdGatewaySqlImpl extends SqlGateway implements ThresholdGateway {
 
+    private static final int BATCH_SIZE = 1000;
+
     @Override
     public List<ThresholdDto> find(Date start, Date end, String threshold) {
         final List<ThresholdDto> result = new ArrayList<>();
 
         final String selectSql = "SELECT ip, count(1) as cont " +
                 "  FROM usr_log.access_log t " +
-                " where t.date > ? " +
-                "   and t.date < ? " +
+                " where t.date between ? " + " and ? " +
                 "group by ip having cont > ? " +
                 "order by cont desc;";
-
-        PreparedStatement preparedStatement = null;
 
         try {
             preparedStatement = getConnection().prepareStatement(selectSql);
@@ -46,53 +45,42 @@ public class ThresholdGatewaySqlImpl extends SqlGateway implements ThresholdGate
                 result.add(dto);
             }
 
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
+            super.closeDbConnection();
             return result;
         }
     }
 
     @Override
-    public void insert(final ThresholdDto thresholdDto) {
+    public void insert(final List<ThresholdDto> thresholdDtoList) {
         final String insertTableSQL = "INSERT INTO usr_log.threshold"
                 + "(ip, start_date, end_date, comment) VALUES"
                 + "(?,?,?,?)";
 
-        PreparedStatement preparedStatement = null;
-
         try {
+            int count = 0;
+
             preparedStatement = getConnection().prepareStatement(insertTableSQL);
 
-            preparedStatement.setString(1, thresholdDto.getIp());
-            preparedStatement.setString(2, DateFormatter.DATE_FORMAT_FILE.format(thresholdDto.getStartDate()));
-            preparedStatement.setString(3, DateFormatter.DATE_FORMAT_FILE.format(thresholdDto.getEndDate()));
-            preparedStatement.setString(4, "Blocked after " + thresholdDto.getCount() + " attempts.");
+            for (final ThresholdDto thresholdDto : thresholdDtoList) {
+                preparedStatement.setString(1, thresholdDto.getIp());
+                preparedStatement.setString(2, DateFormatter.DATE_FORMAT_FILE.format(thresholdDto.getStartDate()));
+                preparedStatement.setString(3, DateFormatter.DATE_FORMAT_FILE.format(thresholdDto.getEndDate()));
+                preparedStatement.setString(4, "Blocked after " + thresholdDto.getCount() + " attempts.");
+                preparedStatement.addBatch();
 
-            preparedStatement.executeUpdate();
+                if(++count % BATCH_SIZE == 0) {
+                    preparedStatement.executeBatch();
+                }
+            }
+            preparedStatement.executeBatch();
 
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             System.out.println(e.getMessage());
         } finally {
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
-            }
+            super.closeDbConnection();
         }
-    }
-
-    @Override
-    public void close() {
-        super.closeDbConnection();
     }
 }

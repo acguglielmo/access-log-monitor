@@ -4,6 +4,7 @@ import com.ef.util.PropertiesHolder;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public abstract class SqlGateway {
@@ -13,6 +14,7 @@ public abstract class SqlGateway {
     private String dbPassword;
 
     private Connection dbConnection;
+    protected PreparedStatement preparedStatement;
 
     public SqlGateway() {
         dbConnectionString = PropertiesHolder.getInstance().getProperty(PropertiesHolder.DB_CONNECTION) + "?useTimezone=true&serverTimezone=UTC&useSSL=false";
@@ -21,25 +23,28 @@ public abstract class SqlGateway {
     }
 
     protected Connection getConnection() {
-        if (dbConnection == null) {
-            try {
+        try {
+            if (dbConnection == null || dbConnection.isClosed()) {
                 dbConnection = DriverManager.getConnection(
                         dbConnectionString, dbUser, dbPassword);
                 return dbConnection;
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
             }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
         return dbConnection;
     }
 
     protected void closeDbConnection() {
-        if (dbConnection != null) {
-            try {
-                dbConnection.close();
-            } catch (SQLException e) {
-                System.out.println(e.getMessage());
+        try {
+            if (preparedStatement != null) {
+                preparedStatement.close();
             }
+            if (dbConnection != null) {
+                dbConnection.close();
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
     }
 }

@@ -13,21 +13,19 @@ import java.util.List;
 
 public class Analyzer {
 
-    public void analyze(final String startDate,
-                        final String duration,
-                        final String threshold) {
+    public void blockByThresold(final String startDate,
+                                final String duration,
+                                final String threshold) {
 
         final ThresholdGateway gateway = new ThresholdGatewaySqlImpl();
 
         final Date start = getInitialDate(startDate);
         final Date end = getFinalDate(start, Duration.getByName(duration));
 
-        final List<ThresholdDto> thresholdDtos = gateway.find(start, end, threshold);
+        final List<ThresholdDto> thresholdDtoList = gateway.find(start, end, threshold);
 
-        thresholdDtos.forEach(System.out::println);
-        thresholdDtos.forEach(gateway::insert);
-
-        gateway.close();
+        thresholdDtoList.forEach(System.out::println);
+        gateway.insert(thresholdDtoList);
     }
 
     private Date getInitialDate(final String date) {
@@ -46,7 +44,7 @@ public class Analyzer {
     private Date getFinalDate(final Date initialDate, final Duration duration) {
 
         if (duration == null) {
-            return null;
+            return new Date();
         }
 
         final Calendar calendar = Calendar.getInstance();
