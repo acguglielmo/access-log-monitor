@@ -9,38 +9,43 @@ import java.nio.file.Paths;
 import java.util.Properties;
 
 public final class PropertiesHolder {
-    public static final String DB_PASSWORD = "db.password";
-    public static final String DB_CONNECTION = "db.connection";
-    public static final String DB_USER = "db.user";
+    public static final String DB_AUTH_PASSWORD = "db.auth.password";
+    public static final String DB_AUTH_USER = "db.auth.user";
 
-    private static final String PROPERTIES_FILENAME = "config.properties";
+    public static final String DB_CONNECTION_SERVER = "db.connection.server";
+    public static final String DB_CONNECTION_PORT ="db.connection.port";
+    public static final String DB_CONNECTION_SERVICE_NAME = "db.connection.servicename";
 
     private Properties prop;
 
-    private static PropertiesHolder instance;
+    private static volatile PropertiesHolder instance;
 
-    private PropertiesHolder(){
-        load();
+    private PropertiesHolder(final String configPath){
+        load(configPath);
     }
 
-    public static PropertiesHolder getInstance() {
+    public static void createInstance(final String configPath) {
         if (instance == null) {
             synchronized (PropertiesHolder.class) {
                 if (instance == null) {
-                    instance = new PropertiesHolder();
+                    instance = new PropertiesHolder(configPath);
                 }
             }
         }
+    }
+
+    public static PropertiesHolder getInstance() {
         return instance;
     }
 
     /**
-     * Loads the properties from the file {@link PropertiesHolder#PROPERTIES_FILENAME}
-     * located in the working directory.
+     * Loads the properties from the config file path
+     *
+     * @param configPath the path to the config file.
      */
-    private void load(){
+    private void load(final String configPath){
         InputStream input = null;
-        final Path path = Paths.get(PROPERTIES_FILENAME);
+        final Path path = Paths.get(configPath);
         boolean shouldExit = false;
         try {
             input = new FileInputStream(new File(path.toUri()));
