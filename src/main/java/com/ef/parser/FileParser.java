@@ -1,21 +1,20 @@
 package com.ef.parser;
 
-import com.ef.gateway.AccessLogGateway;
 import com.ef.gateway.sql.impl.AccessLogGatewaySqlImpl;
-import com.ef.util.PropertiesHolder;
+import com.ef.util.ProgressBar;
 
 import java.io.*;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 public final class FileParser {
 
-    private static FileParser instance;
+    public static final Integer MAX_BATCH_CHUNK_SIZE = 1000;
+    private static volatile FileParser instance;
 
     private FileParser(){}
 
@@ -31,36 +30,35 @@ public final class FileParser {
     }
 
     /**
-     * Parses the file.
+     * Loads the file to the database.
      *
-     * @param path the path
+     * @param bufferedReader the buffered reader
      */
-    public void parseFile(final Path path) {
-        try {
+    public void loadFileToDatabase(final BufferedReader bufferedReader) {
 
-            final File file = new File(path.toUri());
-            final BufferedReader reader = new BufferedReader(new FileReader(file));
+        try {
             final ExecutorService executor = Executors.newFixedThreadPool(10);
 
             String readLine;
             List<String[]> dataList = new ArrayList<>();
 
-            while ((readLine = reader.readLine()) != null) {
+            while ((readLine = bufferedReader.readLine()) != null) {
                 dataList.add(parseLine(readLine));
 
-                if(dataList.size() > 999) {
+                if (dataList.size() == MAX_BATCH_CHUNK_SIZE) {
                     executor.submit(new GatewayClient(dataList));
                     dataList = new ArrayList<>();
                 }
             }
-            reader.close();
+            bufferedReader.close();
             executor.submit(new GatewayClient(dataList));
             executor.shutdown();
 
-            while (!executor.isTerminated()) {}
-
-        } catch (final NoSuchFileException e) {
-            System.out.println("File " + path.getFileName() + " not found");
+            try {
+                executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
+            } catch (final InterruptedException e) {
+                e.printStackTrace();
+            }
         } catch (final IOException e) {
             System.out.println(e.getMessage());
         }
@@ -72,7 +70,7 @@ public final class FileParser {
 
     class GatewayClient implements Runnable {
         private List<String[]> dataList;
-        private AccessLogGateway gateway;
+        private AccessLogGatewaySqlImpl gateway;
 
         private GatewayClient(final List<String[]> dataList){
             this.gateway = new AccessLogGatewaySqlImpl();
@@ -82,6 +80,7 @@ public final class FileParser {
         @Override
         public void run(){
             gateway.insert(dataList);
+            ProgressBar.getInstance().updateProgressByChunk();
         }
     }
 }
