@@ -1,7 +1,6 @@
 package com.ef.gateway.sql.impl;
 
 import com.ef.dto.BlockOccurrencesDto;
-import com.ef.gateway.ThresholdGateway;
 import com.ef.gateway.sql.SqlGateway;
 import com.ef.util.DateUtils;
 
@@ -11,11 +10,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ThresholdGatewaySqlImpl extends SqlGateway implements ThresholdGateway {
+public class ThresholdGatewaySqlImpl extends SqlGateway {
 
     private static final int BATCH_SIZE = 1000;
 
-    @Override
     public List<BlockOccurrencesDto> find(final LocalDateTime start,
                                           final LocalDateTime end, final Integer threshold) {
         final List<BlockOccurrencesDto> result = new ArrayList<>();
@@ -54,7 +52,6 @@ public class ThresholdGatewaySqlImpl extends SqlGateway implements ThresholdGate
         return result;
     }
 
-    @Override
     public void insert(final List<BlockOccurrencesDto> blockOccurrencesDtoList) {
         final String insertTableSQL = "INSERT INTO usr_log.block_occurrences"
                 + "(ip, start_date, end_date, comment, threshold) VALUES"
