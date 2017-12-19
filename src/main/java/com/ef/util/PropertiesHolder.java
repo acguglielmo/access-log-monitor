@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
@@ -47,9 +46,6 @@ public final class PropertiesHolder {
             input = new FileInputStream(new File(path.toUri()));
             prop = new Properties();
             prop.load(input);
-        } catch (final NoSuchFileException e) {
-            System.out.println("File " + PROPERTIES_FILENAME + " not found");
-            shouldExit = true;
         } catch (final IOException ex) {
             System.out.println(ex.getMessage());
             shouldExit = true;
