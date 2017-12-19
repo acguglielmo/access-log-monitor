@@ -9,13 +9,15 @@ import java.util.List;
 
 public class CliHelper {
 
-    public static final String ACCESS_LOG = "accessLog";
+    public static final String ACCESS_LOG_PATH = "accessLog";
+    public static final String CONFIG_FILE_PATH = "configFile";
     public static final String START_DATE = "startDate";
     public static final String DURATION = "duration";
     public static final String THRESHOLD = "threshold";
 
     public static final String THRESHOLD_DEFAULT_VALUE = "100";
     public static final String FILENAME_DEFAULT_VALUE = "access.log";
+    public static final String CONFIG_FILE_DEFAULT_VALUE = "config.properties";
 
     /**
      * Configures the CLI options
@@ -24,7 +26,10 @@ public class CliHelper {
      */
     public CommandLine configureCliOptions(final String[] args) {
         final Options options = new Options();
-        options.addOption("a", ACCESS_LOG, true, "Path to log file. Default value is \"access.log\" (in the working directory)");
+        options.addOption("a", ACCESS_LOG_PATH, true,
+                "Path to log file. Default value is "+ FILENAME_DEFAULT_VALUE +" (in the working directory)");
+        options.addOption("c", CONFIG_FILE_PATH, true,
+                "Path to config file. Default value is "+ CONFIG_FILE_DEFAULT_VALUE +" (in the working directory)");
         options.addOption("t", THRESHOLD, true, "Threshold value to block. Only integer values. Default value is 100.");
 
         final Option startDateOption = new Option("s", START_DATE, true,
