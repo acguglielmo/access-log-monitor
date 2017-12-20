@@ -7,7 +7,7 @@ import org.apache.commons.cli.*;
 import java.util.Arrays;
 import java.util.List;
 
-public class CliHelper {
+public final class CliHelper {
 
     public static final String ACCESS_LOG_PATH = "accessLog";
     public static final String CONFIG_FILE_PATH = "configFile";
@@ -18,6 +18,21 @@ public class CliHelper {
     public static final String THRESHOLD_DEFAULT_VALUE = "100";
     public static final String FILENAME_DEFAULT_VALUE = "access.log";
     public static final String CONFIG_FILE_DEFAULT_VALUE = "config.properties";
+
+    private volatile static CliHelper instance;
+
+    private CliHelper(){}
+
+    public static CliHelper getInstance() {
+        if (instance == null) {
+            synchronized (CliHelper.class) {
+                if (instance == null) {
+                    instance = new CliHelper();
+                }
+            }
+        }
+        return instance;
+    }
 
     /**
      * Configures the CLI options
