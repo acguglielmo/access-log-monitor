@@ -1,13 +1,16 @@
 package com.ef.parser;
 
 import com.ef.gateway.sql.impl.AccessLogGatewaySqlImpl;
-import com.ef.util.ProgressBar;
+import com.ef.util.ApplicationException;
+import com.ef.util.ApplicationStatus;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -32,36 +35,32 @@ public final class FileParser {
     /**
      * Loads the file to the database.
      *
-     * @param bufferedReader the buffered reader
+     * @param file the file
      */
-    public void loadFileToDatabase(final BufferedReader bufferedReader) {
+    public void loadFileToDatabase(final File file) throws IOException, InterruptedException {
 
-        try {
-            final ExecutorService executor = Executors.newFixedThreadPool(10);
+        final FileReader fileReader = new FileReader(file);
+        final BufferedReader bufferedReader = new BufferedReader(fileReader);
 
-            String readLine;
-            List<String[]> dataList = new ArrayList<>();
+        final ExecutorService executor = Executors.newFixedThreadPool(10);
 
-            while ((readLine = bufferedReader.readLine()) != null) {
-                dataList.add(parseLine(readLine));
+        String readLine;
+        List<String[]> dataList = new ArrayList<>();
 
-                if (dataList.size() == MAX_BATCH_CHUNK_SIZE) {
-                    executor.submit(new GatewayClient(dataList));
-                    dataList = new ArrayList<>();
-                }
+        while ((readLine = bufferedReader.readLine()) != null) {
+            dataList.add(parseLine(readLine));
+
+            if (dataList.size() == MAX_BATCH_CHUNK_SIZE) {
+                Future<?> future = executor.submit(new GatewayClient(dataList));
+                ApplicationStatus.getInstance().addFuture(future);
+                dataList = new ArrayList<>();
             }
-            bufferedReader.close();
-            executor.submit(new GatewayClient(dataList));
-            executor.shutdown();
-
-            try {
-                executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-            } catch (final InterruptedException e) {
-                e.printStackTrace();
-            }
-        } catch (final IOException e) {
-            System.out.println(e.getMessage());
         }
+        fileReader.close();
+        executor.submit(new GatewayClient(dataList));
+        executor.shutdown();
+
+        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
     }
 
     private String[] parseLine(final String string) {
@@ -79,8 +78,12 @@ public final class FileParser {
 
         @Override
         public void run(){
-            gateway.insert(dataList);
-            ProgressBar.getInstance().updateProgressByChunk();
+            try {
+                gateway.insert(dataList);
+                ApplicationStatus.getInstance().updateProgressByChunk();
+            } catch (final SQLException e) {
+                throw new ApplicationException(e);
+            }
         }
     }
 }
