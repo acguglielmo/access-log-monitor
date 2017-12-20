@@ -13,20 +13,23 @@ public class ApplicationStatus {
     private double progress;
     private double chunkSize;
 
-    private static Integer ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE = 80;
+    /**
+     * The Estimated file loading to database job percentage.
+     */
+    static final Integer ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE = 80;
 
     /**
      * The constant JOB_PROGRESS_AFTER_TRUNCATE_TABLE.
      */
-    public static Integer JOB_PROGRESS_AFTER_TRUNCATE_TABLE = 10;
+    public static final Integer JOB_PROGRESS_AFTER_TRUNCATE_TABLE = 10;
     /**
      * The constant JOB_PROGRESS_AFTER_LOADING_FILE_TO_DATABASE.
      */
-    public static Integer JOB_PROGRESS_AFTER_LOADING_FILE_TO_DATABASE = 90;
+    public static final Integer JOB_PROGRESS_AFTER_LOADING_FILE_TO_DATABASE = 90;
     /**
      * The constant JOB_PROGRESS_AFTER_COMPLETION.
      */
-    public static Integer JOB_PROGRESS_AFTER_COMPLETION = 100;
+    public static final Integer JOB_PROGRESS_AFTER_COMPLETION = 100;
 
 
     private static volatile ApplicationStatus instance;
@@ -67,6 +70,24 @@ public class ApplicationStatus {
      */
     public synchronized void setProgress(double progress) {
         this.progress = progress;
+    }
+
+    /**
+     * Gets progress.
+     *
+     * @return the progress
+     */
+    synchronized double getProgress() {
+        return this.progress;
+    }
+
+    /**
+     * Gets chunk size.
+     *
+     * @return the chunk size
+     */
+    synchronized double getChunkSize() {
+        return this.chunkSize;
     }
 
     /**
