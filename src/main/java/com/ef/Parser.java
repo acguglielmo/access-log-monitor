@@ -107,6 +107,7 @@ public class Parser {
                 } catch (InterruptedException | ExecutionException e) {
                     System.out.println();
                     System.out.println(e.getMessage());
+                    System.out.println("The application will now exit.");
                     executor.shutdownNow();
                     System.exit(1);
                 }

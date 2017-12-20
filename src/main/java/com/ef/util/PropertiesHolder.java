@@ -63,6 +63,9 @@ public final class PropertiesHolder {
      * @return the instance
      */
     public static PropertiesHolder getInstance() {
+        if (instance == null) {
+            throw new RuntimeException("The instance was not created yet!");
+        }
         return instance;
     }
 
@@ -81,6 +84,14 @@ public final class PropertiesHolder {
             prop.load(input);
         } catch (final IOException ex) {
             System.out.println(ex.getMessage());
+            System.out.println("Please provide a path to a config file or create a " +
+                    "\"config.properties\" file in the working directory with the " +
+                    "following properties filled with your environment settings:" +
+                    "\n db.connection.server= "+
+                    "\n db.connection.port= "+
+                    "\n db.connection.servicename= "+
+                    "\n db.auth.user= "+
+                    "\n db.auth.password= ");
             shouldExit = true;
         } finally {
             if (input != null) {
