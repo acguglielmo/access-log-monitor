@@ -4,7 +4,6 @@ import com.ef.dto.BlockOccurrencesDto;
 import com.ef.enums.Duration;
 import com.ef.gateway.sql.impl.AccessLogGatewaySqlImpl;
 import com.ef.gateway.sql.impl.BlockOccurrencesGatewaySqlImpl;
-import com.ef.util.ApplicationException;
 import com.ef.util.DateUtils;
 
 import java.sql.SQLException;
@@ -60,7 +59,7 @@ public final class Analyzer {
             new BlockOccurrencesGatewaySqlImpl().insert(blockOccurrencesDtoList);
             return blockOccurrencesDtoList;
         } catch (final SQLException e) {
-            throw new ApplicationException(e);
+            throw new RuntimeException(e);
         }
     }
 }

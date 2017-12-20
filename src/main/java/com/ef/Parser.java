@@ -7,7 +7,6 @@ import com.ef.enums.Duration;
 import com.ef.gateway.sql.impl.AccessLogGatewaySqlImpl;
 import com.ef.gateway.sql.impl.BlockOccurrencesGatewaySqlImpl;
 import com.ef.parser.FileParser;
-import com.ef.util.ApplicationException;
 import com.ef.util.ApplicationStatus;
 import com.ef.util.PropertiesHolder;
 import org.apache.commons.cli.*;
@@ -143,7 +142,7 @@ public class Parser {
                 ApplicationStatus.getInstance().setProgress(ApplicationStatus.JOB_PROGRESS_AFTER_COMPLETION);
 
             } catch (final Throwable e) {
-                throw new ApplicationException(e);
+                throw new RuntimeException(e);
             }
         }
     }

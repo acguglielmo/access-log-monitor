@@ -1,7 +1,6 @@
 package com.ef.parser;
 
 import com.ef.gateway.sql.impl.AccessLogGatewaySqlImpl;
-import com.ef.util.ApplicationException;
 import com.ef.util.ApplicationStatus;
 
 import java.io.*;
@@ -98,7 +97,7 @@ public final class FileParser {
                 gateway.insert(dataList);
                 ApplicationStatus.getInstance().updateProgressByChunk();
             } catch (final SQLException e) {
-                throw new ApplicationException(e);
+                throw new RuntimeException(e);
             }
         }
     }
