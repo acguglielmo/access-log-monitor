@@ -24,6 +24,8 @@ public final class FileParser {
     public static final Integer MAX_BATCH_CHUNK_SIZE = 1000;
     private static volatile FileParser instance;
 
+    private Pattern regex = Pattern.compile(Pattern.quote("|"));
+
     private FileParser(){}
 
     /**
@@ -60,7 +62,8 @@ public final class FileParser {
         List<String[]> dataList = new ArrayList<>();
 
         while ((readLine = bufferedReader.readLine()) != null) {
-            dataList.add(parseLine(readLine));
+            final String[] strings = parseLine(readLine);
+            dataList.add(doStringPooling(strings));
 
             if (dataList.size() == MAX_BATCH_CHUNK_SIZE) {
                 Future<?> future = executor.submit(new GatewayClient(dataList));
@@ -76,7 +79,14 @@ public final class FileParser {
     }
 
     private String[] parseLine(final String string) {
-        return string.split(Pattern.quote("|"));
+        return regex.split(string);
+    }
+
+    private String[] doStringPooling(final String[] strings) {
+        for (int i =0; i < strings.length ; i++) {
+            strings[i] = strings[i].intern();
+        }
+        return strings;
     }
 
     /**
@@ -84,17 +94,15 @@ public final class FileParser {
      */
     class GatewayClient implements Runnable {
         private List<String[]> dataList;
-        private AccessLogGatewaySqlImpl gateway;
 
         private GatewayClient(final List<String[]> dataList){
-            this.gateway = new AccessLogGatewaySqlImpl();
             this.dataList = dataList;
         }
 
         @Override
         public void run(){
             try {
-                gateway.insert(dataList);
+                new AccessLogGatewaySqlImpl().insert(dataList);
                 ApplicationStatus.getInstance().updateProgressByChunk();
             } catch (final SQLException e) {
                 throw new RuntimeException(e);
