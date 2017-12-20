@@ -9,8 +9,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Access log gateway sql.
+ */
 public class AccessLogGatewaySqlImpl extends SqlGateway {
 
+    /**
+     * Instantiates a new Access log gateway sql.
+     */
     public AccessLogGatewaySqlImpl() {
         super();
     }
@@ -27,6 +33,12 @@ public class AccessLogGatewaySqlImpl extends SqlGateway {
         return true;
     }
 
+    /**
+     * Insert.
+     *
+     * @param dataList the data list
+     * @throws SQLException the sql exception
+     */
     public void insert(final List<String[]> dataList) throws SQLException {
 
         try {
@@ -49,6 +61,15 @@ public class AccessLogGatewaySqlImpl extends SqlGateway {
         }
     }
 
+    /**
+     * Find list.
+     *
+     * @param start     the start
+     * @param end       the end
+     * @param threshold the threshold
+     * @return the list
+     * @throws SQLException the sql exception
+     */
     public List<BlockOccurrencesDto> find(final LocalDateTime start,
                                           final LocalDateTime end, final Integer threshold) throws SQLException {
         final List<BlockOccurrencesDto> result = new ArrayList<>();
@@ -84,6 +105,11 @@ public class AccessLogGatewaySqlImpl extends SqlGateway {
         return result;
     }
 
+    /**
+     * Truncate.
+     *
+     * @throws SQLException the sql exception
+     */
     public void truncate() throws SQLException {
         try {
             final String statement = "TRUNCATE TABLE usr_aguglielmo.access_log";

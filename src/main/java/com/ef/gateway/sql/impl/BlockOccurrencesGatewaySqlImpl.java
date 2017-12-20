@@ -7,6 +7,9 @@ import com.ef.util.DateUtils;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * The type Block occurrences gateway sql.
+ */
 public class BlockOccurrencesGatewaySqlImpl extends SqlGateway {
 
     private static final int BATCH_CHUNK_SIZE = 1000;
@@ -23,6 +26,12 @@ public class BlockOccurrencesGatewaySqlImpl extends SqlGateway {
         return true;
     }
 
+    /**
+     * Insert.
+     *
+     * @param blockOccurrencesDtoList the block occurrences dto list
+     * @throws SQLException the sql exception
+     */
     public void insert(final List<BlockOccurrencesDto> blockOccurrencesDtoList) throws SQLException {
         final String insertTableSQL = "INSERT INTO usr_aguglielmo.block_occurrences"
                 + "(ip, start_date, end_date, comment, threshold) VALUES"

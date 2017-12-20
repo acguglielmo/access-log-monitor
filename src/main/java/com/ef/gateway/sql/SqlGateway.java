@@ -7,6 +7,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+/**
+ * The type Sql gateway.
+ */
 public abstract class SqlGateway {
 
     private String dbConnectionString;
@@ -14,8 +17,14 @@ public abstract class SqlGateway {
     private String dbPassword;
 
     private Connection dbConnection;
+    /**
+     * The Prepared statement.
+     */
     protected PreparedStatement preparedStatement;
 
+    /**
+     * Instantiates a new Sql gateway.
+     */
     public SqlGateway() {
         final PropertiesHolder propertiesHolder = PropertiesHolder.getInstance();
         dbConnectionString = getConnectionString(propertiesHolder);
@@ -35,6 +44,12 @@ public abstract class SqlGateway {
         return sb.toString();
     }
 
+    /**
+     * Gets connection.
+     *
+     * @return the connection
+     * @throws SQLException the sql exception
+     */
     protected Connection getConnection() throws SQLException {
         if (dbConnection == null || dbConnection.isClosed()) {
             dbConnection = DriverManager.getConnection(
@@ -44,6 +59,11 @@ public abstract class SqlGateway {
         return dbConnection;
     }
 
+    /**
+     * Close db connection.
+     *
+     * @throws SQLException the sql exception
+     */
     protected void closeDbConnection() throws SQLException {
         if (preparedStatement != null) {
             preparedStatement.close();
@@ -53,5 +73,11 @@ public abstract class SqlGateway {
         }
     }
 
+    /**
+     * Table exists boolean.
+     *
+     * @return the boolean
+     * @throws SQLException the sql exception
+     */
     public abstract boolean tableExists() throws SQLException;
 }

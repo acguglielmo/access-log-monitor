@@ -7,22 +7,54 @@ import org.apache.commons.cli.*;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * The type Cli helper.
+ */
 public final class CliHelper {
 
+    /**
+     * The constant ACCESS_LOG_PATH.
+     */
     public static final String ACCESS_LOG_PATH = "accessLog";
+    /**
+     * The constant CONFIG_FILE_PATH.
+     */
     public static final String CONFIG_FILE_PATH = "configFile";
+    /**
+     * The constant START_DATE.
+     */
     public static final String START_DATE = "startDate";
+    /**
+     * The constant DURATION.
+     */
     public static final String DURATION = "duration";
+    /**
+     * The constant THRESHOLD.
+     */
     public static final String THRESHOLD = "threshold";
 
+    /**
+     * The constant THRESHOLD_DEFAULT_VALUE.
+     */
     public static final String THRESHOLD_DEFAULT_VALUE = "100";
+    /**
+     * The constant FILENAME_DEFAULT_VALUE.
+     */
     public static final String FILENAME_DEFAULT_VALUE = "access.log";
+    /**
+     * The constant CONFIG_FILE_DEFAULT_VALUE.
+     */
     public static final String CONFIG_FILE_DEFAULT_VALUE = "config.properties";
 
     private volatile static CliHelper instance;
 
     private CliHelper(){}
 
+    /**
+     * Gets instance.
+     *
+     * @return the instance
+     */
     public static CliHelper getInstance() {
         if (instance == null) {
             synchronized (CliHelper.class) {
@@ -38,6 +70,7 @@ public final class CliHelper {
      * Configures the CLI options
      *
      * @param args the args
+     * @return the command line
      */
     public CommandLine configureCliOptions(final String[] args) {
         final Options options = new Options();

@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
+/**
+ * The type Application status.
+ */
 public class ApplicationStatus {
 
     private double progress;
@@ -12,8 +15,17 @@ public class ApplicationStatus {
 
     private static Integer ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE = 80;
 
+    /**
+     * The constant JOB_PROGRESS_AFTER_TRUNCATE_TABLE.
+     */
     public static Integer JOB_PROGRESS_AFTER_TRUNCATE_TABLE = 10;
+    /**
+     * The constant JOB_PROGRESS_AFTER_LOADING_FILE_TO_DATABASE.
+     */
     public static Integer JOB_PROGRESS_AFTER_LOADING_FILE_TO_DATABASE = 90;
+    /**
+     * The constant JOB_PROGRESS_AFTER_COMPLETION.
+     */
     public static Integer JOB_PROGRESS_AFTER_COMPLETION = 100;
 
 
@@ -25,6 +37,11 @@ public class ApplicationStatus {
         futureList = new ArrayList<>();
     }
 
+    /**
+     * Gets instance.
+     *
+     * @return the instance
+     */
     public static ApplicationStatus getInstance() {
         if (instance == null) {
             synchronized (ApplicationStatus.class) {
@@ -36,14 +53,29 @@ public class ApplicationStatus {
         return instance;
     }
 
+    /**
+     * Update progress by chunk.
+     */
     public synchronized void updateProgressByChunk() {
         this.progress += chunkSize;
     }
 
+    /**
+     * Sets progress.
+     *
+     * @param progress the progress
+     */
     public synchronized void setProgress(double progress) {
         this.progress = progress;
     }
 
+    /**
+     * Configure chunk size.
+     *
+     * @param file           the file
+     * @param batchChunkSize the batch chunk size
+     * @throws IOException the io exception
+     */
     public synchronized void configureChunkSize(final File file, final Integer batchChunkSize) throws IOException {
         final LineNumberReader lineNumberReader = new LineNumberReader(new FileReader(file));
         while (lineNumberReader.skip(Long.MAX_VALUE) > 0)
@@ -55,6 +87,11 @@ public class ApplicationStatus {
         lineNumberReader.close();
     }
 
+    /**
+     * Gets progress bar.
+     *
+     * @return the progress bar
+     */
     public String getProgressBar()
     {
         final StringBuilder sb = new StringBuilder();
@@ -70,10 +107,20 @@ public class ApplicationStatus {
         return sb.toString();
     }
 
+    /**
+     * Add future.
+     *
+     * @param future the future
+     */
     public synchronized void addFuture(final Future<?> future) {
         this.futureList.add(future);
     }
 
+    /**
+     * Gets future list.
+     *
+     * @return the future list
+     */
     public synchronized List<Future<?>> getFutureList() {
         return new ArrayList<>(this.futureList);
     }

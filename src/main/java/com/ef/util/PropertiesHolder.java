@@ -8,12 +8,30 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Properties;
 
+/**
+ * The type Properties holder.
+ */
 public final class PropertiesHolder {
+    /**
+     * The constant DB_AUTH_PASSWORD.
+     */
     public static final String DB_AUTH_PASSWORD = "db.auth.password";
+    /**
+     * The constant DB_AUTH_USER.
+     */
     public static final String DB_AUTH_USER = "db.auth.user";
 
+    /**
+     * The constant DB_CONNECTION_SERVER.
+     */
     public static final String DB_CONNECTION_SERVER = "db.connection.server";
+    /**
+     * The constant DB_CONNECTION_PORT.
+     */
     public static final String DB_CONNECTION_PORT ="db.connection.port";
+    /**
+     * The constant DB_CONNECTION_SERVICE_NAME.
+     */
     public static final String DB_CONNECTION_SERVICE_NAME = "db.connection.servicename";
 
     private Properties prop;
@@ -24,6 +42,11 @@ public final class PropertiesHolder {
         load(configPath);
     }
 
+    /**
+     * Create instance.
+     *
+     * @param configPath the config path
+     */
     public static void createInstance(final String configPath) {
         if (instance == null) {
             synchronized (PropertiesHolder.class) {
@@ -34,6 +57,11 @@ public final class PropertiesHolder {
         }
     }
 
+    /**
+     * Gets instance.
+     *
+     * @return the instance
+     */
     public static PropertiesHolder getInstance() {
         return instance;
     }
@@ -73,6 +101,12 @@ public final class PropertiesHolder {
         System.exit(1);
     }
 
+    /**
+     * Gets property.
+     *
+     * @param propertyName the property name
+     * @return the property
+     */
     public String getProperty(final String propertyName) {
         return prop.getProperty(propertyName);
     }
