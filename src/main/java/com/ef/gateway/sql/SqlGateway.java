@@ -35,29 +35,23 @@ public abstract class SqlGateway {
         return sb.toString();
     }
 
-    protected Connection getConnection() {
-        try {
-            if (dbConnection == null || dbConnection.isClosed()) {
-                dbConnection = DriverManager.getConnection(
-                        dbConnectionString, dbUser, dbPassword);
-                return dbConnection;
-            }
-        } catch (final SQLException e) {
-            System.out.println(e.getMessage());
+    protected Connection getConnection() throws SQLException {
+        if (dbConnection == null || dbConnection.isClosed()) {
+            dbConnection = DriverManager.getConnection(
+                    dbConnectionString, dbUser, dbPassword);
+            return dbConnection;
         }
         return dbConnection;
     }
 
-    protected void closeDbConnection() {
-        try {
-            if (preparedStatement != null) {
-                preparedStatement.close();
-            }
-            if (dbConnection != null) {
-                dbConnection.close();
-            }
-        } catch (final SQLException e) {
-            System.out.println(e.getMessage());
+    protected void closeDbConnection() throws SQLException {
+        if (preparedStatement != null) {
+            preparedStatement.close();
+        }
+        if (dbConnection != null) {
+            dbConnection.close();
         }
     }
+
+    public abstract boolean tableExists() throws SQLException;
 }

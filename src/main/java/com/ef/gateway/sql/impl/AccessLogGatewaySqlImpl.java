@@ -1,8 +1,12 @@
 package com.ef.gateway.sql.impl;
 
+import com.ef.dto.BlockOccurrencesDto;
 import com.ef.gateway.sql.SqlGateway;
+import com.ef.util.DateUtils;
 
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AccessLogGatewaySqlImpl extends SqlGateway {
@@ -11,10 +15,22 @@ public class AccessLogGatewaySqlImpl extends SqlGateway {
         super();
     }
 
-    public void insert(final List<String[]> dataList) {
+    @Override
+    public boolean tableExists() throws SQLException {
+        try {
+            final String statement = "SELECT 1 FROM usr_aguglielmo.access_log";
+            preparedStatement = getConnection().prepareStatement(statement);
+            preparedStatement.executeQuery();
+        } finally {
+            super.closeDbConnection();
+        }
+        return true;
+    }
+
+    public void insert(final List<String[]> dataList) throws SQLException {
 
         try {
-            final String statement = "INSERT INTO usr_log.access_log"
+            final String statement = "INSERT INTO usr_aguglielmo.access_log"
                     + "(date, ip, request, status, user_agent) VALUES"
                     + "(?,?,?,?,?)";
             preparedStatement = getConnection().prepareStatement(statement);
@@ -28,21 +44,51 @@ public class AccessLogGatewaySqlImpl extends SqlGateway {
                 preparedStatement.addBatch();
             }
             preparedStatement.executeBatch();
-
-        } catch (final SQLException e) {
-            System.out.println(e.getMessage());
         } finally {
             super.closeDbConnection();
         }
     }
 
-    public void truncate() {
+    public List<BlockOccurrencesDto> find(final LocalDateTime start,
+                                          final LocalDateTime end, final Integer threshold) throws SQLException {
+        final List<BlockOccurrencesDto> result = new ArrayList<>();
+
+        final String selectSql = "SELECT ip, count(1) as cont " +
+                "  FROM usr_aguglielmo.access_log t " +
+                " where t.date between ? " + " and ? " +
+                "group by ip having cont > ? " +
+                "order by cont desc;";
+
         try {
-            final String statement = "TRUNCATE TABLE usr_log.access_log";
+            preparedStatement = getConnection().prepareStatement(selectSql);
+
+            preparedStatement.setString(1, DateUtils.DATE_FORMAT_FILE.format(start));
+            preparedStatement.setString(2, DateUtils.DATE_FORMAT_FILE.format(end));
+            preparedStatement.setInt(3, threshold);
+
+            final ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+
+                final BlockOccurrencesDto dto = new BlockOccurrencesDto();
+                dto.setCount(resultSet.getInt("cont"));
+                dto.setIp(resultSet.getString("ip"));
+                dto.setStartDate(start);
+                dto.setEndDate(end);
+                dto.setThreshold(threshold);
+                result.add(dto);
+            }
+        } finally {
+            super.closeDbConnection();
+        }
+        return result;
+    }
+
+    public void truncate() throws SQLException {
+        try {
+            final String statement = "TRUNCATE TABLE usr_aguglielmo.access_log";
             preparedStatement = getConnection().prepareStatement(statement);
             preparedStatement.executeUpdate();
-        } catch (final SQLException e) {
-            System.out.println(e.getMessage());
         } finally {
             super.closeDbConnection();
         }
