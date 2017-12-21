@@ -22,9 +22,10 @@ public final class FileParser {
      * The constant MAX_BATCH_CHUNK_SIZE.
      */
     public static final Integer MAX_BATCH_CHUNK_SIZE = 1000;
-    private static volatile FileParser instance;
 
     private Pattern regex = Pattern.compile(Pattern.quote("|"));
+
+    private static volatile FileParser instance;
 
     private FileParser(){}
 
@@ -59,54 +60,64 @@ public final class FileParser {
         final ExecutorService executor = Executors.newFixedThreadPool(10);
 
         String readLine;
-        List<String[]> dataList = new ArrayList<>();
+        List<String> readLines = new ArrayList<>();
 
         while ((readLine = bufferedReader.readLine()) != null) {
-            final String[] strings = parseLine(readLine);
-            dataList.add(doStringPooling(strings));
+            readLines.add(readLine);
 
-            if (dataList.size() == MAX_BATCH_CHUNK_SIZE) {
-                Future<?> future = executor.submit(new GatewayClient(dataList));
+            if (readLines.size() == MAX_BATCH_CHUNK_SIZE) {
+                Future<?> future = executor.submit(new GatewayClient(readLines));
                 ApplicationStatus.getInstance().addFuture(future);
-                dataList = new ArrayList<>();
+                readLines = new ArrayList<>();
             }
         }
         fileReader.close();
-        executor.submit(new GatewayClient(dataList));
+        Future<?> future = executor.submit(new GatewayClient(readLines));
+        ApplicationStatus.getInstance().addFuture(future);
+
         executor.shutdown();
-
         executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
-    }
-
-    private String[] parseLine(final String string) {
-        return regex.split(string);
-    }
-
-    private String[] doStringPooling(final String[] strings) {
-        for (int i =0; i < strings.length ; i++) {
-            strings[i] = strings[i].intern();
-        }
-        return strings;
     }
 
     /**
      * The type Gateway client.
+     * <p>
+     * Do the string splitting and polling.
      */
     class GatewayClient implements Runnable {
-        private List<String[]> dataList;
+        private List<String> readLines;
 
-        private GatewayClient(final List<String[]> dataList){
-            this.dataList = dataList;
+        /**
+         * Instantiates a new Gateway client.
+         *
+         * @param readLines the read lines
+         */
+        GatewayClient(final List<String> readLines){
+            this.readLines = readLines;
         }
 
         @Override
         public void run(){
             try {
-                new AccessLogGatewaySqlImpl().insert(dataList);
+                final List<String[]> stringArrayList = new ArrayList<>();
+
+                for (final String readLine : readLines) {
+                    final String[] stringArray = regex.split(readLine);
+                    stringArrayList.add(doStringPolling(stringArray));
+                }
+
+                new AccessLogGatewaySqlImpl().insert(stringArrayList);
                 ApplicationStatus.getInstance().updateProgressByChunk();
             } catch (final SQLException e) {
                 throw new RuntimeException(e);
             }
+        }
+
+        private String[] doStringPolling(final String[] strings) {
+            for (int i =0; i < strings.length ; i++) {
+                strings[i] = strings[i].intern();
+            }
+            return strings;
         }
     }
 }

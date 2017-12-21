@@ -25,12 +25,12 @@ public class DateUtilsTest {
     }
 
     @Test
-    public void getInstance() throws Exception {
+    public void getInstanceTest() throws Exception {
         assertEquals(instance, DateUtils.getInstance());
     }
 
     @Test
-    public void getStartDate() throws Exception {
+    public void getStartDateTest() throws Exception {
         final LocalDateTime startDate = instance.getStartDate(this.startDate);
 
         assertEquals(2017, startDate.getYear());
@@ -42,7 +42,7 @@ public class DateUtilsTest {
     }
 
     @Test
-    public void getEndDate() throws Exception {
+    public void getEndDateTest() throws Exception {
         final LocalDateTime startDate = instance.getStartDate(this.startDate);
 
         final LocalDateTime endDateDailyTest = instance.getEndDate(startDate, Duration.DAILY);
