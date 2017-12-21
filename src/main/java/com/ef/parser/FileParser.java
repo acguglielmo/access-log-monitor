@@ -52,7 +52,7 @@ public final class FileParser {
      * @throws IOException          the io exception
      * @throws InterruptedException the interrupted exception
      */
-    public void loadFileToDatabase(final File file) throws IOException, InterruptedException {
+    public void loadFileToDatabase(final File file) throws IOException, InterruptedException, SQLException {
 
         final FileReader fileReader = new FileReader(file);
         final BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -107,7 +107,6 @@ public final class FileParser {
                 }
 
                 new AccessLogGatewaySqlImpl().insert(stringArrayList);
-                ApplicationStatus.getInstance().updateProgressByChunk();
             } catch (final SQLException e) {
                 throw new RuntimeException(e);
             }

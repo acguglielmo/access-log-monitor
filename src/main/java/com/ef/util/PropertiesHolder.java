@@ -86,7 +86,7 @@ public final class PropertiesHolder {
             System.out.println(ex.getMessage());
             System.out.println("Please provide a path to a config file or create a " +
                     "\"config.properties\" file in the working directory with the " +
-                    "following properties filled with your environment settings:" +
+                    "following properties filled according to your environment settings:" +
                     "\n db.connection.server= "+
                     "\n db.connection.port= "+
                     "\n db.connection.servicename= "+

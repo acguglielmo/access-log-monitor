@@ -105,6 +105,6 @@ public class BlockOccurrencesDto {
 
     @Override
     public String toString() {
-        return String.format("Ip: %-15s - Count: %s", ip, count);
+        return String.format("%-15s   %s", ip, count);
     }
 }

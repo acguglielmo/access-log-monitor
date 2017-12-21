@@ -2,6 +2,7 @@ package com.ef.parser;
 
 import com.ef.gateway.sql.impl.AccessLogGatewaySqlImpl;
 import com.ef.util.ApplicationStatus;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,10 +13,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
-import java.util.regex.Pattern;
 
 import static org.easymock.EasyMock.expectLastCall;
 import static org.junit.Assert.*;
@@ -38,8 +37,6 @@ public class FileParserTest {
     private static final String LINE_5 = "2017-01-01 23:59:29.749|192.168.70.119|\"GET / HTTP/1.1\"|200|\"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.86 Safari/537.36\"\n";
     private static final String LINE_6 = "2017-01-01 23:59:31.128|192.168.110.220|\"GET / HTTP/1.1\"|200|\"Mozilla/5.0 (Linux; Android 7.0; Moto G (4) Build/NPJS25.93-14-8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.116 Mobile Safari/537.36\"";
 
-    private File file;
-
     /**
      * Sets up.
      *
@@ -48,11 +45,9 @@ public class FileParserTest {
     @Before
     public void setUp() throws Exception {
         this.instance = FileParser.getInstance();
-
-        createFile();
     }
 
-    private void createFile() throws IOException {
+    private File createFile() throws IOException {
         final Path path = Paths.get(ACCESS_LOG_FILENAME);
         if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
             Files.delete(path);
@@ -60,14 +55,15 @@ public class FileParserTest {
 
         final Path filePath = Files.createFile(path);
         final BufferedWriter bufferedWriter = Files.newBufferedWriter(filePath, StandardOpenOption.WRITE);
-        bufferedWriter.write(LINE_1);
-        bufferedWriter.write(LINE_2);
-        bufferedWriter.write(LINE_3);
-        bufferedWriter.write(LINE_4);
-        bufferedWriter.write(LINE_5);
-        bufferedWriter.write(LINE_6);
-        bufferedWriter.close();
-        this.file = filePath.toFile();
+        for(int i =0; i < 1001; i++) {
+            bufferedWriter.write(LINE_1);
+            bufferedWriter.write(LINE_2);
+            bufferedWriter.write(LINE_3);
+            bufferedWriter.write(LINE_4);
+            bufferedWriter.write(LINE_5);
+            bufferedWriter.write(LINE_6);
+        }
+        return filePath.toFile();
     }
 
     @Test
@@ -77,28 +73,25 @@ public class FileParserTest {
 
     @Test
     public void loadFileToDatabaseTest() throws Exception {
-        final String quote = Pattern.quote("|");
+        final AccessLogGatewaySqlImpl mockedGateway = createMock(AccessLogGatewaySqlImpl.class);
 
-
-        final List<String[]> lines = new ArrayList<>();
-        lines.add(quote.split(LINE_1));
-        lines.add(quote.split(LINE_2));
-        lines.add(quote.split(LINE_3));
-        lines.add(quote.split(LINE_4));
-        lines.add(quote.split(LINE_5));
-        lines.add(quote.split(LINE_6));
-
-        final AccessLogGatewaySqlImpl mockedClient = createMock(AccessLogGatewaySqlImpl.class);
-
-        expectNew(AccessLogGatewaySqlImpl.class).andReturn(mockedClient);
+        expectNew(AccessLogGatewaySqlImpl.class).andReturn(mockedGateway);
         expectLastCall().once();
 
-        replay(mockedClient, AccessLogGatewaySqlImpl.class);
+        replay(mockedGateway, AccessLogGatewaySqlImpl.class);
 
-        instance.loadFileToDatabase(file);
+        instance.loadFileToDatabase(createFile());
 
         final List<Future<?>> futureList = ApplicationStatus.getInstance().getFutureList();
         assertFalse(futureList.isEmpty());
-        assertEquals(1, futureList.size());
+        assertEquals(5, futureList.size());
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        final Path path = Paths.get(ACCESS_LOG_FILENAME);
+        if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
+            Files.delete(path);
+        }
     }
 }

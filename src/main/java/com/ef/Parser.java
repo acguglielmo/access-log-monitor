@@ -1,7 +1,7 @@
 package com.ef;
 
 import com.ef.analysis.Analyzer;
-import com.ef.cli.CliHelper;
+import com.ef.cli.CommandLineHelper;
 import com.ef.dto.BlockOccurrencesDto;
 import com.ef.enums.Duration;
 import com.ef.gateway.sql.impl.AccessLogGatewaySqlImpl;
@@ -9,6 +9,8 @@ import com.ef.gateway.sql.impl.BlockOccurrencesGatewaySqlImpl;
 import com.ef.parser.FileParser;
 import com.ef.util.ApplicationStatus;
 import com.ef.util.PropertiesHolder;
+import com.mysql.cj.jdbc.exceptions.CommunicationsException;
+import com.mysql.cj.jdbc.exceptions.MySQLTimeoutException;
 import org.apache.commons.cli.*;
 
 import java.io.*;
@@ -29,46 +31,44 @@ public class Parser {
 
     private List<BlockOccurrencesDto> blockOccurrencesDtos = new ArrayList<>();
 
+    /**
+     * Main.
+     *
+     * @param args the args
+     */
     public static void main(final String[] args) {
         new Parser().process(args);
     }
 
 
 	private void process(final String[] args) {
-		final CommandLine commandLine = CliHelper.getInstance().configureCliOptions(args);
+		final CommandLine commandLine = CommandLineHelper.getInstance().configureCliOptions(args);
 		if (commandLine ==  null) {
 			return;
 		}
 
-		final String accessLogPath = commandLine.getOptionValue(CliHelper.ACCESS_LOG_PATH, CliHelper.FILENAME_DEFAULT_VALUE);
-        final String configPath = commandLine.getOptionValue(CliHelper.CONFIG_FILE_PATH, CliHelper.CONFIG_FILE_DEFAULT_VALUE);
+		final String accessLogPath = commandLine.getOptionValue(CommandLineHelper.ACCESS_LOG_PATH, CommandLineHelper.FILENAME_DEFAULT_VALUE);
+        final String configPath = commandLine.getOptionValue(CommandLineHelper.CONFIG_FILE_PATH, CommandLineHelper.CONFIG_FILE_DEFAULT_VALUE);
 
         PropertiesHolder.createInstance(configPath);
 
         checkIfDatabaseTablesExist();
 
-        final Path path = Paths.get(accessLogPath);
-        final File file = new File(path.toUri());
+        final FileParsingTask task = new FileParsingTask(accessLogPath,
+                Integer.parseInt(commandLine.getOptionValue(CommandLineHelper.THRESHOLD)),
+                commandLine.getOptionValue(CommandLineHelper.START_DATE),
+                commandLine.getOptionValue(CommandLineHelper.DURATION));
 
-        try {
-            ApplicationStatus.getInstance().configureChunkSize(file, FileParser.MAX_BATCH_CHUNK_SIZE);
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
+        final Future<?> future = executor.submit(task);
+        ApplicationStatus.getInstance().addFuture(future);
+        executor.shutdown();
 
-            final Task task = new Task(file,
-                    Integer.parseInt(commandLine.getOptionValue(CliHelper.THRESHOLD, CliHelper.THRESHOLD_DEFAULT_VALUE)),
-                    commandLine.getOptionValue(CliHelper.START_DATE),
-                    commandLine.getOptionValue(CliHelper.DURATION));
+        monitorApplicationStatus(executor);
 
-            final ExecutorService executor = Executors.newSingleThreadExecutor();
-            final Future<?> future = executor.submit(task);
-            ApplicationStatus.getInstance().addFuture(future);
-            executor.shutdown();
-
-            monitorApplicationStatus(executor);
-
+        if (!blockOccurrencesDtos.isEmpty()) {
+            System.out.println(String.format("%-15s   %s", "IP", "Count"));
             blockOccurrencesDtos.forEach(System.out::println);
-
-        } catch (final IOException e) {
-            System.out.println(e.getMessage());
         }
     }
 
@@ -105,8 +105,8 @@ public class Parser {
                 try {
                     future.get();
                 } catch (InterruptedException | ExecutionException e) {
-                    System.out.println();
-                    System.out.println(e.getMessage());
+                    printExceptionToConsole(e);
+
                     System.out.println("The application will now exit.");
                     executor.shutdownNow();
                     System.exit(1);
@@ -115,15 +115,49 @@ public class Parser {
         }
     }
 
-    private class Task implements Runnable {
-        private File file;
+    private void printExceptionToConsole(final Exception e) {
+        System.out.println();
+
+        if (e.getCause() != null && e.getCause() instanceof RuntimeException) {
+            final RuntimeException runtimeException = (RuntimeException) e.getCause();
+            if (runtimeException.getCause() != null) {
+                printSQLException(runtimeException);
+                printIOException(runtimeException);
+            }
+        } else {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    private void printIOException(final RuntimeException runtimeException) {
+        if (runtimeException.getCause() instanceof IOException) {
+            final IOException iOException = (IOException) runtimeException.getCause();
+            System.out.println("An error occurred during a I/O operation: ");
+            System.out.println(iOException.getMessage());
+        }
+    }
+
+    private void printSQLException(final RuntimeException runtimeException) {
+        if (runtimeException.getCause() instanceof SQLException) {
+            final SQLException sqlException = (SQLException) runtimeException.getCause();
+            System.out.println("An error occurred during a database operation: ");
+            if (sqlException instanceof CommunicationsException || sqlException instanceof MySQLTimeoutException) {
+                System.out.println("Please check if the configured database server is up and running.");
+            } else {
+                System.out.println(sqlException.getMessage());
+            }
+        }
+    }
+
+    private class FileParsingTask implements Runnable {
+        private String accessLogPath;
         private Integer threshold;
         private String startDate;
         private Duration duration;
 
-        private Task(final File file, final Integer threshold,
-                     final String startDate, final String duration ) {
-            this.file = file;
+        private FileParsingTask(final String accessLogPath, final Integer threshold,
+                              final String startDate, final String duration ) {
+            this.accessLogPath = accessLogPath;
             this.threshold = threshold;
             this.startDate = startDate;
             this.duration = Duration.getByName(duration);
@@ -132,11 +166,12 @@ public class Parser {
         @Override
         public void run() {
             try {
-                new AccessLogGatewaySqlImpl().truncate();
-                ApplicationStatus.getInstance().setProgress(ApplicationStatus.JOB_PROGRESS_AFTER_TRUNCATE_TABLE);
+                final Path path = Paths.get(accessLogPath);
+                final File file = new File(path.toUri());
+
+                ApplicationStatus.getInstance().configureChunkSize(file, FileParser.MAX_BATCH_CHUNK_SIZE);
 
                 FileParser.getInstance().loadFileToDatabase(file);
-                ApplicationStatus.getInstance().setProgress(ApplicationStatus.JOB_PROGRESS_AFTER_LOADING_FILE_TO_DATABASE);
 
                 blockOccurrencesDtos = Analyzer.getInstance()
                         .blockByThresold(startDate, duration, threshold);

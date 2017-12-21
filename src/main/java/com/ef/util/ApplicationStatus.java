@@ -16,16 +16,8 @@ public class ApplicationStatus {
     /**
      * The Estimated file loading to database job percentage.
      */
-    static final Integer ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE = 80;
+    static final Integer ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE = 90;
 
-    /**
-     * The constant JOB_PROGRESS_AFTER_TRUNCATE_TABLE.
-     */
-    public static final Integer JOB_PROGRESS_AFTER_TRUNCATE_TABLE = 10;
-    /**
-     * The constant JOB_PROGRESS_AFTER_LOADING_FILE_TO_DATABASE.
-     */
-    public static final Integer JOB_PROGRESS_AFTER_LOADING_FILE_TO_DATABASE = 90;
     /**
      * The constant JOB_PROGRESS_AFTER_COMPLETION.
      */
