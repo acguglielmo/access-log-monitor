@@ -2,6 +2,7 @@ package com.ef.gateway.sql.impl;
 
 import com.ef.dto.BlockOccurrencesDto;
 import com.ef.gateway.sql.SqlGateway;
+import com.ef.util.ApplicationStatus;
 import com.ef.util.DateUtils;
 
 import java.sql.*;
@@ -42,7 +43,7 @@ public class AccessLogGatewaySqlImpl extends SqlGateway {
     public void insert(final List<String[]> dataList) throws SQLException {
 
         try {
-            final String statement = "INSERT INTO usr_aguglielmo.access_log"
+            final String statement = "INSERT IGNORE INTO usr_aguglielmo.access_log"
                     + "(date, ip, request, status, user_agent) VALUES"
                     + "(?,?,?,?,?)";
             preparedStatement = getConnection().prepareStatement(statement);
@@ -57,6 +58,7 @@ public class AccessLogGatewaySqlImpl extends SqlGateway {
             }
             preparedStatement.executeBatch();
         } finally {
+            ApplicationStatus.getInstance().updateProgressByChunk();
             super.closeDbConnection();
         }
     }
@@ -103,20 +105,5 @@ public class AccessLogGatewaySqlImpl extends SqlGateway {
             super.closeDbConnection();
         }
         return result;
-    }
-
-    /**
-     * Truncate.
-     *
-     * @throws SQLException the sql exception
-     */
-    public void truncate() throws SQLException {
-        try {
-            final String statement = "TRUNCATE TABLE usr_aguglielmo.access_log";
-            preparedStatement = getConnection().prepareStatement(statement);
-            preparedStatement.executeUpdate();
-        } finally {
-            super.closeDbConnection();
-        }
     }
 }

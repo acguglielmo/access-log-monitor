@@ -33,7 +33,7 @@ public class BlockOccurrencesGatewaySqlImpl extends SqlGateway {
      * @throws SQLException the sql exception
      */
     public void insert(final List<BlockOccurrencesDto> blockOccurrencesDtoList) throws SQLException {
-        final String insertTableSQL = "INSERT INTO usr_aguglielmo.block_occurrences"
+        final String insertTableSQL = "REPLACE INTO usr_aguglielmo.block_occurrences"
                 + "(ip, start_date, end_date, comment, threshold) VALUES"
                 + "(?,?,?,?,?)";
 
