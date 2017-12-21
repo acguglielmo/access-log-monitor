@@ -8,9 +8,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * The type Cli helper.
+ * The type Command line helper.
  */
-public final class CliHelper {
+public final class CommandLineHelper {
 
     /**
      * The constant ACCESS_LOG_PATH.
@@ -34,10 +34,6 @@ public final class CliHelper {
     public static final String THRESHOLD = "threshold";
 
     /**
-     * The constant THRESHOLD_DEFAULT_VALUE.
-     */
-    public static final String THRESHOLD_DEFAULT_VALUE = "100";
-    /**
      * The constant FILENAME_DEFAULT_VALUE.
      */
     public static final String FILENAME_DEFAULT_VALUE = "access.log";
@@ -46,20 +42,20 @@ public final class CliHelper {
      */
     public static final String CONFIG_FILE_DEFAULT_VALUE = "config.properties";
 
-    private volatile static CliHelper instance;
+    private volatile static CommandLineHelper instance;
 
-    private CliHelper(){}
+    private CommandLineHelper(){}
 
     /**
      * Gets instance.
      *
      * @return the instance
      */
-    public static CliHelper getInstance() {
+    public static CommandLineHelper getInstance() {
         if (instance == null) {
-            synchronized (CliHelper.class) {
+            synchronized (CommandLineHelper.class) {
                 if (instance == null) {
-                    instance = new CliHelper();
+                    instance = new CommandLineHelper();
                 }
             }
         }
@@ -78,7 +74,11 @@ public final class CliHelper {
                 "Path to log file. Default value is "+ FILENAME_DEFAULT_VALUE +" (in the working directory)");
         options.addOption("c", CONFIG_FILE_PATH, true,
                 "Path to config file. Default value is "+ CONFIG_FILE_DEFAULT_VALUE +" (in the working directory)");
-        options.addOption("t", THRESHOLD, true, "Threshold value to block. Only integer values. Default value is 100.");
+
+        final Option thresholdOption = new Option("t", THRESHOLD, true,
+                "Required. Threshold value to block. Only integer values.");
+        thresholdOption.setRequired(true);
+        options.addOption(thresholdOption);
 
         final Option startDateOption = new Option("s", START_DATE, true,
                 "Required. Start date to analysis in the following format: yyyy-MM-dd.HH:mm:ss");
