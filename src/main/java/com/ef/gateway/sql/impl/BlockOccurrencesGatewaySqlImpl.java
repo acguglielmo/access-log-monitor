@@ -1,36 +1,54 @@
 package com.ef.gateway.sql.impl;
 
 import com.ef.dto.BlockOccurrencesDto;
-import com.ef.gateway.sql.SqlGateway;
+import com.ef.gateway.sql.DbConnectionWrapper;
 import com.ef.util.DateUtils;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
 /**
  * The type Block occurrences gateway sql.
  */
-public class BlockOccurrencesGatewaySqlImpl extends SqlGateway {
+public class BlockOccurrencesGatewaySqlImpl {
 
     private static final int BATCH_CHUNK_SIZE = 1000;
 
-    @Override
-    public boolean tableExists() throws SQLException {
+    private DbConnectionWrapper dbConnectionWrapper;
+
+    private PreparedStatement preparedStatement;
+
+    /**
+     * Instantiates a new Block occurrences gateway sql.
+     */
+    public BlockOccurrencesGatewaySqlImpl() {
+        this.dbConnectionWrapper = new DbConnectionWrapper();
+    }
+
+    /**
+     * Table exists.
+     *
+     * @throws SQLException           the sql exception
+     */
+    public void tableExists() throws SQLException {
         try {
             final String statement = "SELECT 1 FROM usr_aguglielmo.block_occurrences";
-            preparedStatement = getConnection().prepareStatement(statement);
+            preparedStatement = dbConnectionWrapper.getConnection().prepareStatement(statement);
             preparedStatement.executeQuery();
         } finally {
-            super.closeDbConnection();
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            dbConnectionWrapper.closeDbConnection();
         }
-        return true;
     }
 
     /**
      * Insert.
      *
      * @param blockOccurrencesDtoList the block occurrences dto list
-     * @throws SQLException the sql exception
+     * @throws SQLException           the sql exception
      */
     public void insert(final List<BlockOccurrencesDto> blockOccurrencesDtoList) throws SQLException {
         final String insertTableSQL = "REPLACE INTO usr_aguglielmo.block_occurrences"
@@ -40,7 +58,7 @@ public class BlockOccurrencesGatewaySqlImpl extends SqlGateway {
         try {
             int count = 0;
 
-            preparedStatement = getConnection().prepareStatement(insertTableSQL);
+            preparedStatement = dbConnectionWrapper.getConnection().prepareStatement(insertTableSQL);
 
             for (final BlockOccurrencesDto blockOccurrencesDto : blockOccurrencesDtoList) {
                 preparedStatement.setString(1, blockOccurrencesDto.getIp());
@@ -56,7 +74,10 @@ public class BlockOccurrencesGatewaySqlImpl extends SqlGateway {
             }
             preparedStatement.executeBatch();
         } finally {
-            super.closeDbConnection();
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            dbConnectionWrapper.closeDbConnection();
         }
     }
 }

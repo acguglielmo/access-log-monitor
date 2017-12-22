@@ -1,7 +1,7 @@
 package com.ef.gateway.sql.impl;
 
 import com.ef.dto.BlockOccurrencesDto;
-import com.ef.gateway.sql.SqlGateway;
+import com.ef.gateway.sql.DbConnectionWrapper;
 import com.ef.util.ApplicationStatus;
 import com.ef.util.DateUtils;
 
@@ -13,53 +13,68 @@ import java.util.List;
 /**
  * The type Access log gateway sql.
  */
-public class AccessLogGatewaySqlImpl extends SqlGateway {
+public class AccessLogGatewaySqlImpl {
+
+    private DbConnectionWrapper dbConnectionWrapper;
+
+    private PreparedStatement preparedStatement;
 
     /**
      * Instantiates a new Access log gateway sql.
      */
     public AccessLogGatewaySqlImpl() {
-        super();
+        this.dbConnectionWrapper = new DbConnectionWrapper();
     }
 
-    @Override
-    public boolean tableExists() throws SQLException {
+    /**
+     * Table exists.
+     *
+     * @throws SQLException           the sql exception
+     */
+    public void tableExists() throws SQLException {
         try {
             final String statement = "SELECT 1 FROM usr_aguglielmo.access_log";
-            preparedStatement = getConnection().prepareStatement(statement);
+            preparedStatement = dbConnectionWrapper.getConnection().prepareStatement(statement);
             preparedStatement.executeQuery();
         } finally {
-            super.closeDbConnection();
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            dbConnectionWrapper.closeDbConnection();
         }
-        return true;
     }
 
     /**
      * Insert.
      *
      * @param dataList the data list
-     * @throws SQLException the sql exception
+     * @throws SQLException           the sql exception
      */
     public void insert(final List<String[]> dataList) throws SQLException {
 
-        try {
-            final String statement = "INSERT IGNORE INTO usr_aguglielmo.access_log"
-                    + "(date, ip, request, status, user_agent) VALUES"
-                    + "(?,?,?,?,?)";
-            preparedStatement = getConnection().prepareStatement(statement);
+        if (!dataList.isEmpty()) {
+            try {
+                final String statement = "INSERT IGNORE INTO usr_aguglielmo.access_log"
+                        + "(date, ip, request, status, user_agent) VALUES"
+                        + "(?,?,?,?,?)";
+                preparedStatement = dbConnectionWrapper.getConnection().prepareStatement(statement);
 
-            for (final String data[] : dataList){
-                preparedStatement.setString(1, data[0]);
-                preparedStatement.setString(2, data[1]);
-                preparedStatement.setString(3, data[2]);
-                preparedStatement.setString(4, data[3]);
-                preparedStatement.setString(5, data[4]);
-                preparedStatement.addBatch();
+                for (final String data[] : dataList){
+                    preparedStatement.setString(1, data[0]);
+                    preparedStatement.setString(2, data[1]);
+                    preparedStatement.setString(3, data[2]);
+                    preparedStatement.setString(4, data[3]);
+                    preparedStatement.setString(5, data[4]);
+                    preparedStatement.addBatch();
+                }
+                preparedStatement.executeBatch();
+            } finally {
+                ApplicationStatus.getInstance().updateProgressByChunk();
+                if (preparedStatement != null) {
+                    preparedStatement.close();
+                }
+                dbConnectionWrapper.closeDbConnection();
             }
-            preparedStatement.executeBatch();
-        } finally {
-            ApplicationStatus.getInstance().updateProgressByChunk();
-            super.closeDbConnection();
         }
     }
 
@@ -70,20 +85,20 @@ public class AccessLogGatewaySqlImpl extends SqlGateway {
      * @param end       the end
      * @param threshold the threshold
      * @return the list
-     * @throws SQLException the sql exception
+     * @throws SQLException           the sql exception
      */
     public List<BlockOccurrencesDto> find(final LocalDateTime start,
                                           final LocalDateTime end, final Integer threshold) throws SQLException {
         final List<BlockOccurrencesDto> result = new ArrayList<>();
 
-        final String selectSql = "SELECT ip, count(1) as cont " +
+        final String selectSql = "SELECT ip, count(1) " +
                 "  FROM usr_aguglielmo.access_log t " +
                 " where t.date between ? " + " and ? " +
-                "group by ip having cont > ? " +
-                "order by cont desc;";
+                "group by ip having count(1) > ? " +
+                "order by count(1) desc;";
 
         try {
-            preparedStatement = getConnection().prepareStatement(selectSql);
+            preparedStatement = dbConnectionWrapper.getConnection().prepareStatement(selectSql);
 
             preparedStatement.setString(1, DateUtils.DATE_FORMAT_FILE.format(start));
             preparedStatement.setString(2, DateUtils.DATE_FORMAT_FILE.format(end));
@@ -94,7 +109,7 @@ public class AccessLogGatewaySqlImpl extends SqlGateway {
             while (resultSet.next()) {
 
                 final BlockOccurrencesDto dto = new BlockOccurrencesDto();
-                dto.setCount(resultSet.getInt("cont"));
+                dto.setCount(resultSet.getInt("c2"));
                 dto.setIp(resultSet.getString("ip"));
                 dto.setStartDate(start);
                 dto.setEndDate(end);
@@ -102,7 +117,10 @@ public class AccessLogGatewaySqlImpl extends SqlGateway {
                 result.add(dto);
             }
         } finally {
-            super.closeDbConnection();
+            if (preparedStatement != null) {
+                preparedStatement.close();
+            }
+            dbConnectionWrapper.closeDbConnection();
         }
         return result;
     }
