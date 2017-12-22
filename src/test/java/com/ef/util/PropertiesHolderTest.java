@@ -1,9 +1,6 @@
 package com.ef.util;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
 
 import java.io.BufferedWriter;
 import java.nio.file.*;
@@ -22,8 +19,8 @@ public class PropertiesHolderTest {
      *
      * @throws Exception the exception
      */
-    @Before
-    public void setUp() throws Exception {
+    @BeforeClass
+    public static void setUp() throws Exception {
         final Path path = Paths.get(CONFIG_FILENAME);
         if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
             Files.delete(path);
@@ -32,11 +29,9 @@ public class PropertiesHolderTest {
         final Path filePath = Files.createFile(path);
         final BufferedWriter bufferedWriter = Files.newBufferedWriter(filePath, StandardOpenOption.WRITE);
 
-        bufferedWriter.write("\n" + PropertiesHolder.DB_CONNECTION_SERVER + "=localhost"+
-                "\n" + PropertiesHolder.DB_CONNECTION_PORT + "=3306"+
-                "\n" + PropertiesHolder.DB_CONNECTION_SERVICE_NAME + "=MySQL"+
-                "\n" + PropertiesHolder.DB_AUTH_USER + "=test"+
-                "\n" + PropertiesHolder.DB_AUTH_PASSWORD + "=passwd");
+        bufferedWriter.write("\n" + PropertiesHolder.DB_CONNECTION_URL + "=jdbc:mysql://localhost:3306/MySQL"+
+                "\n" + PropertiesHolder.DB_CONNECTION_USERNAME + "=test"+
+                "\n" + PropertiesHolder.DB_CONNECTION_PASSWORD + "=passwd");
 
         bufferedWriter.close();
     }
@@ -44,25 +39,22 @@ public class PropertiesHolderTest {
     /**
      * Create instance without creating first test.
      *
-     * Ignored for now because as JUnit framework does not promote test ordering,
-     * we should create a subclass of {@link java.lang.ClassLoader}
-     * and implement the dynamic class reloading.
-     *
      * @throws Exception the exception
      */
     @Test(expected = RuntimeException.class)
-    @Ignore
-    public void createInstanceWithoutCreatingFirstTest() throws Exception {
+    public void getInstanceWithoutCreatingFirstTest() throws Exception {
+        PropertiesHolder.destroyInstance();
         PropertiesHolder.getInstance();
     }
 
     /**
-     * Create instance creating first test.
+     * Get instance creating first test.
      *
      * @throws Exception the exception
      */
     @Test
-    public void createInstanceCreatingFirstTest() throws Exception {
+    public void getInstanceCreatingFirstTest() throws Exception {
+        PropertiesHolder.destroyInstance();
         PropertiesHolder.createInstance(CONFIG_FILENAME);
         final PropertiesHolder propertiesHolder = PropertiesHolder.getInstance();
 
@@ -80,15 +72,14 @@ public class PropertiesHolderTest {
      */
     @Test
     public void getPropertyTest() throws Exception {
+        PropertiesHolder.destroyInstance();
         PropertiesHolder.createInstance(CONFIG_FILENAME);
         final PropertiesHolder propertiesHolder = PropertiesHolder.getInstance();
 
         assertNotNull(propertiesHolder);
-        assertEquals("localhost", propertiesHolder.getProperty(PropertiesHolder.DB_CONNECTION_SERVER));
-        assertEquals("3306", propertiesHolder.getProperty(PropertiesHolder.DB_CONNECTION_PORT));
-        assertEquals("MySQL", propertiesHolder.getProperty(PropertiesHolder.DB_CONNECTION_SERVICE_NAME));
-        assertEquals("test", propertiesHolder.getProperty(PropertiesHolder.DB_AUTH_USER));
-        assertEquals("passwd", propertiesHolder.getProperty(PropertiesHolder.DB_AUTH_PASSWORD));
+        assertEquals("jdbc:mysql://localhost:3306/MySQL", propertiesHolder.getProperty(PropertiesHolder.DB_CONNECTION_URL));
+        assertEquals("test", propertiesHolder.getProperty(PropertiesHolder.DB_CONNECTION_USERNAME));
+        assertEquals("passwd", propertiesHolder.getProperty(PropertiesHolder.DB_CONNECTION_PASSWORD));
     }
 
     /**
@@ -96,8 +87,8 @@ public class PropertiesHolderTest {
      *
      * @throws Exception the exception
      */
-    @After
-    public void tearDown() throws Exception {
+    @AfterClass
+    public static void tearDown() throws Exception {
         final Path path = Paths.get(CONFIG_FILENAME);
         if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
             Files.delete(path);

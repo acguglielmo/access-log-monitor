@@ -2,9 +2,7 @@ package com.ef.parser;
 
 import com.ef.gateway.sql.impl.AccessLogGatewaySqlImpl;
 import com.ef.util.ApplicationStatus;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -26,7 +24,7 @@ import static org.powermock.api.easymock.PowerMock.replay;
 @PrepareForTest( {FileParser.class, FileParser.GatewayClient.class})
 public class FileParserTest {
 
-    private FileParser instance;
+    private static FileParser instance;
 
     private static final String ACCESS_LOG_FILENAME = "access.log";
 
@@ -42,9 +40,9 @@ public class FileParserTest {
      *
      * @throws Exception the exception
      */
-    @Before
-    public void setUp() throws Exception {
-        this.instance = FileParser.getInstance();
+    @BeforeClass
+    public static void setUp() throws Exception {
+        instance = FileParser.getInstance();
     }
 
     private File createFile() throws IOException {
@@ -87,8 +85,8 @@ public class FileParserTest {
         assertEquals(5, futureList.size());
     }
 
-    @After
-    public void tearDown() throws Exception {
+    @AfterClass
+    public static void tearDown() throws Exception {
         final Path path = Paths.get(ACCESS_LOG_FILENAME);
         if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
             Files.delete(path);
