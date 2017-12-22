@@ -13,32 +13,24 @@ import java.util.Properties;
  */
 public final class PropertiesHolder {
     /**
-     * The constant DB_AUTH_PASSWORD.
+     * The constant DB_CONNECTION_PASSWORD.
      */
-    public static final String DB_AUTH_PASSWORD = "db.auth.password";
+    public static final String DB_CONNECTION_PASSWORD = "db.connection.password";
     /**
-     * The constant DB_AUTH_USER.
+     * The constant DB_CONNECTION_USERNAME.
      */
-    public static final String DB_AUTH_USER = "db.auth.user";
+    public static final String DB_CONNECTION_USERNAME = "db.connection.username";
 
     /**
-     * The constant DB_CONNECTION_SERVER.
+     * The constant DB_CONNECTION_URL.
      */
-    public static final String DB_CONNECTION_SERVER = "db.connection.server";
-    /**
-     * The constant DB_CONNECTION_PORT.
-     */
-    public static final String DB_CONNECTION_PORT ="db.connection.port";
-    /**
-     * The constant DB_CONNECTION_SERVICE_NAME.
-     */
-    public static final String DB_CONNECTION_SERVICE_NAME = "db.connection.servicename";
+    public static final String DB_CONNECTION_URL = "db.connection.url";
 
     private Properties prop;
 
     private static volatile PropertiesHolder instance;
 
-    private PropertiesHolder(final String configPath){
+    private PropertiesHolder(final String configPath) throws IOException {
         load(configPath);
     }
 
@@ -46,8 +38,9 @@ public final class PropertiesHolder {
      * Create instance.
      *
      * @param configPath the config path
+     * @throws IOException the io exception
      */
-    public static void createInstance(final String configPath) {
+    public static void createInstance(final String configPath) throws IOException {
         if (instance == null) {
             synchronized (PropertiesHolder.class) {
                 if (instance == null) {
@@ -58,13 +51,24 @@ public final class PropertiesHolder {
     }
 
     /**
+     * Destroy instance.
+     *
+     * For JUnit tests.
+     *
+     * @throws IOException the io exception
+     */
+    public static void destroyInstance() throws IOException {
+        instance = null;
+    }
+
+    /**
      * Gets instance.
      *
      * @return the instance
      */
     public static PropertiesHolder getInstance() {
         if (instance == null) {
-            throw new RuntimeException("The instance was not created yet!");
+            throw new RuntimeException("The instance has not been created yet!");
         }
         return instance;
     }
@@ -74,25 +78,13 @@ public final class PropertiesHolder {
      *
      * @param configPath the path to the config file.
      */
-    private void load(final String configPath){
+    private void load(final String configPath) throws IOException {
         InputStream input = null;
         final Path path = Paths.get(configPath);
-        boolean shouldExit = false;
         try {
             input = new FileInputStream(new File(path.toUri()));
             prop = new Properties();
             prop.load(input);
-        } catch (final IOException ex) {
-            System.out.println(ex.getMessage());
-            System.out.println("Please provide a path to a config file or create a " +
-                    "\"config.properties\" file in the working directory with the " +
-                    "following properties filled according to your environment settings:" +
-                    "\n db.connection.server= "+
-                    "\n db.connection.port= "+
-                    "\n db.connection.servicename= "+
-                    "\n db.auth.user= "+
-                    "\n db.auth.password= ");
-            shouldExit = true;
         } finally {
             if (input != null) {
                 try {
@@ -101,15 +93,7 @@ public final class PropertiesHolder {
                     e.printStackTrace();
                 }
             }
-            if (shouldExit) {
-                exit();
-            }
         }
-    }
-
-    private void exit() {
-        System.out.println("The application will now exit.");
-        System.exit(1);
     }
 
     /**

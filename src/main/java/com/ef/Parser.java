@@ -50,7 +50,18 @@ public class Parser {
 		final String accessLogPath = commandLine.getOptionValue(CommandLineHelper.ACCESS_LOG_PATH, CommandLineHelper.FILENAME_DEFAULT_VALUE);
         final String configPath = commandLine.getOptionValue(CommandLineHelper.CONFIG_FILE_PATH, CommandLineHelper.CONFIG_FILE_DEFAULT_VALUE);
 
-        PropertiesHolder.createInstance(configPath);
+        try {
+            PropertiesHolder.createInstance(configPath);
+        } catch (final IOException e) {
+            System.out.println(e.getMessage());
+            System.out.println("Please provide a path to a config file or create a " +
+                    "\"config.properties\" file in the working directory with the " +
+                    "following properties filled according to your environment settings:" +
+                    "\n db.connection.url=jdbc:mysql://<server>:<port>/<service_name> "+
+                    "\n db.connection.username=<user> "+
+                    "\n db.connection.password=<password>");
+            System.exit(1);
+        }
 
         checkIfDatabaseTablesExist();
 
@@ -76,7 +87,7 @@ public class Parser {
         try {
             new AccessLogGatewaySqlImpl().tableExists();
             new BlockOccurrencesGatewaySqlImpl().tableExists();
-        } catch (final SQLException e) {
+        } catch (final SQLException | ClassNotFoundException e) {
             System.out.println(e.getMessage());
             System.exit(1);
         }
