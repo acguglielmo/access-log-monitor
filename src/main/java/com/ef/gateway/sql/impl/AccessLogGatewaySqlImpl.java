@@ -1,7 +1,7 @@
 package com.ef.gateway.sql.impl;
 
 import com.ef.dto.BlockOccurrencesDto;
-import com.ef.gateway.sql.DbConnectionWrapper;
+import com.ef.gateway.sql.ConnectionFactory;
 import com.ef.util.ApplicationStatus;
 import com.ef.util.DateUtils;
 
@@ -15,16 +15,17 @@ import java.util.List;
  */
 public class AccessLogGatewaySqlImpl {
 
-    private DbConnectionWrapper dbConnectionWrapper;
+    private static final String INSERT_STATEMENT = "INSERT IGNORE INTO usr_aguglielmo.access_log"
+            + "(date, ip, request, status, user_agent) VALUES"
+            + "(?,?,?,?,?)";
 
-    private PreparedStatement preparedStatement;
+    private static final String FIND_BLOCK_OCCURRENCES_STATEMENT = "SELECT ip, count(1) " +
+            "  FROM usr_aguglielmo.access_log t " +
+            " where t.date between ? " + " and ? " +
+            "group by ip having count(1) > ? " +
+            "order by count(1) desc;";
 
-    /**
-     * Instantiates a new Access log gateway sql.
-     */
-    public AccessLogGatewaySqlImpl() {
-        this.dbConnectionWrapper = new DbConnectionWrapper();
-    }
+    private static final String TABLE_VERIFICATION_STATEMENT = "SELECT 1 FROM usr_aguglielmo.access_log";
 
     /**
      * Table exists.
@@ -32,15 +33,10 @@ public class AccessLogGatewaySqlImpl {
      * @throws SQLException           the sql exception
      */
     public void tableExists() throws SQLException {
-        try {
-            final String statement = "SELECT 1 FROM usr_aguglielmo.access_log";
-            preparedStatement = dbConnectionWrapper.getConnection().prepareStatement(statement);
-            preparedStatement.executeQuery();
-        } finally {
-            if (preparedStatement != null) {
-                preparedStatement.close();
+        try (final Connection dbConnection = ConnectionFactory.getInstance().getConnection()) {
+            try(final PreparedStatement preparedStatement = dbConnection.prepareStatement(TABLE_VERIFICATION_STATEMENT)) {
+                preparedStatement.executeQuery();
             }
-            dbConnectionWrapper.closeDbConnection();
         }
     }
 
@@ -53,27 +49,23 @@ public class AccessLogGatewaySqlImpl {
     public void insert(final List<String[]> dataList) throws SQLException {
 
         if (!dataList.isEmpty()) {
-            try {
-                final String statement = "INSERT IGNORE INTO usr_aguglielmo.access_log"
-                        + "(date, ip, request, status, user_agent) VALUES"
-                        + "(?,?,?,?,?)";
-                preparedStatement = dbConnectionWrapper.getConnection().prepareStatement(statement);
 
-                for (final String data[] : dataList){
-                    preparedStatement.setString(1, data[0]);
-                    preparedStatement.setString(2, data[1]);
-                    preparedStatement.setString(3, data[2]);
-                    preparedStatement.setString(4, data[3]);
-                    preparedStatement.setString(5, data[4]);
-                    preparedStatement.addBatch();
+            try (Connection connection = ConnectionFactory.getInstance().getConnection()) {
+
+                try (final PreparedStatement preparedStatement = connection.prepareStatement(INSERT_STATEMENT)) {
+
+                    for (final String data[] : dataList) {
+                        preparedStatement.setString(1, data[0]);
+                        preparedStatement.setString(2, data[1]);
+                        preparedStatement.setString(3, data[2]);
+                        preparedStatement.setString(4, data[3]);
+                        preparedStatement.setString(5, data[4]);
+                        preparedStatement.addBatch();
+                    }
+                    preparedStatement.executeBatch();
                 }
-                preparedStatement.executeBatch();
             } finally {
                 ApplicationStatus.getInstance().updateProgressByChunk();
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-                dbConnectionWrapper.closeDbConnection();
             }
         }
     }
@@ -91,36 +83,26 @@ public class AccessLogGatewaySqlImpl {
                                           final LocalDateTime end, final Integer threshold) throws SQLException {
         final List<BlockOccurrencesDto> result = new ArrayList<>();
 
-        final String selectSql = "SELECT ip, count(1) " +
-                "  FROM usr_aguglielmo.access_log t " +
-                " where t.date between ? " + " and ? " +
-                "group by ip having count(1) > ? " +
-                "order by count(1) desc;";
+        try (Connection connection = ConnectionFactory.getInstance().getConnection()) {
 
-        try {
-            preparedStatement = dbConnectionWrapper.getConnection().prepareStatement(selectSql);
+            try (final PreparedStatement preparedStatement = connection.prepareStatement(FIND_BLOCK_OCCURRENCES_STATEMENT)) {
 
-            preparedStatement.setString(1, DateUtils.DATE_FORMAT_FILE.format(start));
-            preparedStatement.setString(2, DateUtils.DATE_FORMAT_FILE.format(end));
-            preparedStatement.setInt(3, threshold);
+                preparedStatement.setString(1, DateUtils.DATE_FORMAT_FILE.format(start));
+                preparedStatement.setString(2, DateUtils.DATE_FORMAT_FILE.format(end));
+                preparedStatement.setInt(3, threshold);
 
-            final ResultSet resultSet = preparedStatement.executeQuery();
+                final ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()) {
-
-                final BlockOccurrencesDto dto = new BlockOccurrencesDto();
-                dto.setCount(resultSet.getInt("c2"));
-                dto.setIp(resultSet.getString("ip"));
-                dto.setStartDate(start);
-                dto.setEndDate(end);
-                dto.setThreshold(threshold);
-                result.add(dto);
+                while (resultSet.next()) {
+                    final BlockOccurrencesDto dto = new BlockOccurrencesDto();
+                    dto.setIp(resultSet.getString(1));
+                    dto.setCount(resultSet.getInt(2));
+                    dto.setStartDate(start);
+                    dto.setEndDate(end);
+                    dto.setThreshold(threshold);
+                    result.add(dto);
+                }
             }
-        } finally {
-            if (preparedStatement != null) {
-                preparedStatement.close();
-            }
-            dbConnectionWrapper.closeDbConnection();
         }
         return result;
     }

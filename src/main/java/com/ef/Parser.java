@@ -87,7 +87,7 @@ public class Parser {
         try {
             new AccessLogGatewaySqlImpl().tableExists();
             new BlockOccurrencesGatewaySqlImpl().tableExists();
-        } catch (final SQLException | ClassNotFoundException e) {
+        } catch (final SQLException e) {
             System.out.println(e.getMessage());
             System.exit(1);
         }
@@ -132,31 +132,32 @@ public class Parser {
         if (e.getCause() != null && e.getCause() instanceof RuntimeException) {
             final RuntimeException runtimeException = (RuntimeException) e.getCause();
             if (runtimeException.getCause() != null) {
-                printSQLException(runtimeException);
-                printIOException(runtimeException);
+                if (runtimeException.getCause() instanceof SQLException) {
+                    printSQLException(runtimeException);
+                } else if (runtimeException.getCause() instanceof IOException) {
+                    printIOException(runtimeException);
+                } else {
+                    System.out.println(e.getMessage());
+                }
+                return;
             }
-        } else {
-            System.out.println(e.getMessage());
         }
+        System.out.println(e.getMessage());
     }
 
     private void printIOException(final RuntimeException runtimeException) {
-        if (runtimeException.getCause() instanceof IOException) {
-            final IOException iOException = (IOException) runtimeException.getCause();
-            System.out.println("An error occurred during a I/O operation: ");
-            System.out.println(iOException.getMessage());
-        }
+        final IOException iOException = (IOException) runtimeException.getCause();
+        System.out.println("An error occurred during a I/O operation: ");
+        System.out.println(iOException.getMessage());
     }
 
     private void printSQLException(final RuntimeException runtimeException) {
-        if (runtimeException.getCause() instanceof SQLException) {
-            final SQLException sqlException = (SQLException) runtimeException.getCause();
-            System.out.println("An error occurred during a database operation: ");
-            if (sqlException instanceof CommunicationsException || sqlException instanceof MySQLTimeoutException) {
-                System.out.println("Please check if the configured database server is up and running.");
-            } else {
-                System.out.println(sqlException.getMessage());
-            }
+        final SQLException sqlException = (SQLException) runtimeException.getCause();
+        System.out.println("An error occurred during a database operation: ");
+        if (sqlException instanceof CommunicationsException || sqlException instanceof MySQLTimeoutException) {
+            System.out.println("Please check if the configured database server is up and running.");
+        } else {
+            System.out.println(sqlException.getMessage());
         }
     }
 

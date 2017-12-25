@@ -2,7 +2,7 @@ package com.ef.gateway.sql.impl;
 
 import com.ef.dto.BlockOccurrencesDto;
 import com.ef.enums.Duration;
-import com.ef.gateway.sql.DbConnectionWrapper;
+import com.ef.gateway.sql.ConnectionFactory;
 import com.ef.util.DateUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -18,43 +18,40 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.powermock.api.easymock.PowerMock.createMock;
-import static org.powermock.api.easymock.PowerMock.expectNew;
-import static org.powermock.api.easymock.PowerMock.replay;
 import static org.junit.Assert.*;
+import static org.powermock.api.easymock.PowerMock.*;
+import static org.powermock.api.support.SuppressCode.suppressConstructor;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {AccessLogGatewaySqlImpl.class})
+@PrepareForTest( {AccessLogGatewaySqlImpl.class, ConnectionFactory.class})
 public class AccessLogGatewaySqlImplTest extends AbstractGatewaySqlImplTest {
 
-    private static Connection connection;
-
     @BeforeClass
-    public static void oneTime() throws Exception {
+    public static void oneTime() throws SQLException, ClassNotFoundException {
         new AccessLogGatewaySqlImplTest().initDatabase();
     }
 
+    @Override
     protected void initDatabase() throws SQLException, ClassNotFoundException {
-        connection = super.getConnection();
-        Statement statement = connection.createStatement();
-        statement.execute("SET DATABASE SQL SYNTAX MYS TRUE");
-        statement.execute("CREATE SCHEMA usr_aguglielmo");
-        statement.execute("CREATE TABLE usr_aguglielmo.access_log (\n" +
-                "  date datetime(3) NOT NULL,\n" +
-                "  ip varchar(15) NOT NULL,\n" +
-                "  request varchar(45) NOT NULL,\n" +
-                "  status int(11) NOT NULL,\n" +
-                "  user_agent varchar(200) NOT NULL,\n" +
-                "  PRIMARY KEY (date, ip),\n" +
-                ");\n");
+            Connection connection = super.getConnection();
+            final Statement statement = connection.createStatement();
+            statement.execute("SET DATABASE SQL SYNTAX MYS TRUE");
+            statement.execute("CREATE SCHEMA usr_aguglielmo");
+            statement.execute("CREATE TABLE usr_aguglielmo.access_log (\n" +
+                    "  date datetime(3) NOT NULL,\n" +
+                    "  ip varchar(15) NOT NULL,\n" +
+                    "  request varchar(45) NOT NULL,\n" +
+                    "  status int(11) NOT NULL,\n" +
+                    "  user_agent varchar(200) NOT NULL,\n" +
+                    "  PRIMARY KEY (date, ip),\n" +
+                    ");\n");
 
-        statement.executeUpdate("INSERT INTO usr_aguglielmo.access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:00:11.763','192.168.234.82','\"GET / HTTP/1.1\"',200,'\"swcd (unknown version) CFNetwork/808.2.16 Darwin/15.6.0\"');");
-        statement.executeUpdate("INSERT INTO usr_aguglielmo.access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:00:21.164','192.168.234.82','\"GET / HTTP/1.1\"',200,'\"swcd (unknown version) CFNetwork/808.2.16 Darwin/15.6.0\"');");
-        statement.executeUpdate("INSERT INTO usr_aguglielmo.access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:00:23.003','192.168.169.194','\"GET / HTTP/1.1\"',200,'\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393\"');");
-        statement.executeUpdate("INSERT INTO usr_aguglielmo.access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:00:40.554','192.168.234.82','\"GET / HTTP/1.1\"',200,'\"swcd (unknown version) CFNetwork/808.2.16 Darwin/15.6.0\"');");
-        statement.executeUpdate("INSERT INTO usr_aguglielmo.access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:00:54.583','192.168.169.194','\"GET / HTTP/1.1\"',200,'\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393\"');");
-        connection.commit();
+            statement.executeUpdate("INSERT INTO usr_aguglielmo.access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:00:11.763','192.168.234.82','\"GET / HTTP/1.1\"',200,'\"swcd (unknown version) CFNetwork/808.2.16 Darwin/15.6.0\"');");
+            statement.executeUpdate("INSERT INTO usr_aguglielmo.access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:00:21.164','192.168.234.82','\"GET / HTTP/1.1\"',200,'\"swcd (unknown version) CFNetwork/808.2.16 Darwin/15.6.0\"');");
+            statement.executeUpdate("INSERT INTO usr_aguglielmo.access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:00:23.003','192.168.169.194','\"GET / HTTP/1.1\"',200,'\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393\"');");
+            statement.executeUpdate("INSERT INTO usr_aguglielmo.access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:00:40.554','192.168.234.82','\"GET / HTTP/1.1\"',200,'\"swcd (unknown version) CFNetwork/808.2.16 Darwin/15.6.0\"');");
+            statement.executeUpdate("INSERT INTO usr_aguglielmo.access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:00:54.583','192.168.169.194','\"GET / HTTP/1.1\"',200,'\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393\"');");
+            connection.commit();
     }
 
     @Test
@@ -66,7 +63,6 @@ public class AccessLogGatewaySqlImplTest extends AbstractGatewaySqlImplTest {
     @Test
     public void insertTest() throws Exception {
         configureMock();
-
         final Pattern quote = Pattern.compile(Pattern.quote("|"));
         final List<String[]> list = new ArrayList<>();
         list.add(quote.split("2017-01-01 23:59:56.907|192.168.167.234|\"GET / HTTP/1.1\"|200|\"Mozilla/5.0 (Windows NT 10.0; WOW64; rv:54.0) Gecko/20100101 Firefox/54.0"));
@@ -93,13 +89,14 @@ public class AccessLogGatewaySqlImplTest extends AbstractGatewaySqlImplTest {
     }
 
     private void configureMock() throws Exception {
-        final DbConnectionWrapper mockedConnectionWrapper = createMock(DbConnectionWrapper.class);
+        suppressConstructor(ConnectionFactory.class);
+        mockStatic(ConnectionFactory.class);
 
-        expectNew(DbConnectionWrapper.class).andReturn(mockedConnectionWrapper);
-        expect(mockedConnectionWrapper.getConnection()).andReturn(connection);
-        mockedConnectionWrapper.closeDbConnection();
-        expectLastCall().once();
-
-        replay(mockedConnectionWrapper, DbConnectionWrapper.class);
+        final ConnectionFactory mockedConnectionFactory = createMock(ConnectionFactory.class);
+        expectNew(ConnectionFactory.class).andReturn(mockedConnectionFactory);
+        expect(ConnectionFactory.getInstance()).andReturn(mockedConnectionFactory);
+        expect(mockedConnectionFactory.getConnection()).andReturn(super.getConnection()).anyTimes();
+        replay(mockedConnectionFactory);
+        replay(ConnectionFactory.class);
     }
 }

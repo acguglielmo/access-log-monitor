@@ -11,7 +11,7 @@ import java.sql.Connection;
 
 import static org.junit.Assert.*;
 
-public class DbConnectionWrapperTest {
+public class ConnectionFactoryTest {
 
     private static final String CONFIG_FILENAME = "config.properties";
 
@@ -38,29 +38,23 @@ public class DbConnectionWrapperTest {
     }
 
     @Test
-    public void getConnection() throws Exception {
+    public void getInstanceTest() throws Exception {
         PropertiesHolder.destroyInstance();
         PropertiesHolder.createInstance(CONFIG_FILENAME);
-        final DbConnectionWrapper dbConnectionWrapper = new DbConnectionWrapper();
-        final Connection connection = dbConnectionWrapper.getConnection();
+        final ConnectionFactory instance = ConnectionFactory.getInstance();
 
-        assertNotNull(connection);
-        assertEquals(connection, dbConnectionWrapper.getConnection());
-        assertNotEquals(connection, new DbConnectionWrapper().getConnection());
+        assertNotNull(instance);
+        assertEquals(instance, ConnectionFactory.getInstance());
     }
 
     @Test
-    public void closeDbConnection() throws Exception {
+    public void getConnectionTest() throws Exception {
         PropertiesHolder.destroyInstance();
         PropertiesHolder.createInstance(CONFIG_FILENAME);
-        final DbConnectionWrapper dbConnectionWrapper = new DbConnectionWrapper();
-        final Connection connection = dbConnectionWrapper.getConnection();
+        final Connection connection = ConnectionFactory.getInstance().getConnection();
 
         assertNotNull(connection);
-        assertTrue(connection.isValid(0));
-
-        dbConnectionWrapper.closeDbConnection();
-        assertTrue(connection.isClosed());
+        assertNotEquals(connection, ConnectionFactory.getInstance().getConnection());
     }
 
     /**

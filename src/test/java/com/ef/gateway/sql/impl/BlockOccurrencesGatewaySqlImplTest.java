@@ -2,7 +2,7 @@ package com.ef.gateway.sql.impl;
 
 import com.ef.dto.BlockOccurrencesDto;
 import com.ef.enums.Duration;
-import com.ef.gateway.sql.DbConnectionWrapper;
+import com.ef.gateway.sql.ConnectionFactory;
 import com.ef.util.DateUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -18,25 +18,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.powermock.api.easymock.PowerMock.createMock;
-import static org.powermock.api.easymock.PowerMock.expectNew;
-import static org.powermock.api.easymock.PowerMock.replay;
+import static org.powermock.api.easymock.PowerMock.*;
+import static org.powermock.api.support.SuppressCode.suppressConstructor;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest( {BlockOccurrencesGatewaySqlImpl.class})
+@PrepareForTest( {BlockOccurrencesGatewaySqlImpl.class, ConnectionFactory.class})
 public class BlockOccurrencesGatewaySqlImplTest extends AbstractGatewaySqlImplTest {
 
-    private static Connection connection;
-
     @BeforeClass
-    public static void oneTime() throws Exception {
+    public static void oneTime() throws SQLException, ClassNotFoundException {
         new BlockOccurrencesGatewaySqlImplTest().initDatabase();
     }
 
     @Override
     protected void initDatabase() throws SQLException, ClassNotFoundException {
-        connection = super.getConnection();
+        final Connection connection = super.getConnection();
         Statement statement = connection.createStatement();
         statement.execute("SET DATABASE SQL SYNTAX MYS TRUE");
         statement.execute("CREATE SCHEMA usr_aguglielmo");
@@ -86,14 +82,14 @@ public class BlockOccurrencesGatewaySqlImplTest extends AbstractGatewaySqlImplTe
     }
 
     private void configureMock() throws Exception {
-        final DbConnectionWrapper mockedConnectionWrapper = createMock(DbConnectionWrapper.class);
+        suppressConstructor(ConnectionFactory.class);
+        mockStatic(ConnectionFactory.class);
 
-        expectNew(DbConnectionWrapper.class).andReturn(mockedConnectionWrapper);
-        expect(mockedConnectionWrapper.getConnection()).andReturn(connection);
-        mockedConnectionWrapper.closeDbConnection();
-        expectLastCall().once();
-
-        replay(mockedConnectionWrapper, DbConnectionWrapper.class);
+        final ConnectionFactory mockedConnectionFactory = createMock(ConnectionFactory.class);
+        expectNew(ConnectionFactory.class).andReturn(mockedConnectionFactory);
+        expect(ConnectionFactory.getInstance()).andReturn(mockedConnectionFactory);
+        expect(mockedConnectionFactory.getConnection()).andReturn(super.getConnection()).anyTimes();
+        replay(mockedConnectionFactory);
+        replay(ConnectionFactory.class);
     }
-
 }
