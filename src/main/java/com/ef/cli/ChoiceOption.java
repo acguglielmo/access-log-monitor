@@ -8,7 +8,9 @@ import java.util.Arrays;
  * The type Choice option.
  */
 public class ChoiceOption extends Option {
-    private final String[] choices;
+	private static final long serialVersionUID = 723485642511703539L;
+	
+	private final String[] choices;
 
     /**
      * Instantiates a new Choice option.
