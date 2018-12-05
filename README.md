@@ -3,6 +3,7 @@ Command line application to read and save access.log entries into a MySQL databa
 
 ### Generated artifact CLI arguments
 usage: parser
+
  -a,--accessLog <arg>    Path to log file. Default value is access.log (in the working directory)
 
  -c,--configFile <arg>   Path to config file. Default value is config.properties (in the working directory)
