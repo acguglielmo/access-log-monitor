@@ -75,14 +75,10 @@ public final class CommandLineHelper {
                 "Path to log file. Default value is "+ FILENAME_DEFAULT_VALUE +" (in the working directory)");
         options.addOption("c", CONFIG_FILE_PATH, true,
                 "Path to config file. Default value is "+ CONFIG_FILE_DEFAULT_VALUE +" (in the working directory)");
-
-        final Option thresholdOption = new Option("t", THRESHOLD, true,
-                "Required. Threshold value to block. Only integer values.");
-        thresholdOption.setRequired(true);
-        options.addOption(thresholdOption);
-
+        options.addRequiredOption("t", THRESHOLD, true,
+            "Required. Threshold value to block. Only integer values.");
         options.addRequiredOption("s", START_DATE, true,
-                "Required. Start date to analysis in the following format: yyyy-MM-dd.HH:mm:ss");
+            "Required. Start date to analysis in the following format: yyyy-MM-dd.HH:mm:ss");
 
         final ChoiceOption durationOption =
                 new ChoiceOption("d", DURATION,  true, "Required. Options:",
