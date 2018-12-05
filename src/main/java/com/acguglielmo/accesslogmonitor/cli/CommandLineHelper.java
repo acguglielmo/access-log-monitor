@@ -81,10 +81,8 @@ public final class CommandLineHelper {
         thresholdOption.setRequired(true);
         options.addOption(thresholdOption);
 
-        final Option startDateOption = new Option("s", START_DATE, true,
+        options.addRequiredOption("s", START_DATE, true,
                 "Required. Start date to analysis in the following format: yyyy-MM-dd.HH:mm:ss");
-        startDateOption.setRequired(true);
-        options.addOption(startDateOption);
 
         final ChoiceOption durationOption =
                 new ChoiceOption("d", DURATION,  true, "Required. Options:",
