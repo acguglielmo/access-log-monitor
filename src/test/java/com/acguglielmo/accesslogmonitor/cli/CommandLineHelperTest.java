@@ -12,12 +12,7 @@ public class CommandLineHelperTest {
 
     @Before
     public void setUp() throws Exception {
-        this.instance = CommandLineHelper.getInstance();
-    }
-
-    @Test
-    public void getInstanceTest() throws Exception {
-        assertEquals(instance, CommandLineHelper.getInstance());
+        this.instance = new CommandLineHelper();
     }
 
     @Test

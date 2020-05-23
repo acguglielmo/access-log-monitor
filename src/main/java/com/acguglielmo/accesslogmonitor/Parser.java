@@ -34,7 +34,7 @@ public class Parser {
 
 
 	private void process(final String[] args) {
-		final CommandLine commandLine = CommandLineHelper.getInstance().configureCliOptions(args);
+		final CommandLine commandLine = new CommandLineHelper().configureCliOptions(args);
 		if (commandLine ==  null) {
 			return;
 		}

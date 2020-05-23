@@ -23,21 +23,6 @@ public final class CommandLineHelper {
     public static final String FILENAME_DEFAULT_VALUE = "access.log";
     public static final String CONFIG_FILE_DEFAULT_VALUE = "config.properties";
 
-    private volatile static CommandLineHelper instance;
-
-    private CommandLineHelper(){}
-
-    public static CommandLineHelper getInstance() {
-        if (instance == null) {
-            synchronized (CommandLineHelper.class) {
-                if (instance == null) {
-                    instance = new CommandLineHelper();
-                }
-            }
-        }
-        return instance;
-    }
-
     public CommandLine configureCliOptions(final String[] args) {
         final Options options = new Options();
         options.addOption("a", ACCESS_LOG_PATH, true,
