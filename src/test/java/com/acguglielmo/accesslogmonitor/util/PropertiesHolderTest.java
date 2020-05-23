@@ -9,18 +9,10 @@ import java.nio.file.*;
 
 import static org.junit.Assert.*;
 
-/**
- * The type Properties holder test.
- */
 public class PropertiesHolderTest {
 
     private static final String CONFIG_FILENAME = "config.properties";
 
-    /**
-     * Sets up.
-     *
-     * @throws Exception the exception
-     */
     @BeforeClass
     public static void setUp() throws Exception {
         final Path path = Paths.get(CONFIG_FILENAME);
@@ -38,22 +30,12 @@ public class PropertiesHolderTest {
         bufferedWriter.close();
     }
 
-    /**
-     * Create instance without creating first test.
-     *
-     * @throws Exception the exception
-     */
     @Test(expected = RuntimeException.class)
     public void getInstanceWithoutCreatingFirstTest() throws Exception {
         PropertiesHolder.destroyInstance();
         PropertiesHolder.getInstance();
     }
 
-    /**
-     * Get instance creating first test.
-     *
-     * @throws Exception the exception
-     */
     @Test
     public void getInstanceCreatingFirstTest() throws Exception {
         PropertiesHolder.destroyInstance();
@@ -67,11 +49,6 @@ public class PropertiesHolderTest {
     }
 
 
-    /**
-     * Gets property test.
-     *
-     * @throws Exception the exception
-     */
     @Test
     public void getPropertyTest() throws Exception {
         PropertiesHolder.destroyInstance();
@@ -84,11 +61,6 @@ public class PropertiesHolderTest {
         assertEquals("passwd", propertiesHolder.getProperty(PropertiesHolder.DB_CONNECTION_PASSWORD));
     }
 
-    /**
-     * Tear down.
-     *
-     * @throws Exception the exception
-     */
     @AfterClass
     public static void tearDown() throws Exception {
         final Path path = Paths.get(CONFIG_FILENAME);

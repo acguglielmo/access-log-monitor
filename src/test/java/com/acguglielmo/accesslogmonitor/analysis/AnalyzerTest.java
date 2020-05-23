@@ -24,9 +24,6 @@ import static org.powermock.api.easymock.PowerMock.createMock;
 import static org.powermock.api.easymock.PowerMock.expectNew;
 import static org.powermock.api.easymock.PowerMock.replay;
 
-/**
- * The type Analyzer test.
- */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest( {Analyzer.class, AccessLogGatewaySqlImpl.class, BlockOccurrencesGatewaySqlImpl.class})
 public class AnalyzerTest {
@@ -35,32 +32,17 @@ public class AnalyzerTest {
 
     private static final String startDateString = "2017-01-01.15:00:06";
 
-    /**
-     * Sets up.
-     *
-     * @throws Exception the exception
-     */
     @Before
     public void setUp() throws Exception {
         this.instance = Analyzer.getInstance();
     }
 
 
-    /**
-     * Gets instance test.
-     *
-     * @throws Exception the exception
-     */
     @Test
     public void getInstanceTest() throws Exception {
         assertEquals(instance, Analyzer.getInstance());
     }
 
-    /**
-     * Block by hourly thresold test.
-     *
-     * @throws Exception the exception
-     */
     @Test
     public void blockByHourlyThresoldTest() throws Exception {
 
@@ -94,11 +76,6 @@ public class AnalyzerTest {
         return dto;
     }
 
-    /**
-     * Block by daily thresold test.
-     *
-     * @throws Exception the exception
-     */
     @Test
     public void blockByDailyThresoldTest() throws Exception {
 

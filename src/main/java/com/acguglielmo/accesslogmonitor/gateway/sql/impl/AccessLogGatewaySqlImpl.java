@@ -10,9 +10,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * The type Access log gateway sql.
- */
 public class AccessLogGatewaySqlImpl {
 
     private static final String INSERT_STATEMENT = "INSERT IGNORE INTO usr_aguglielmo.access_log"
@@ -27,11 +24,6 @@ public class AccessLogGatewaySqlImpl {
 
     private static final String TABLE_VERIFICATION_STATEMENT = "SELECT 1 FROM usr_aguglielmo.access_log";
 
-    /**
-     * Table exists.
-     *
-     * @throws SQLException           the sql exception
-     */
     public void tableExists() throws SQLException {
         try (final Connection dbConnection = ConnectionFactory.getInstance().getConnection()) {
             try(final PreparedStatement preparedStatement = dbConnection.prepareStatement(TABLE_VERIFICATION_STATEMENT)) {
@@ -40,12 +32,6 @@ public class AccessLogGatewaySqlImpl {
         }
     }
 
-    /**
-     * Insert.
-     *
-     * @param dataList the data list
-     * @throws SQLException           the sql exception
-     */
     public void insert(final List<String[]> dataList) throws SQLException {
 
         if (!dataList.isEmpty()) {
@@ -70,15 +56,6 @@ public class AccessLogGatewaySqlImpl {
         }
     }
 
-    /**
-     * Find list.
-     *
-     * @param start     the start
-     * @param end       the end
-     * @param threshold the threshold
-     * @return the list
-     * @throws SQLException           the sql exception
-     */
     public List<BlockOccurrencesDto> find(final LocalDateTime start,
                                           final LocalDateTime end, final Integer threshold) throws SQLException {
         final List<BlockOccurrencesDto> result = new ArrayList<>();

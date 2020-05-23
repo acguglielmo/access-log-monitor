@@ -13,14 +13,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-/**
- * The type File parser.
- */
 public final class FileParser {
 
-    /**
-     * The constant MAX_BATCH_CHUNK_SIZE.
-     */
     public static final Integer MAX_BATCH_CHUNK_SIZE = 1000;
 
     private Pattern regex = Pattern.compile(Pattern.quote("|"));
@@ -29,11 +23,6 @@ public final class FileParser {
 
     private FileParser(){}
 
-    /**
-     * Gets instance.
-     *
-     * @return the instance
-     */
     public static FileParser getInstance() {
         if (instance == null) {
             synchronized (FileParser.class) {
@@ -45,13 +34,6 @@ public final class FileParser {
         return instance;
     }
 
-    /**
-     * Loads the file to the database.
-     *
-     * @param file the file
-     * @throws IOException          the io exception
-     * @throws InterruptedException the interrupted exception
-     */
     public void loadFileToDatabase(final File file) throws IOException, InterruptedException, SQLException {
 
         final FileReader fileReader = new FileReader(file);
@@ -79,19 +61,9 @@ public final class FileParser {
         executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
     }
 
-    /**
-     * The type Gateway client.
-     * <p>
-     * Do the string splitting and polling.
-     */
     class GatewayClient implements Runnable {
         private List<String> readLines;
 
-        /**
-         * Instantiates a new Gateway client.
-         *
-         * @param readLines the read lines
-         */
         GatewayClient(final List<String> readLines){
             this.readLines = readLines;
         }

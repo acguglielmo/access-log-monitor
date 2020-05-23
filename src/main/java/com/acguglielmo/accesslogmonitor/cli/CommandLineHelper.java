@@ -8,50 +8,25 @@ import org.apache.commons.cli.*;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * The type Command line helper.
- */
 public final class CommandLineHelper {
 
-    /**
-     * The constant ACCESS_LOG_PATH.
-     */
     public static final String ACCESS_LOG_PATH = "accessLog";
-    /**
-     * The constant CONFIG_FILE_PATH.
-     */
+
     public static final String CONFIG_FILE_PATH = "configFile";
-    /**
-     * The constant START_DATE.
-     */
+
     public static final String START_DATE = "startDate";
-    /**
-     * The constant DURATION.
-     */
+
     public static final String DURATION = "duration";
-    /**
-     * The constant THRESHOLD.
-     */
+
     public static final String THRESHOLD = "threshold";
 
-    /**
-     * The constant FILENAME_DEFAULT_VALUE.
-     */
     public static final String FILENAME_DEFAULT_VALUE = "access.log";
-    /**
-     * The constant CONFIG_FILE_DEFAULT_VALUE.
-     */
     public static final String CONFIG_FILE_DEFAULT_VALUE = "config.properties";
 
     private volatile static CommandLineHelper instance;
 
     private CommandLineHelper(){}
 
-    /**
-     * Gets instance.
-     *
-     * @return the instance
-     */
     public static CommandLineHelper getInstance() {
         if (instance == null) {
             synchronized (CommandLineHelper.class) {
@@ -63,12 +38,6 @@ public final class CommandLineHelper {
         return instance;
     }
 
-    /**
-     * Configures the CLI options
-     *
-     * @param args the args
-     * @return the command line
-     */
     public CommandLine configureCliOptions(final String[] args) {
         final Options options = new Options();
         options.addOption("a", ACCESS_LOG_PATH, true,
@@ -116,11 +85,6 @@ public final class CommandLineHelper {
         }
     }
 
-    /**
-     * Generate the help statement.
-     *
-     * @param options the options
-     */
     private static void printCliHelp(Options options) {
         final HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp( "parser", options );

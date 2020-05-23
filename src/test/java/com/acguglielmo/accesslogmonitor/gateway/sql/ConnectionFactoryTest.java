@@ -17,11 +17,6 @@ public class ConnectionFactoryTest {
 
     private static final String CONFIG_FILENAME = "config.properties";
 
-    /**
-     * Sets up.
-     *
-     * @throws Exception the exception
-     */
     @BeforeClass
     public static void setUp() throws Exception {
         final Path path = Paths.get(CONFIG_FILENAME);
@@ -59,11 +54,6 @@ public class ConnectionFactoryTest {
         assertNotEquals(connection, ConnectionFactory.getInstance().getConnection());
     }
 
-    /**
-     * Tear down.
-     *
-     * @throws Exception the exception
-     */
     @AfterClass
     public static void tearDown() throws Exception {
         final Path path = Paths.get(CONFIG_FILENAME);
