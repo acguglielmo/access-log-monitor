@@ -1,6 +1,5 @@
 package com.acguglielmo.accesslogmonitor.analysis;
 
-import com.acguglielmo.accesslogmonitor.analysis.Analyzer;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
 import com.acguglielmo.accesslogmonitor.enums.Duration;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;

@@ -1,7 +1,6 @@
 package com.acguglielmo.accesslogmonitor.parser;
 
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
-import com.acguglielmo.accesslogmonitor.parser.FileParser;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 
 import org.junit.*;

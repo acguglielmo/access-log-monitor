@@ -2,8 +2,6 @@ package com.acguglielmo.accesslogmonitor.util;
 
 import org.junit.*;
 
-import com.acguglielmo.accesslogmonitor.util.PropertiesHolder;
-
 import java.io.BufferedWriter;
 import java.nio.file.*;
 

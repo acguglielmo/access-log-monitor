@@ -3,7 +3,6 @@ package com.acguglielmo.accesslogmonitor.gateway.sql.impl;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
 import com.acguglielmo.accesslogmonitor.enums.Duration;
 import com.acguglielmo.accesslogmonitor.gateway.sql.ConnectionFactory;
-import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
 import com.acguglielmo.accesslogmonitor.util.DateUtils;
 
 import org.junit.BeforeClass;

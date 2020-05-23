@@ -1,6 +1,5 @@
 package com.acguglielmo.accesslogmonitor.gateway.sql;
 
-import com.acguglielmo.accesslogmonitor.gateway.sql.ConnectionFactory;
 import com.acguglielmo.accesslogmonitor.util.PropertiesHolder;
 
 import org.junit.AfterClass;

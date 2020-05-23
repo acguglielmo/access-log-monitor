@@ -4,8 +4,6 @@ import org.apache.commons.cli.CommandLine;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.acguglielmo.accesslogmonitor.cli.CommandLineHelper;
-
 import static org.junit.Assert.*;
 
 public class CommandLineHelperTest {
