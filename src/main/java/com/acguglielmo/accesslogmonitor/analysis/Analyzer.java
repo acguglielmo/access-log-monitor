@@ -10,20 +10,12 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * The type Analyzer.
- */
 public final class Analyzer {
 
     private static volatile Analyzer instance;
 
     private Analyzer(){}
 
-    /**
-     * Gets instance.
-     *
-     * @return the instance
-     */
     public static Analyzer getInstance() {
         if (instance == null) {
             synchronized (Analyzer.class) {
@@ -35,15 +27,6 @@ public final class Analyzer {
         return instance;
     }
 
-
-    /**
-     * Block by thresold list.
-     *
-     * @param startDate the start date
-     * @param duration  the duration
-     * @param threshold the threshold
-     * @return the list
-     */
     public List<BlockOccurrencesDto> blockByThresold(final String startDate,
                                                      final Duration duration,
                                                      final Integer threshold) {

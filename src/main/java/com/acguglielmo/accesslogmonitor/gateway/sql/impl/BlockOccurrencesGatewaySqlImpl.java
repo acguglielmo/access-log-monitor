@@ -9,9 +9,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
-/**
- * The type Block occurrences gateway sql.
- */
 public class BlockOccurrencesGatewaySqlImpl {
 
     private static final int BATCH_CHUNK_SIZE = 1000;
@@ -22,11 +19,6 @@ public class BlockOccurrencesGatewaySqlImpl {
 
     private static final String TABLE_VERIFICATION_STATEMENT = "SELECT 1 FROM usr_aguglielmo.block_occurrences";
 
-    /**
-     * Table exists.
-     *
-     * @throws SQLException           the sql exception
-     */
     public void tableExists() throws SQLException {
         try (final Connection dbConnection = ConnectionFactory.getInstance().getConnection()) {
             try(final PreparedStatement preparedStatement = dbConnection.prepareStatement(TABLE_VERIFICATION_STATEMENT)) {
@@ -35,12 +27,6 @@ public class BlockOccurrencesGatewaySqlImpl {
         }
     }
 
-    /**
-     * Insert.
-     *
-     * @param blockOccurrencesDtoList the block occurrences dto list
-     * @throws SQLException           the sql exception
-     */
     public void insert(final List<BlockOccurrencesDto> blockOccurrencesDtoList) throws SQLException {
         int count = 0;
 

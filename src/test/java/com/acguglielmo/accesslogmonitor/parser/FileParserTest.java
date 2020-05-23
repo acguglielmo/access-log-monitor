@@ -1,7 +1,6 @@
 package com.acguglielmo.accesslogmonitor.parser;
 
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
-import com.acguglielmo.accesslogmonitor.parser.FileParser;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 
 import org.junit.*;
@@ -37,11 +36,6 @@ public class FileParserTest {
     private static final String LINE_5 = "2017-01-01 23:59:29.749|192.168.70.119|\"GET / HTTP/1.1\"|200|\"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.86 Safari/537.36\"\n";
     private static final String LINE_6 = "2017-01-01 23:59:31.128|192.168.110.220|\"GET / HTTP/1.1\"|200|\"Mozilla/5.0 (Linux; Android 7.0; Moto G (4) Build/NPJS25.93-14-8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.116 Mobile Safari/537.36\"";
 
-    /**
-     * Sets up.
-     *
-     * @throws Exception the exception
-     */
     @BeforeClass
     public static void setUp() throws Exception {
         instance = FileParser.getInstance();

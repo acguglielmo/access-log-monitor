@@ -1,7 +1,6 @@
 package com.acguglielmo.accesslogmonitor.util;
 
 import com.acguglielmo.accesslogmonitor.enums.Duration;
-import com.acguglielmo.accesslogmonitor.util.DateUtils;
 
 import org.junit.Before;
 import org.junit.Test;

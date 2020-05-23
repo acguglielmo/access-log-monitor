@@ -24,25 +24,24 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-/**
- * The type Parser.
- */
 public class Parser {
 
+    protected static final String CONFIG_FILE_NOT_FOUND_MESSAGE = "Please provide a path to a config file or create a " +
+	        "\"config.properties\" file in the working directory with the " +
+	        "following properties filled according to your environment settings:" +
+	        "\n db.connection.url=jdbc:mysql://<server>:<port>/<service_name> "+
+	        "\n db.connection.username=<user> "+
+	        "\n db.connection.password=<password>";
+	
     private List<BlockOccurrencesDto> blockOccurrencesDtos = new ArrayList<>();
 
-    /**
-     * Main.
-     *
-     * @param args the args
-     */
     public static void main(final String[] args) {
         new Parser().process(args);
     }
 
 
 	private void process(final String[] args) {
-		final CommandLine commandLine = CommandLineHelper.getInstance().configureCliOptions(args);
+		final CommandLine commandLine = new CommandLineHelper().configureCliOptions(args);
 		if (commandLine ==  null) {
 			return;
 		}
@@ -53,14 +52,8 @@ public class Parser {
         try {
             PropertiesHolder.createInstance(configPath);
         } catch (final IOException e) {
-            System.out.println(e.getMessage());
-            System.out.println("Please provide a path to a config file or create a " +
-                    "\"config.properties\" file in the working directory with the " +
-                    "following properties filled according to your environment settings:" +
-                    "\n db.connection.url=jdbc:mysql://<server>:<port>/<service_name> "+
-                    "\n db.connection.username=<user> "+
-                    "\n db.connection.password=<password>");
-            System.exit(1);
+            System.out.println(CONFIG_FILE_NOT_FOUND_MESSAGE);
+            return;
         }
 
         checkIfDatabaseTablesExist();

@@ -5,8 +5,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.nio.file.*;

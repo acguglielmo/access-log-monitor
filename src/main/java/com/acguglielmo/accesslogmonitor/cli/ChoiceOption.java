@@ -4,25 +4,11 @@ import org.apache.commons.cli.Option;
 
 import java.util.Arrays;
 
-/**
- * The type Choice option.
- */
 public class ChoiceOption extends Option {
 	private static final long serialVersionUID = 723485642511703539L;
 	
 	private final String[] choices;
 
-    /**
-     * Instantiates a new Choice option.
-     *
-     * @param opt         the opt
-     * @param longOpt     the long opt
-     * @param hasArg      the has arg
-     * @param description the description
-     * @param isRequired  the is required
-     * @param choices     the choices
-     * @throws IllegalArgumentException the illegal argument exception
-     */
     ChoiceOption(
             final String opt,
             final String longOpt,
@@ -35,11 +21,6 @@ public class ChoiceOption extends Option {
         this.choices = choices;
     }
 
-    /**
-     * Check choice value.
-     *
-     * @throws RuntimeException the runtime exception
-     */
     void checkChoiceValue() throws RuntimeException {
         final String value = super.getValue();
         if (Arrays.stream(choices).noneMatch(s -> s.equals(value))) {

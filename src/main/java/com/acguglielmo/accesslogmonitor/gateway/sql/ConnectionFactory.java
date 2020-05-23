@@ -6,9 +6,6 @@ import java.sql.SQLException;
 
 import com.acguglielmo.accesslogmonitor.util.PropertiesHolder;
 
-/**
- * The type Connection factory.
- */
 public class ConnectionFactory {
 
     private String dbConnectionUrl;
@@ -24,11 +21,6 @@ public class ConnectionFactory {
         dbPassword = propertiesHolder.getProperty(PropertiesHolder.DB_CONNECTION_PASSWORD);
     }
 
-    /**
-     * Gets instance.
-     *
-     * @return the instance
-     */
     public static ConnectionFactory getInstance() {
         if (instance == null) {
             synchronized (ConnectionFactory.class) {
@@ -39,12 +31,6 @@ public class ConnectionFactory {
         return instance;
     }
 
-    /**
-     * Gets connection.
-     *
-     * @return the connection
-     * @throws SQLException the sql exception
-     */
     public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(
                 dbConnectionUrl.contains("mysql") ? dbConnectionUrl.concat("?useTimezone=true&serverTimezone=UTC&useSSL=false")
