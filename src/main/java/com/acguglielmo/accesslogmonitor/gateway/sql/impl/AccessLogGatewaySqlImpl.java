@@ -71,12 +71,13 @@ public class AccessLogGatewaySqlImpl {
                 final ResultSet resultSet = preparedStatement.executeQuery();
 
                 while (resultSet.next()) {
-                    final BlockOccurrencesDto dto = new BlockOccurrencesDto();
-                    dto.setIp(resultSet.getString(1));
-                    dto.setCount(resultSet.getInt(2));
-                    dto.setStartDate(start);
-                    dto.setEndDate(end);
-                    dto.setThreshold(threshold);
+                    final BlockOccurrencesDto dto = BlockOccurrencesDto.builder()
+	            		.ip(resultSet.getString(1))
+	            		.count(resultSet.getInt(2))
+	            		.startDate(start)
+	            		.endDate(end)
+	            		.threshold(threshold)
+	            		.build();
                     result.add(dto);
                 }
             }

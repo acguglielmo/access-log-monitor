@@ -24,6 +24,7 @@
         <easymock.version>3.5</easymock.version>
         <hsqldb.version>2.4.0</hsqldb.version>
         <jacoco.version>0.8.2</jacoco.version>
+        <lombok.version>1.18.12</lombok.version>
     </properties>
 
     <dependencies>
@@ -38,6 +39,12 @@
             <artifactId>commons-cli</artifactId>
             <version>${commons-cli.version}</version>
         </dependency>
+        
+		<dependency>
+		    <groupId>org.projectlombok</groupId>
+		    <artifactId>lombok</artifactId>
+		    <version>${lombok.version}</version>
+		</dependency>
 
         <dependency>
             <groupId>junit</groupId>

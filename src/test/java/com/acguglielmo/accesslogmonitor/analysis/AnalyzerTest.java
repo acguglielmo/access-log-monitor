@@ -66,13 +66,13 @@ public class AnalyzerTest {
 
     private BlockOccurrencesDto getBlockOccurrencesDto(final LocalDateTime startDate,
                                                        final LocalDateTime endDate) {
-        final BlockOccurrencesDto dto = new BlockOccurrencesDto();
-        dto.setCount(1);
-        dto.setStartDate(startDate);
-        dto.setEndDate(endDate);
-        dto.setIp("192.168.98.21");
-        dto.setThreshold(1);
-        return dto;
+        return BlockOccurrencesDto.builder()
+        	.count(1)
+        	.startDate(startDate)
+        	.endDate(endDate)
+        	.ip("192.168.98.21")
+        	.threshold(1)
+        	.build();
     }
 
     @Test

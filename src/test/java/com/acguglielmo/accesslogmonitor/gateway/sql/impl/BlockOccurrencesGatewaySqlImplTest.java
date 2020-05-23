@@ -60,21 +60,23 @@ public class BlockOccurrencesGatewaySqlImplTest extends AbstractGatewaySqlImplTe
         final LocalDateTime endDate = DateUtils.getInstance().getEndDate(startDate, Duration.HOURLY);
 
         final List<BlockOccurrencesDto> list = new ArrayList<>();
-        final BlockOccurrencesDto dto1 = new BlockOccurrencesDto();
-        dto1.setIp("192.168.90.4");
-        dto1.setThreshold(100);
-        dto1.setCount(34);
-        dto1.setStartDate(startDate);
-        dto1.setEndDate(endDate);
+        final BlockOccurrencesDto dto1 = BlockOccurrencesDto.builder()
+        	.ip("192.168.90.4")
+        	.threshold(100)
+        	.count(34)
+        	.startDate(startDate)
+        	.endDate(endDate)
+        	.build();
         list.add(dto1);
 
         for (int i = 1; i < 1200; i++) {
-            final BlockOccurrencesDto dto = new BlockOccurrencesDto();
-            dto.setIp("192.168.90.8");
-            dto.setThreshold(100);
-            dto.setCount(34);
-            dto.setStartDate(startDate);
-            dto.setEndDate(endDate);
+            final BlockOccurrencesDto dto = BlockOccurrencesDto.builder()
+            	.ip("192.168.90.8")
+            	.threshold(100)
+            	.count(34)
+            	.startDate(startDate)
+            	.endDate(endDate)
+            	.build();
             list.add(dto);
         }
 
