@@ -57,4 +57,16 @@ public class ParserTest {
 		
 	}
 	
+	@Test
+	public void shouldShowConfigFileNotFoundWhenNoConfigFileIsProvidedTest() {
+		
+		final String[] args = 
+			new String[] {"--accessLog=access.log", "--configFile=config.properties", "--startDate=2017-01-01.00:00:00", "--duration=daily", "--threshold=500"};
+		
+		Parser.main(args);
+		
+		assertEquals(Parser.CONFIG_FILE_NOT_FOUND_MESSAGE + "\r\n", outContent.toString());
+		
+	}
+	
 }

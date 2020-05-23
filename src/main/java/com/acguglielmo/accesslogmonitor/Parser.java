@@ -26,6 +26,13 @@ import java.util.concurrent.Future;
 
 public class Parser {
 
+    protected static final String CONFIG_FILE_NOT_FOUND_MESSAGE = "Please provide a path to a config file or create a " +
+	        "\"config.properties\" file in the working directory with the " +
+	        "following properties filled according to your environment settings:" +
+	        "\n db.connection.url=jdbc:mysql://<server>:<port>/<service_name> "+
+	        "\n db.connection.username=<user> "+
+	        "\n db.connection.password=<password>";
+	
     private List<BlockOccurrencesDto> blockOccurrencesDtos = new ArrayList<>();
 
     public static void main(final String[] args) {
@@ -45,14 +52,8 @@ public class Parser {
         try {
             PropertiesHolder.createInstance(configPath);
         } catch (final IOException e) {
-            System.out.println(e.getMessage());
-            System.out.println("Please provide a path to a config file or create a " +
-                    "\"config.properties\" file in the working directory with the " +
-                    "following properties filled according to your environment settings:" +
-                    "\n db.connection.url=jdbc:mysql://<server>:<port>/<service_name> "+
-                    "\n db.connection.username=<user> "+
-                    "\n db.connection.password=<password>");
-            System.exit(1);
+            System.out.println(CONFIG_FILE_NOT_FOUND_MESSAGE);
+            return;
         }
 
         checkIfDatabaseTablesExist();
