@@ -1,12 +1,9 @@
 package com.acguglielmo.accesslogmonitor;
 
-import com.acguglielmo.accesslogmonitor.analysis.Analyzer;
 import com.acguglielmo.accesslogmonitor.cli.CommandLineHelper;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
-import com.acguglielmo.accesslogmonitor.enums.Duration;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.BlockOccurrencesGatewaySqlImpl;
-import com.acguglielmo.accesslogmonitor.parser.FileParser;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 import com.acguglielmo.accesslogmonitor.util.PropertiesHolder;
 import com.mysql.cj.jdbc.exceptions.CommunicationsException;
@@ -14,8 +11,6 @@ import com.mysql.cj.jdbc.exceptions.MySQLTimeoutException;
 import org.apache.commons.cli.*;
 
 import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +28,7 @@ public class Parser {
 	        "\n db.connection.username=<user> "+
 	        "\n db.connection.password=<password>";
 	
-    private List<BlockOccurrencesDto> blockOccurrencesDtos = new ArrayList<>();
+    List<BlockOccurrencesDto> blockOccurrencesDtos = new ArrayList<>();
 
     public static void main(final String[] args) {
         new Parser().process(args);
@@ -58,7 +53,7 @@ public class Parser {
 
         checkIfDatabaseTablesExist();
 
-        final FileParsingTask task = new FileParsingTask(accessLogPath,
+        final FileParsingTask task = new FileParsingTask(this, accessLogPath,
                 Integer.parseInt(commandLine.getOptionValue(CommandLineHelper.THRESHOLD)),
                 commandLine.getOptionValue(CommandLineHelper.START_DATE),
                 commandLine.getOptionValue(CommandLineHelper.DURATION));
@@ -151,40 +146,6 @@ public class Parser {
             System.out.println("Please check if the configured database server is up and running.");
         } else {
             System.out.println(sqlException.getMessage());
-        }
-    }
-
-    private class FileParsingTask implements Runnable {
-        private String accessLogPath;
-        private Integer threshold;
-        private String startDate;
-        private Duration duration;
-
-        private FileParsingTask(final String accessLogPath, final Integer threshold,
-                              final String startDate, final String duration ) {
-            this.accessLogPath = accessLogPath;
-            this.threshold = threshold;
-            this.startDate = startDate;
-            this.duration = Duration.getByName(duration);
-        }
-
-        @Override
-        public void run() {
-            try {
-                final Path path = Paths.get(accessLogPath);
-                final File file = new File(path.toUri());
-
-                ApplicationStatus.getInstance().configureChunkSize(file, FileParser.MAX_BATCH_CHUNK_SIZE);
-
-                new FileParser().loadFileToDatabase(file);
-
-                blockOccurrencesDtos = Analyzer.getInstance()
-                        .blockByThresold(startDate, duration, threshold);
-                ApplicationStatus.getInstance().setProgress(ApplicationStatus.JOB_PROGRESS_AFTER_COMPLETION);
-
-            } catch (final Throwable e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 }
