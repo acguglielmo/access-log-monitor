@@ -83,4 +83,8 @@ public class ApplicationStatus {
     public synchronized List<Future<?>> getFutureList() {
         return new ArrayList<>(this.futureList);
     }
+    
+    protected synchronized void clearFutureList() {
+    	this.futureList.clear();
+    }
 }
