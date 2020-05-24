@@ -14,7 +14,7 @@ public class ApplicationStatusTest {
 
     private File file = Paths.get("src/test/resources/test.txt").toFile();
     
-    private int linesWrittenToTheFile = 100;
+    private int linesWrittenToTheFile = 1000;
 
     @Test
     public void getInstanceTest() throws Exception {
@@ -40,11 +40,11 @@ public class ApplicationStatusTest {
             instance.updateProgressByChunk();
         }
         Assert.assertEquals(50.0 * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE / 100,
-                instance.getProgress(), 0.001);
+                instance.getProgress(), 0.1);
 
         instance.updateProgressByChunk();
         Assert.assertEquals(51.0 * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE / 100,
-                instance.getProgress(), 0.001);
+                instance.getProgress(), 0.1);
     }
 
     @Test
@@ -54,22 +54,22 @@ public class ApplicationStatusTest {
         int batchChunkSize = 10;
         instance.configureChunkSize(file, batchChunkSize);
         Assert.assertEquals((double) batchChunkSize / linesWrittenToTheFile * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE,
-                instance.getChunkSize(), 0.001);
+                instance.getChunkSize(), 0.1);
 
         batchChunkSize = 20;
         instance.configureChunkSize(file, batchChunkSize);
         Assert.assertEquals((double) batchChunkSize / linesWrittenToTheFile * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE,
-                instance.getChunkSize(), 0.001);
+                instance.getChunkSize(), 0.1);
 
         batchChunkSize = 30;
         instance.configureChunkSize(file, batchChunkSize);
         Assert.assertEquals((double) batchChunkSize / linesWrittenToTheFile * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE,
-                instance.getChunkSize(), 0.001);
+                instance.getChunkSize(), 0.1);
 
         batchChunkSize = 400;
         instance.configureChunkSize(file, batchChunkSize);
         Assert.assertEquals((double) batchChunkSize / linesWrittenToTheFile * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE,
-                instance.getChunkSize(), 0.0001);
+                instance.getChunkSize(), 0.1);
     }
 
     @Test
