@@ -13,11 +13,11 @@ public class BlockOccurrencesGatewaySqlImpl {
 
     private static final int BATCH_CHUNK_SIZE = 1000;
 
-    private static final String INSERT_STATEMENT = "REPLACE INTO usr_aguglielmo.block_occurrences"
+    private static final String INSERT_STATEMENT = "REPLACE INTO block_occurrences"
             + "(ip, start_date, end_date, comment, threshold) VALUES"
             + "(?,?,?,?,?)";
 
-    private static final String TABLE_VERIFICATION_STATEMENT = "SELECT 1 FROM usr_aguglielmo.block_occurrences";
+    private static final String TABLE_VERIFICATION_STATEMENT = "SELECT 1 FROM block_occurrences";
 
     public void tableExists() throws SQLException {
         try (final Connection dbConnection = ConnectionFactory.getInstance().getConnection()) {

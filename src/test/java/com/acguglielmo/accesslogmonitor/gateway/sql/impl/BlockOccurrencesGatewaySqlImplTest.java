@@ -36,8 +36,7 @@ public class BlockOccurrencesGatewaySqlImplTest extends AbstractGatewaySqlImplTe
         final Connection connection = super.getConnection();
         Statement statement = connection.createStatement();
         statement.execute("SET DATABASE SQL SYNTAX MYS TRUE");
-        statement.execute("CREATE SCHEMA usr_aguglielmo");
-        statement.execute("CREATE TABLE usr_aguglielmo.block_occurrences (\n" +
+        statement.execute("CREATE TABLE block_occurrences (\n" +
                 "  ip varchar(15) NOT NULL,\n" +
                 "  start_date datetime(3) NOT NULL,\n" +
                 "  end_date datetime(3) NOT NULL,\n" +
