@@ -176,7 +176,7 @@ public class Parser {
 
                 ApplicationStatus.getInstance().configureChunkSize(file, FileParser.MAX_BATCH_CHUNK_SIZE);
 
-                FileParser.getInstance().loadFileToDatabase(file);
+                new FileParser().loadFileToDatabase(file);
 
                 blockOccurrencesDtos = Analyzer.getInstance()
                         .blockByThresold(startDate, duration, threshold);

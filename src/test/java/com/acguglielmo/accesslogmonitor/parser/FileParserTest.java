@@ -38,7 +38,7 @@ public class FileParserTest {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        instance = FileParser.getInstance();
+        instance = new FileParser();
     }
 
     private File createFile() throws IOException {
@@ -58,11 +58,6 @@ public class FileParserTest {
             bufferedWriter.write(LINE_6);
         }
         return filePath.toFile();
-    }
-
-    @Test
-    public void getInstanceTest() throws Exception {
-        assertEquals(instance, FileParser.getInstance());
     }
 
     @Test

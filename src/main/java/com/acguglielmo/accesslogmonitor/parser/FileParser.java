@@ -19,21 +19,6 @@ public final class FileParser {
 
     private Pattern regex = Pattern.compile(Pattern.quote("|"));
 
-    private static volatile FileParser instance;
-
-    private FileParser(){}
-
-    public static FileParser getInstance() {
-        if (instance == null) {
-            synchronized (FileParser.class) {
-                if (instance == null) {
-                    instance = new FileParser();
-                }
-            }
-        }
-        return instance;
-    }
-
     public void loadFileToDatabase(final File file) throws IOException, InterruptedException, SQLException {
 
         final FileReader fileReader = new FileReader(file);
