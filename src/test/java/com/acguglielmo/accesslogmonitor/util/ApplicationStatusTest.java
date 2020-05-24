@@ -1,14 +1,15 @@
 package com.acguglielmo.accesslogmonitor.util;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.io.File;
-import java.nio.file.*;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ApplicationStatusTest {
 
@@ -16,6 +17,11 @@ public class ApplicationStatusTest {
     
     private int linesWrittenToTheFile = 1000;
 
+    @Before
+    public void before() {
+    	ApplicationStatus.getInstance().clearFutureList();
+    }
+    
     @Test
     public void getInstanceTest() throws Exception {
         final ApplicationStatus instance = ApplicationStatus.getInstance();
