@@ -28,13 +28,10 @@ public final class Analyzer {
     }
 
     public List<BlockOccurrencesDto> blockByThresold(final String startDate,
-                                                     final Duration duration,
-                                                     final Integer threshold) {
+        final Duration duration, final Integer threshold) {
 
-        final DateUtils dateUtil = DateUtils.getInstance();
-
-        final LocalDateTime start = dateUtil.getStartDate(startDate);
-        final LocalDateTime end = dateUtil.getEndDate(start, duration);
+        final LocalDateTime start = DateUtils.getStartDate(startDate);
+        final LocalDateTime end = DateUtils.getEndDate(start, duration);
 
         List<BlockOccurrencesDto> blockOccurrencesDtoList;
         try {

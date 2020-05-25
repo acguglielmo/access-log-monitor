@@ -12,13 +12,10 @@ import static org.junit.Assert.*;
 
 public class DateUtilsTest {
 
-    private DateUtils instance;
     private String startDate;
 
     @Before
     public void setUp() throws Exception {
-        this.instance = DateUtils.getInstance();
-
         final TemporalAccessor temporalAccessor = DateUtils.DATE_FORMAT_ARGS.parse("2017-12-18.14:01:09");
         final String temporalAcessorString = temporalAccessor.toString();
         startDate = temporalAcessorString.substring(temporalAcessorString.indexOf("2")).replace('T', '.');
@@ -26,13 +23,8 @@ public class DateUtilsTest {
     }
 
     @Test
-    public void getInstanceTest() throws Exception {
-        assertEquals(instance, DateUtils.getInstance());
-    }
-
-    @Test
     public void getStartDateTest() throws Exception {
-        final LocalDateTime startDate = instance.getStartDate(this.startDate);
+        final LocalDateTime startDate = DateUtils.getStartDate(this.startDate);
 
         assertEquals(2017, startDate.getYear());
         assertEquals(12, startDate.getMonth().getValue());
@@ -44,9 +36,9 @@ public class DateUtilsTest {
 
     @Test
     public void getEndDateTest() throws Exception {
-        final LocalDateTime startDate = instance.getStartDate(this.startDate);
+        final LocalDateTime startDate = DateUtils.getStartDate(this.startDate);
 
-        final LocalDateTime endDateDailyTest = instance.getEndDate(startDate, Duration.DAILY);
+        final LocalDateTime endDateDailyTest = DateUtils.getEndDate(startDate, Duration.DAILY);
         assertEquals(2017, endDateDailyTest.getYear());
         assertEquals(12, endDateDailyTest.getMonth().getValue());
         assertEquals(19, endDateDailyTest.getDayOfMonth());
@@ -54,7 +46,7 @@ public class DateUtilsTest {
         assertEquals(1, endDateDailyTest.getMinute());
         assertEquals(9, endDateDailyTest.getSecond());
 
-        final LocalDateTime endDateHourlyTest = instance.getEndDate(startDate, Duration.HOURLY);
+        final LocalDateTime endDateHourlyTest = DateUtils.getEndDate(startDate, Duration.HOURLY);
         assertEquals(2017, endDateHourlyTest.getYear());
         assertEquals(12, endDateHourlyTest.getMonth().getValue());
         assertEquals(18, endDateHourlyTest.getDayOfMonth());

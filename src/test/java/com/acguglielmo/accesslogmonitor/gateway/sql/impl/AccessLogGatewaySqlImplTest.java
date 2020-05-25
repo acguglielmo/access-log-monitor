@@ -48,8 +48,8 @@ public class AccessLogGatewaySqlImplTest extends AbstractComponentTest {
 		statement.executeUpdate("INSERT INTO access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:00:54.583','192.168.169.194','\"GET / HTTP/1.1\"',200,'\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393\"');");
 		connection.commit();
     	
-    	final LocalDateTime startDate = DateUtils.getInstance().getStartDate("2017-01-01.00:00:11");
-        final LocalDateTime endDate = DateUtils.getInstance().getEndDate(startDate, Duration.HOURLY);
+    	final LocalDateTime startDate = DateUtils.getStartDate("2017-01-01.00:00:11");
+        final LocalDateTime endDate = DateUtils.getEndDate(startDate, Duration.HOURLY);
 
         final List<BlockOccurrencesDto> blockOccurrencesDtos = new AccessLogGatewaySqlImpl().find(startDate, endDate, 1);
         assertNotNull(blockOccurrencesDtos);

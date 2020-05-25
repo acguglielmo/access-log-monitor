@@ -20,8 +20,8 @@ public class BlockOccurrencesGatewaySqlImplTest extends AbstractComponentTest {
 
     @Test
     public void insertTest() throws Exception {
-        final LocalDateTime startDate = DateUtils.getInstance().getStartDate("2017-01-01.13:00:00");
-        final LocalDateTime endDate = DateUtils.getInstance().getEndDate(startDate, Duration.HOURLY);
+        final LocalDateTime startDate = DateUtils.getStartDate("2017-01-01.13:00:00");
+        final LocalDateTime endDate = DateUtils.getEndDate(startDate, Duration.HOURLY);
 
         final List<BlockOccurrencesDto> list = new ArrayList<>();
         final BlockOccurrencesDto dto1 = BlockOccurrencesDto.builder()
