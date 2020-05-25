@@ -12,17 +12,17 @@ import java.util.List;
 
 public class AccessLogGatewaySqlImpl {
 
-    private static final String INSERT_STATEMENT = "INSERT IGNORE INTO usr_aguglielmo.access_log"
+    private static final String INSERT_STATEMENT = "INSERT IGNORE INTO access_log"
             + "(date, ip, request, status, user_agent) VALUES"
             + "(?,?,?,?,?)";
 
     private static final String FIND_BLOCK_OCCURRENCES_STATEMENT = "SELECT ip, count(1) " +
-            "  FROM usr_aguglielmo.access_log t " +
+            "  FROM access_log t " +
             " where t.date between ? " + " and ? " +
             "group by ip having count(1) > ? " +
             "order by count(1) desc;";
 
-    private static final String TABLE_VERIFICATION_STATEMENT = "SELECT 1 FROM usr_aguglielmo.access_log";
+    private static final String TABLE_VERIFICATION_STATEMENT = "SELECT 1 FROM access_log";
 
     public void tableExists() throws SQLException {
         try (final Connection dbConnection = ConnectionFactory.getInstance().getConnection()) {
