@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 import org.junit.Test;
 
-public class DateUtilsTest {
+public class ThresholdTest {
 
     private static final String START_DATE = "2017-12-18.14:01:09";
 
