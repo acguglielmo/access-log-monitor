@@ -2,43 +2,12 @@ package com.acguglielmo.accesslogmonitor;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 @Ignore
-public class ParserTest {
+public class ParserTest extends ConsoleWatcherSupport {
 
-	private final PrintStream originalOut = System.out;
-	
-	private final PrintStream originalErr = System.err;
-
-	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-	
-	private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
-	
-	@Before
-	public void before() {
-		
-		System.setOut(new PrintStream(outContent));
-		
-		System.setErr(new PrintStream(errContent));
-		
-	}
-
-	@After
-	public void after() {
-
-		System.setOut(originalOut);
-
-	    System.setErr(originalErr);
-
-	}
-	
 	@Test
 	public void shouldShowHelpMessageWhenNoArgsAreProvidedTest() {
 
