@@ -1,9 +1,6 @@
 package com.acguglielmo.accesslogmonitor.util;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
-import com.acguglielmo.accesslogmonitor.enums.Duration;
 
 public final class DateUtils {
 
@@ -13,15 +10,4 @@ public final class DateUtils {
 
     private DateUtils(){}
 
-    public static LocalDateTime getStartDate(final String date) {
-        return LocalDateTime.parse(date, DateUtils.DATE_FORMAT_ARGS);
-    }
-
-    public static LocalDateTime getEndDate(final LocalDateTime initialDate, final Duration duration) {
-        switch (duration) {
-            case HOURLY:  return initialDate.plusHours(1);
-            case DAILY:   return initialDate.plusDays(1);
-            default:      return LocalDateTime.now();
-        }
-    }
 }

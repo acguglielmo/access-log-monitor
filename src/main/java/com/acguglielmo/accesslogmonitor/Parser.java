@@ -1,16 +1,6 @@
 package com.acguglielmo.accesslogmonitor;
 
-import com.acguglielmo.accesslogmonitor.cli.CommandLineHelper;
-import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
-import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
-import com.acguglielmo.accesslogmonitor.gateway.sql.impl.BlockOccurrencesGatewaySqlImpl;
-import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
-import com.acguglielmo.accesslogmonitor.util.PropertiesHolder;
-import com.mysql.cj.jdbc.exceptions.CommunicationsException;
-import com.mysql.cj.jdbc.exceptions.MySQLTimeoutException;
-import org.apache.commons.cli.*;
-
-import java.io.*;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +8,18 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import org.apache.commons.cli.CommandLine;
+
+import com.acguglielmo.accesslogmonitor.cli.CommandLineHelper;
+import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
+import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
+import com.acguglielmo.accesslogmonitor.gateway.sql.impl.BlockOccurrencesGatewaySqlImpl;
+import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
+import com.acguglielmo.accesslogmonitor.util.PropertiesHolder;
+import com.acguglielmo.accesslogmonitor.util.Threshold;
+import com.mysql.cj.jdbc.exceptions.CommunicationsException;
+import com.mysql.cj.jdbc.exceptions.MySQLTimeoutException;
 
 public class Parser {
 
@@ -54,9 +56,11 @@ public class Parser {
         checkIfDatabaseTablesExist();
 
         final FileParsingTask task = new FileParsingTask(this, accessLogPath,
-                Integer.parseInt(commandLine.getOptionValue(CommandLineHelper.THRESHOLD)),
-                commandLine.getOptionValue(CommandLineHelper.START_DATE),
-                commandLine.getOptionValue(CommandLineHelper.DURATION));
+            new Threshold(
+            	commandLine.getOptionValue(CommandLineHelper.START_DATE),
+            	commandLine.getOptionValue(CommandLineHelper.DURATION),
+            	commandLine.getOptionValue(CommandLineHelper.THRESHOLD)
+            ));
 
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         final Future<?> future = executor.submit(task);

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.sql.Connection;
 import java.sql.Statement;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -14,8 +13,7 @@ import org.junit.Test;
 
 import com.acguglielmo.accesslogmonitor.AbstractComponentTest;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
-import com.acguglielmo.accesslogmonitor.enums.Duration;
-import com.acguglielmo.accesslogmonitor.util.DateUtils;
+import com.acguglielmo.accesslogmonitor.util.Threshold;
 
 public class AccessLogGatewaySqlImplTest extends AbstractComponentTest {
 
@@ -48,10 +46,9 @@ public class AccessLogGatewaySqlImplTest extends AbstractComponentTest {
 		statement.executeUpdate("INSERT INTO access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:00:54.583','192.168.169.194','\"GET / HTTP/1.1\"',200,'\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393\"');");
 		connection.commit();
     	
-    	final LocalDateTime startDate = DateUtils.getStartDate("2017-01-01.00:00:11");
-        final LocalDateTime endDate = DateUtils.getEndDate(startDate, Duration.HOURLY);
+        final Threshold threshold = new Threshold("2017-01-01.00:00:11", "hourly", "1");
 
-        final List<BlockOccurrencesDto> blockOccurrencesDtos = new AccessLogGatewaySqlImpl().find(startDate, endDate, 1);
+        final List<BlockOccurrencesDto> blockOccurrencesDtos = new AccessLogGatewaySqlImpl().find(threshold);
         assertNotNull(blockOccurrencesDtos);
         assertEquals(2, blockOccurrencesDtos.size());
         assertEquals("192.168.234.82", blockOccurrencesDtos.get(0).getIp());
