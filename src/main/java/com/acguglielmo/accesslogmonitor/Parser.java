@@ -9,8 +9,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.apache.commons.cli.CommandLine;
-
 import com.acguglielmo.accesslogmonitor.cli.CommandLineHelper;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
@@ -38,41 +36,42 @@ public class Parser {
 
 
 	private void process(final String[] args) {
-		final CommandLine commandLine = new CommandLineHelper().configureCliOptions(args);
-		if (commandLine ==  null) {
-			return;
-		}
 
-		final String accessLogPath = commandLine.getOptionValue(CommandLineHelper.ACCESS_LOG_PATH, CommandLineHelper.FILENAME_DEFAULT_VALUE);
-        final String configPath = commandLine.getOptionValue(CommandLineHelper.CONFIG_FILE_PATH, CommandLineHelper.CONFIG_FILE_DEFAULT_VALUE);
+		new CommandLineHelper().configureCliOptions(args)
+			.ifPresent(commandLine -> {
+				
+				final String accessLogPath = commandLine.getOptionValue(CommandLineHelper.ACCESS_LOG_PATH, CommandLineHelper.FILENAME_DEFAULT_VALUE);
+				final String configPath = commandLine.getOptionValue(CommandLineHelper.CONFIG_FILE_PATH, CommandLineHelper.CONFIG_FILE_DEFAULT_VALUE);
+				
+				try {
+					PropertiesHolder.createInstance(configPath);
+				} catch (final IOException e) {
+					System.out.println(CONFIG_FILE_NOT_FOUND_MESSAGE);
+					return;
+				}
+				
+				checkIfDatabaseTablesExist();
+				
+				final FileParsingTask task = new FileParsingTask(this, accessLogPath,
+						new Threshold(
+								commandLine.getOptionValue(CommandLineHelper.START_DATE),
+								commandLine.getOptionValue(CommandLineHelper.DURATION),
+								commandLine.getOptionValue(CommandLineHelper.THRESHOLD)
+								));
+				
+				final ExecutorService executor = Executors.newSingleThreadExecutor();
+				final Future<?> future = executor.submit(task);
+				ApplicationStatus.getInstance().addFuture(future);
+				executor.shutdown();
+				
+				monitorApplicationStatus(executor);
+				
+				if (!blockOccurrencesDtos.isEmpty()) {
+					System.out.println(String.format("%-15s   %s", "IP", "Count"));
+					blockOccurrencesDtos.forEach(System.out::println);
+				}
+			});
 
-        try {
-            PropertiesHolder.createInstance(configPath);
-        } catch (final IOException e) {
-            System.out.println(CONFIG_FILE_NOT_FOUND_MESSAGE);
-            return;
-        }
-
-        checkIfDatabaseTablesExist();
-
-        final FileParsingTask task = new FileParsingTask(this, accessLogPath,
-            new Threshold(
-            	commandLine.getOptionValue(CommandLineHelper.START_DATE),
-            	commandLine.getOptionValue(CommandLineHelper.DURATION),
-            	commandLine.getOptionValue(CommandLineHelper.THRESHOLD)
-            ));
-
-        final ExecutorService executor = Executors.newSingleThreadExecutor();
-        final Future<?> future = executor.submit(task);
-        ApplicationStatus.getInstance().addFuture(future);
-        executor.shutdown();
-
-        monitorApplicationStatus(executor);
-
-        if (!blockOccurrencesDtos.isEmpty()) {
-            System.out.println(String.format("%-15s   %s", "IP", "Count"));
-            blockOccurrencesDtos.forEach(System.out::println);
-        }
     }
 
     private void checkIfDatabaseTablesExist() {

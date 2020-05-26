@@ -7,6 +7,7 @@ import org.apache.commons.cli.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public final class CommandLineHelper {
 
@@ -23,7 +24,7 @@ public final class CommandLineHelper {
     public static final String FILENAME_DEFAULT_VALUE = "access.log";
     public static final String CONFIG_FILE_DEFAULT_VALUE = "config.properties";
 
-    public CommandLine configureCliOptions(final String[] args) {
+    public Optional<CommandLine> configureCliOptions(final String[] args) {
         final Options options = new Options();
         options.addOption("a", ACCESS_LOG_PATH, true,
                 "Path to log file. Default value is "+ FILENAME_DEFAULT_VALUE +" (in the working directory)");
@@ -43,10 +44,10 @@ public final class CommandLineHelper {
         try {
             final CommandLine commandLine = commandLineParser.parse(options, args);
             checkCommandLineArgs(commandLine);
-            return commandLine;
+            return Optional.of(commandLine);
         } catch (org.apache.commons.cli.ParseException | RuntimeException e) {
             printCliHelp(options);
-            return null;
+            return Optional.empty();
         }
     }
 
