@@ -39,27 +39,23 @@ public class CommandLineHelperTest {
     @Test
     public void shouldReturnOptionalEmptyWhenDurationParameterIsProvidedWithInvalidValueTest() {
 
-    	final String[] args = new String[] {"--accessLog=access.log", "--configFile=config.properties", "--startDate=2017-01-01.00:00:00", "--duration=daili", "--threshold=500"};
-
-    	assertOptionalEmptyReturned(args);
+    	assertOptionalEmptyReturned(
+    		new String[] {"--accessLog=access.log", "--configFile=config.properties", "--startDate=2017-01-01.00:00:00", "--duration=daili", "--threshold=500"});
 
     }
 
     @Test
     public void shouldReturnOptionalEmptyWhenDurationParameterIsNotProvidedTest() {
 
-    	final String[] args = new String[] {"--accessLog=access.log", "--configFile=config.properties", "--startDate=2017-01-01.00:00:00", "--duration", "--threshold=500"};
-
-    	assertOptionalEmptyReturned(args);
+    	assertOptionalEmptyReturned(
+    		new String[] {"--accessLog=access.log", "--configFile=config.properties", "--startDate=2017-01-01.00:00:00", "--duration", "--threshold=500"});
 
     }
 
     @Test
     public void shouldReturnOptionalEmptyWhenOnlyAccessLogParameterIsProvidedTest() {
 
-    	final String[] args = new String[] {"--accessLog=access.log"};
-
-    	assertOptionalEmptyReturned(args);
+    	assertOptionalEmptyReturned(new String[] {"--accessLog=access.log"});
 
     }
     
