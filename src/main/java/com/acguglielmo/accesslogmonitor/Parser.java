@@ -47,7 +47,6 @@ public class Parser {
 
 	private void processAfterCliParametersConfigured(final CommandLine commandLine) {
 			
-		final String accessLogPath = commandLine.getOptionValue(CommandLineHelper.ACCESS_LOG_PATH, CommandLineHelper.FILENAME_DEFAULT_VALUE);
 		final String configPath = commandLine.getOptionValue(CommandLineHelper.CONFIG_FILE_PATH, CommandLineHelper.CONFIG_FILE_DEFAULT_VALUE);
 		
 		try {
@@ -59,17 +58,7 @@ public class Parser {
 		
 		checkIfDatabaseTablesExist();
 		
-		final FileParsingTask task = new FileParsingTask(this, accessLogPath,
-				new Threshold(
-						commandLine.getOptionValue(CommandLineHelper.START_DATE),
-						commandLine.getOptionValue(CommandLineHelper.DURATION),
-						commandLine.getOptionValue(CommandLineHelper.THRESHOLD)
-						));
-		
-		final ExecutorService executor = Executors.newSingleThreadExecutor();
-		final Future<?> future = executor.submit(task);
-		ApplicationStatus.getInstance().addFuture(future);
-		executor.shutdown();
+		final ExecutorService executor = submitFileParsingTask(commandLine);
 		
 		monitorApplicationStatus(executor);
 		
@@ -77,6 +66,23 @@ public class Parser {
 			System.out.println(String.format("%-15s   %s", "IP", "Count"));
 			blockOccurrencesDtos.forEach(System.out::println);
 		}
+	}
+
+
+	private ExecutorService submitFileParsingTask(final CommandLine commandLine) {
+		final String accessLogPath = commandLine.getOptionValue(CommandLineHelper.ACCESS_LOG_PATH, CommandLineHelper.FILENAME_DEFAULT_VALUE);
+
+		final FileParsingTask task = new FileParsingTask(this, accessLogPath,
+			new Threshold(
+				commandLine.getOptionValue(CommandLineHelper.START_DATE),
+				commandLine.getOptionValue(CommandLineHelper.DURATION),
+				commandLine.getOptionValue(CommandLineHelper.THRESHOLD) ));
+		
+		final ExecutorService executor = Executors.newSingleThreadExecutor();
+		final Future<?> future = executor.submit(task);
+		ApplicationStatus.getInstance().addFuture(future);
+		executor.shutdown();
+		return executor;
 	}
 
     private void checkIfDatabaseTablesExist() {
