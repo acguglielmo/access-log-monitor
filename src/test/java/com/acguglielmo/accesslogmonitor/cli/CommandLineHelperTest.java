@@ -41,11 +41,7 @@ public class CommandLineHelperTest {
 
     	final String[] args = new String[] {"--accessLog=access.log", "--configFile=config.properties", "--startDate=2017-01-01.00:00:00", "--duration=daili", "--threshold=500"};
 
-    	final Optional<CommandLine> returnedValue = instance.configureCliOptions(args);
-		
-    	assertNotNull(returnedValue);
-    	
-    	assertFalse(returnedValue.isPresent());
+    	assertOptionalEmptyReturned(args);
 
     }
 
@@ -54,11 +50,7 @@ public class CommandLineHelperTest {
 
     	final String[] args = new String[] {"--accessLog=access.log", "--configFile=config.properties", "--startDate=2017-01-01.00:00:00", "--duration", "--threshold=500"};
 
-    	final Optional<CommandLine> returnedValue = instance.configureCliOptions(args);
-		
-    	assertNotNull(returnedValue);
-    	
-    	assertFalse(returnedValue.isPresent());
+    	assertOptionalEmptyReturned(args);
 
     }
 
@@ -67,12 +59,16 @@ public class CommandLineHelperTest {
 
     	final String[] args = new String[] {"--accessLog=access.log"};
 
-    	final Optional<CommandLine> returnedValue = instance.configureCliOptions(args);
+    	assertOptionalEmptyReturned(args);
+
+    }
+    
+	private void assertOptionalEmptyReturned(final String[] args) {
+		final Optional<CommandLine> returnedValue = instance.configureCliOptions(args);
 		
     	assertNotNull(returnedValue);
     	
     	assertFalse(returnedValue.isPresent());
-
-    }
+	}
 
 }
