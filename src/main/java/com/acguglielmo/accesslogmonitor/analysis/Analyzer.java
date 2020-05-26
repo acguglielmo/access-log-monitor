@@ -1,14 +1,12 @@
 package com.acguglielmo.accesslogmonitor.analysis;
 
+import java.sql.SQLException;
+import java.util.List;
+
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
-import com.acguglielmo.accesslogmonitor.enums.Duration;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.BlockOccurrencesGatewaySqlImpl;
-import com.acguglielmo.accesslogmonitor.util.DateUtils;
-
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.util.List;
+import com.acguglielmo.accesslogmonitor.util.Threshold;
 
 public final class Analyzer {
 
@@ -27,18 +25,10 @@ public final class Analyzer {
         return instance;
     }
 
-    public List<BlockOccurrencesDto> blockByThresold(final String startDate,
-                                                     final Duration duration,
-                                                     final Integer threshold) {
+    public List<BlockOccurrencesDto> blockByThresold(final Threshold threshold) {
 
-        final DateUtils dateUtil = DateUtils.getInstance();
-
-        final LocalDateTime start = dateUtil.getStartDate(startDate);
-        final LocalDateTime end = dateUtil.getEndDate(start, duration);
-
-        List<BlockOccurrencesDto> blockOccurrencesDtoList;
         try {
-            blockOccurrencesDtoList = new AccessLogGatewaySqlImpl().find(start, end, threshold);
+            final List<BlockOccurrencesDto> blockOccurrencesDtoList = new AccessLogGatewaySqlImpl().find(threshold);
             new BlockOccurrencesGatewaySqlImpl().insert(blockOccurrencesDtoList);
             return blockOccurrencesDtoList;
         } catch (final SQLException e) {

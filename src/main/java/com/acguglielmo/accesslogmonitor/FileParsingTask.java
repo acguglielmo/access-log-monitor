@@ -5,28 +5,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.acguglielmo.accesslogmonitor.analysis.Analyzer;
-import com.acguglielmo.accesslogmonitor.enums.Duration;
 import com.acguglielmo.accesslogmonitor.parser.FileParser;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
+import com.acguglielmo.accesslogmonitor.util.Threshold;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 class FileParsingTask implements Runnable {
-    /**
-	 * 
-	 */
+
 	private final Parser parser;
 	private String accessLogPath;
-    private Integer threshold;
-    private String startDate;
-    private Duration duration;
-
-    FileParsingTask(Parser parser, final String accessLogPath, final Integer threshold,
-                          final String startDate, final String duration ) {
-        this.parser = parser;
-		this.accessLogPath = accessLogPath;
-        this.threshold = threshold;
-        this.startDate = startDate;
-        this.duration = Duration.getByName(duration);
-    }
+    private Threshold threshold;
 
     @Override
     public void run() {
@@ -38,8 +28,8 @@ class FileParsingTask implements Runnable {
 
             new FileParser().loadFileToDatabase(file);
 
-            this.parser.blockOccurrencesDtos = Analyzer.getInstance()
-                    .blockByThresold(startDate, duration, threshold);
+            this.parser.blockOccurrencesDtos = Analyzer.getInstance().blockByThresold(threshold);
+            
             ApplicationStatus.getInstance().setProgress(ApplicationStatus.JOB_PROGRESS_AFTER_COMPLETION);
 
         } catch (final Throwable e) {

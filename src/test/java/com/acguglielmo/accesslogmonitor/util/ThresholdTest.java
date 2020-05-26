@@ -1,38 +1,20 @@
 package com.acguglielmo.accesslogmonitor.util;
 
-import com.acguglielmo.accesslogmonitor.enums.Duration;
-
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
 
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalAccessor;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
-public class DateUtilsTest {
+public class ThresholdTest {
 
-    private DateUtils instance;
-    private String startDate;
-
-    @Before
-    public void setUp() throws Exception {
-        this.instance = DateUtils.getInstance();
-
-        final TemporalAccessor temporalAccessor = DateUtils.DATE_FORMAT_ARGS.parse("2017-12-18.14:01:09");
-        final String temporalAcessorString = temporalAccessor.toString();
-        startDate = temporalAcessorString.substring(temporalAcessorString.indexOf("2")).replace('T', '.');
-
-    }
-
-    @Test
-    public void getInstanceTest() throws Exception {
-        assertEquals(instance, DateUtils.getInstance());
-    }
+    private static final String START_DATE = "2017-12-18.14:01:09";
 
     @Test
     public void getStartDateTest() throws Exception {
-        final LocalDateTime startDate = instance.getStartDate(this.startDate);
+        final Threshold threshold = new Threshold(START_DATE, null, "1");
+    	
+    	final LocalDateTime startDate = threshold.getStartDate();
 
         assertEquals(2017, startDate.getYear());
         assertEquals(12, startDate.getMonth().getValue());
@@ -44,9 +26,9 @@ public class DateUtilsTest {
 
     @Test
     public void getEndDateTest() throws Exception {
-        final LocalDateTime startDate = instance.getStartDate(this.startDate);
-
-        final LocalDateTime endDateDailyTest = instance.getEndDate(startDate, Duration.DAILY);
+        final Threshold dailyThreshold = new Threshold(START_DATE, "daily", "1");
+    	
+        final LocalDateTime endDateDailyTest = dailyThreshold.getEndDate();
         assertEquals(2017, endDateDailyTest.getYear());
         assertEquals(12, endDateDailyTest.getMonth().getValue());
         assertEquals(19, endDateDailyTest.getDayOfMonth());
@@ -54,7 +36,9 @@ public class DateUtilsTest {
         assertEquals(1, endDateDailyTest.getMinute());
         assertEquals(9, endDateDailyTest.getSecond());
 
-        final LocalDateTime endDateHourlyTest = instance.getEndDate(startDate, Duration.HOURLY);
+        final Threshold hourlyThreshold = new Threshold(START_DATE, "hourly", "1");
+    	
+        final LocalDateTime endDateHourlyTest = hourlyThreshold.getEndDate();
         assertEquals(2017, endDateHourlyTest.getYear());
         assertEquals(12, endDateHourlyTest.getMonth().getValue());
         assertEquals(18, endDateHourlyTest.getDayOfMonth());
