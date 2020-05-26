@@ -18,7 +18,7 @@ public class CommandLineHelperTest {
     }
 
     @Test
-    public void configureCliOptionsWithAllParametersCorrectlyFilledTest() {
+    public void shouldReturnOptionalWithConfiguredCliWhenAllParametersAreCorrectlyProvidedTest() {
 
     	final String[] args = new String[] {"--accessLog=access.log", "--configFile=config.properties", "--startDate=2017-01-01.00:00:00", "--duration=daily", "--threshold=500"};
 
@@ -37,7 +37,7 @@ public class CommandLineHelperTest {
     }
 
     @Test
-    public void configureCliOptionsWithDurationParameterIncorrectlyFilledTest() {
+    public void shouldReturnOptionalEmptyWhenDurationParameterIsProvidedWithInvalidValueTest() {
 
     	final String[] args = new String[] {"--accessLog=access.log", "--configFile=config.properties", "--startDate=2017-01-01.00:00:00", "--duration=daili", "--threshold=500"};
 
@@ -46,7 +46,7 @@ public class CommandLineHelperTest {
     }
 
     @Test
-    public void configureCliOptionsWithDurationParameterNotFilledTest() {
+    public void shouldReturnOptionalEmptyWhenDurationParameterIsNotProvidedTest() {
 
     	final String[] args = new String[] {"--accessLog=access.log", "--configFile=config.properties", "--startDate=2017-01-01.00:00:00", "--duration", "--threshold=500"};
 
@@ -55,7 +55,7 @@ public class CommandLineHelperTest {
     }
 
     @Test
-    public void configureCliOptionsWithOnlyAccessLogParameterTest() {
+    public void shouldReturnOptionalEmptyWhenOnlyAccessLogParameterIsProvidedTest() {
 
     	final String[] args = new String[] {"--accessLog=access.log"};
 
