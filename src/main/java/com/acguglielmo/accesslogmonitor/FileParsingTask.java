@@ -28,7 +28,7 @@ class FileParsingTask implements Runnable {
 
             new FileParser().loadFileToDatabase(file);
 
-            this.parser.blockOccurrencesDtos = Analyzer.getInstance().blockByThresold(threshold);
+            this.parser.blockOccurrencesDtos = new Analyzer().blockByThresold(threshold);
             
             ApplicationStatus.getInstance().setProgress(ApplicationStatus.JOB_PROGRESS_AFTER_COMPLETION);
 

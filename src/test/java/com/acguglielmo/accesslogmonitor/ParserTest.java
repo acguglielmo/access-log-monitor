@@ -2,12 +2,17 @@ package com.acguglielmo.accesslogmonitor;
 
 import static org.junit.Assert.assertEquals;
 
+import org.apache.logging.log4j.LogManager;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
 
 @Ignore
-public class ParserTest extends ConsoleWatcherSupport {
+public class ParserTest {
 
+    @Rule 
+    public ConsoleWatcherSupport appender = new ConsoleWatcherSupport(LogManager.getLogger(Parser.class));
+	
 	@Test
 	public void shouldShowHelpMessageWhenNoArgsAreProvidedTest() {
 
@@ -24,7 +29,7 @@ public class ParserTest extends ConsoleWatcherSupport {
 			" -t,--threshold <arg>    Required. Threshold value to block. Only integer\r\n" + 
 			"                         values.\r\n" + 
 			"", 
-			outContent.toString());
+			appender.getOutput());
 		
 	}
 	
@@ -36,7 +41,7 @@ public class ParserTest extends ConsoleWatcherSupport {
 		
 		Parser.main(args);
 		
-		assertEquals(Parser.CONFIG_FILE_NOT_FOUND_MESSAGE + "\r\n", outContent.toString());
+		assertEquals(Parser.CONFIG_FILE_NOT_FOUND_MESSAGE + "\r\n", appender.getOutput());
 		
 	}
 	

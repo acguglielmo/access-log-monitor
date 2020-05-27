@@ -10,21 +10,6 @@ import com.acguglielmo.accesslogmonitor.util.Threshold;
 
 public final class Analyzer {
 
-    private static volatile Analyzer instance;
-
-    private Analyzer(){}
-
-    public static Analyzer getInstance() {
-        if (instance == null) {
-            synchronized (Analyzer.class) {
-                if (instance == null) {
-                    instance = new Analyzer();
-                }
-            }
-        }
-        return instance;
-    }
-
     public List<BlockOccurrencesDto> blockByThresold(final Threshold threshold) {
 
         try {

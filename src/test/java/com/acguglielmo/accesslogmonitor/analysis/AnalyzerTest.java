@@ -9,7 +9,6 @@ import java.sql.Statement;
 import java.util.List;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.acguglielmo.accesslogmonitor.AbstractComponentTest;
@@ -18,15 +17,10 @@ import com.acguglielmo.accesslogmonitor.util.Threshold;
 
 public class AnalyzerTest extends AbstractComponentTest {
 
-    private Analyzer instance;
+    private Analyzer instance = new Analyzer();
 
     private static final String startDateString = "2017-01-01.00:00:00";
 
-    @Before
-    public void setUp() throws Exception {
-        this.instance = Analyzer.getInstance();
-    }
-    
     @After
     public void cleanUp() throws Exception {
     	
@@ -36,12 +30,6 @@ public class AnalyzerTest extends AbstractComponentTest {
 		statement.executeUpdate("DELETE FROM access_log;");
 		connection.commit();
 		
-    }
-
-
-    @Test
-    public void getInstanceTest() throws Exception {
-        assertEquals(instance, Analyzer.getInstance());
     }
 
     @Test
