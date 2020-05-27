@@ -1,37 +1,50 @@
 package com.acguglielmo.accesslogmonitor;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.io.CharArrayWriter;
 
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Logger;
+import org.apache.logging.log4j.core.StringLayout;
+import org.apache.logging.log4j.core.appender.WriterAppender;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.rules.ExternalResource;
 
-public class ConsoleWatcherSupport {
-
-	private final PrintStream originalOut = System.out;
-
-	private final PrintStream originalErr = System.err;
-
-	protected final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-
-	private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
-
-	@Before
-	public void before() {
-		
-		System.setOut(new PrintStream(outContent));
-		
-		System.setErr(new PrintStream(errContent));
-		
-	}
-
-	@After
-	public void after() {
+public class ConsoleWatcherSupport extends ExternalResource {
 	
-		System.setOut(originalOut);
+	private static final String PATTERN = "%msg%n";
 	
-	    System.setErr(originalErr);
+	private static final String APPENDER_NAME = "log4jRuleAppender";
 	
-	}
+	private Logger logger;
+	
+	private Appender appender;
+
+	private final CharArrayWriter outContent = new CharArrayWriter();
+
+    public ConsoleWatcherSupport(final org.apache.logging.log4j.Logger logger2) {
+        this.logger = ( org.apache.logging.log4j.core.Logger) logger2;
+    }
+	
+    @Before
+    protected void before() {
+        StringLayout layout = PatternLayout.newBuilder().withPattern(PATTERN).build();
+        appender = WriterAppender.newBuilder()
+                .setTarget(outContent)
+                .setLayout(layout)
+                .setName(APPENDER_NAME).build();
+        appender.start();
+        logger.addAppender(appender);
+    }
+ 
+    @After
+    protected void after() {
+        logger.removeAppender(appender);
+    }
+ 
+    public String getOutput() {
+        return outContent.toString();
+    }
 
 }

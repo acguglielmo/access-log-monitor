@@ -5,18 +5,23 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import org.apache.logging.log4j.LogManager;
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.acguglielmo.accesslogmonitor.ConsoleWatcherSupport;
 
-public class ExceptionHandlerTest extends ConsoleWatcherSupport{
+public class ExceptionHandlerTest {
 
+    @Rule 
+    public ConsoleWatcherSupport appender = new ConsoleWatcherSupport(LogManager.getLogger(ExceptionHandler.class));
+	
 	@Test
 	public void shouldPrintExceptionMessageToConsoleTest() throws Exception {
 		
 		ExceptionHandler.printExceptionToConsole(new RuntimeException("hello"));
 		
-		assertEquals("\r\nhello\r\n", outContent.toString());
+		assertEquals("hello\r\n", appender.getOutput());
 		
 	}
 	
@@ -27,7 +32,7 @@ public class ExceptionHandlerTest extends ConsoleWatcherSupport{
 		
 		ExceptionHandler.printExceptionToConsole(outer);
 		
-		assertEquals("\r\nouter\r\n", outContent.toString());
+		assertEquals("outer\r\n", appender.getOutput());
 		
 	}
 	
@@ -38,7 +43,7 @@ public class ExceptionHandlerTest extends ConsoleWatcherSupport{
 		
 		ExceptionHandler.printExceptionToConsole(outer);
 		
-		assertEquals("\r\nouter\r\n", outContent.toString());
+		assertEquals("outer\r\n", appender.getOutput());
 		
 	}
 
@@ -49,7 +54,7 @@ public class ExceptionHandlerTest extends ConsoleWatcherSupport{
 		
 		ExceptionHandler.printExceptionToConsole(outer);
 		
-		assertEquals("\r\nAn error occurred during a I/O operation: \r\nioException\r\n", outContent.toString());
+		assertEquals("An error occurred during a I/O operation: \r\nioException\r\n", appender.getOutput());
 		
 	}
 
@@ -60,7 +65,8 @@ public class ExceptionHandlerTest extends ConsoleWatcherSupport{
 		
 		ExceptionHandler.printExceptionToConsole(outer);
 		
-		assertEquals("\r\nAn error occurred during a database operation: \r\nsqlException\r\n", outContent.toString());
+		assertEquals("An error occurred during a database operation: \r\nsqlException\r\n", appender.getOutput());
 		
 	}
+	
 }
