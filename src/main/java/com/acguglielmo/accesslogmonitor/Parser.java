@@ -42,19 +42,21 @@ public class Parser {
 
 	private final BlockOccurrencesGatewaySqlImpl blockOccurrencesGatewaySqlImpl;
 
+	private final CommandLineHelper commandLineHelper;
+
 	public static void main(final String[] args) {
 
 		new Parser(
         	new AccessLogGatewaySqlImpl(),
-        	new BlockOccurrencesGatewaySqlImpl()
+        	new BlockOccurrencesGatewaySqlImpl(),
+        	new CommandLineHelper()
         ).process(args);
 
 	}
 
-
 	private void process(final String[] args) {
 
-		new CommandLineHelper().configureCliOptions(args)
+		commandLineHelper.configureCliOptions(args)
 			.ifPresent(this::processAfterCliParametersConfigured);
 
     }
