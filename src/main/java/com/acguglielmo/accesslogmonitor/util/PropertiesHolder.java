@@ -54,11 +54,8 @@ public final class PropertiesHolder {
         	prop = new Properties();
             prop.load(input);
 
-        } catch (IOException e) {
-
-        	e.printStackTrace();
-
         }
+
     }
 
     public String getProperty(final String propertyName) {
