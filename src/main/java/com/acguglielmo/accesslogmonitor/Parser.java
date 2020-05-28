@@ -10,6 +10,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.commons.cli.CommandLine;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.acguglielmo.accesslogmonitor.cli.CommandLineHelper;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
@@ -22,6 +24,8 @@ import com.acguglielmo.accesslogmonitor.util.Threshold;
 
 public class Parser {
 
+	private static final Logger LOGGER = LogManager.getLogger(Parser.class);
+	
     protected static final String CONFIG_FILE_NOT_FOUND_MESSAGE = "Please provide a path to a config file or create a " +
 	        "\"config.properties\" file in the working directory with the " +
 	        "following properties filled according to your environment settings:" +
@@ -51,7 +55,7 @@ public class Parser {
 		try {
 			PropertiesHolder.createInstance(configPath);
 		} catch (final IOException e) {
-			System.out.println(CONFIG_FILE_NOT_FOUND_MESSAGE);
+			LOGGER.error(CONFIG_FILE_NOT_FOUND_MESSAGE);
 			return;
 		}
 		

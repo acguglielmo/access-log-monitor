@@ -3,17 +3,27 @@ package com.acguglielmo.accesslogmonitor;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.logging.log4j.LogManager;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 
-@Ignore
+import com.acguglielmo.accesslogmonitor.util.PropertiesHolder;
+
 public class ParserTest {
 
     @Rule 
     public ConsoleWatcherSupport appender = new ConsoleWatcherSupport(LogManager.getLogger(Parser.class));
 	
+    @Before
+    public void before() throws Exception {
+    	
+    	PropertiesHolder.destroyInstance();
+    	
+    }
+    
 	@Test
+	@Ignore("Verify if it is possible for Apache Cli to print help to a logger")
 	public void shouldShowHelpMessageWhenNoArgsAreProvidedTest() {
 
 		Parser.main(null);
