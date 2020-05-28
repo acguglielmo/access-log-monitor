@@ -35,7 +35,17 @@ public class Parser {
 	
     List<BlockOccurrencesDto> blockOccurrencesDtos = new ArrayList<>();
 
-    public static void main(final String[] args) {
+	private final AccessLogGatewaySqlImpl accessLogGatewaySqlImpl;
+
+	private final BlockOccurrencesGatewaySqlImpl blockOccurrencesGatewaySqlImpl;
+
+    public Parser() {
+		accessLogGatewaySqlImpl = new AccessLogGatewaySqlImpl();
+		blockOccurrencesGatewaySqlImpl = new BlockOccurrencesGatewaySqlImpl();
+	}
+
+
+	public static void main(final String[] args) {
         new Parser().process(args);
     }
 
@@ -90,9 +100,7 @@ public class Parser {
 
     private void checkIfDatabaseTablesExist() {
         try {
-        	final AccessLogGatewaySqlImpl accessLogGatewaySqlImpl = new AccessLogGatewaySqlImpl();
         	accessLogGatewaySqlImpl.tableExists();
-        	final BlockOccurrencesGatewaySqlImpl blockOccurrencesGatewaySqlImpl = new BlockOccurrencesGatewaySqlImpl();
         	blockOccurrencesGatewaySqlImpl.tableExists();
         } catch (final SQLException e) {
             System.out.println(e.getMessage());
