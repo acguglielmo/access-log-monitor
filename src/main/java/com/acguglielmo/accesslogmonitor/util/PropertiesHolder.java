@@ -46,20 +46,18 @@ public final class PropertiesHolder {
     }
 
     private void load(final String configPath) throws IOException {
-        InputStream input = null;
-        final Path path = Paths.get(configPath);
-        try {
-            input = new FileInputStream(new File(path.toUri()));
-            prop = new Properties();
+
+    	final Path path = Paths.get(configPath);
+
+        try (final InputStream input = new FileInputStream(new File(path.toUri()))) {
+
+        	prop = new Properties();
             prop.load(input);
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+
+        } catch (IOException e) {
+
+        	e.printStackTrace();
+
         }
     }
 
