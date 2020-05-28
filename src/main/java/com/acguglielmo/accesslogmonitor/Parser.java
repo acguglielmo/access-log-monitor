@@ -22,6 +22,9 @@ import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 import com.acguglielmo.accesslogmonitor.util.PropertiesHolder;
 import com.acguglielmo.accesslogmonitor.util.Threshold;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class Parser {
 
 	private static final Logger LOGGER = LogManager.getLogger(Parser.class);
@@ -38,14 +41,6 @@ public class Parser {
 	private final AccessLogGatewaySqlImpl accessLogGatewaySqlImpl;
 
 	private final BlockOccurrencesGatewaySqlImpl blockOccurrencesGatewaySqlImpl;
-
-    public Parser(final AccessLogGatewaySqlImpl aAccessLogGatewaySqlImpl, 
-    	final BlockOccurrencesGatewaySqlImpl aBlockOccurrencesGatewaySqlImpl) {
-
-    	accessLogGatewaySqlImpl = aAccessLogGatewaySqlImpl;
-		blockOccurrencesGatewaySqlImpl = aBlockOccurrencesGatewaySqlImpl;
-	}
-
 
 	public static void main(final String[] args) {
 
