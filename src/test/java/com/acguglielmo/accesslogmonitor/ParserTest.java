@@ -54,5 +54,17 @@ public class ParserTest {
 		assertEquals(Parser.CONFIG_FILE_NOT_FOUND_MESSAGE + "\r\n", appender.getOutput());
 		
 	}
+
+	@Test
+	@Ignore
+	public void test() {
+
+		final String[] args = 
+			new String[] {"--accessLog=access.log", "--configFile=src/test/resources/application.properties", "--startDate=2017-01-01.00:00:00", "--duration=daily", "--threshold=500"};
+
+		Parser.main(args);
+
+		
+	}
 	
 }

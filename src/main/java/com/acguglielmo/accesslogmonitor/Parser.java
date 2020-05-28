@@ -90,8 +90,10 @@ public class Parser {
 
     private void checkIfDatabaseTablesExist() {
         try {
-            new AccessLogGatewaySqlImpl().tableExists();
-            new BlockOccurrencesGatewaySqlImpl().tableExists();
+        	final AccessLogGatewaySqlImpl accessLogGatewaySqlImpl = new AccessLogGatewaySqlImpl();
+        	accessLogGatewaySqlImpl.tableExists();
+        	final BlockOccurrencesGatewaySqlImpl blockOccurrencesGatewaySqlImpl = new BlockOccurrencesGatewaySqlImpl();
+        	blockOccurrencesGatewaySqlImpl.tableExists();
         } catch (final SQLException e) {
             System.out.println(e.getMessage());
             System.exit(1);
