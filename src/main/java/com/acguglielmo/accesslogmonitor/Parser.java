@@ -39,15 +39,22 @@ public class Parser {
 
 	private final BlockOccurrencesGatewaySqlImpl blockOccurrencesGatewaySqlImpl;
 
-    public Parser() {
-		accessLogGatewaySqlImpl = new AccessLogGatewaySqlImpl();
-		blockOccurrencesGatewaySqlImpl = new BlockOccurrencesGatewaySqlImpl();
+    public Parser(final AccessLogGatewaySqlImpl aAccessLogGatewaySqlImpl, 
+    	final BlockOccurrencesGatewaySqlImpl aBlockOccurrencesGatewaySqlImpl) {
+
+    	accessLogGatewaySqlImpl = aAccessLogGatewaySqlImpl;
+		blockOccurrencesGatewaySqlImpl = aBlockOccurrencesGatewaySqlImpl;
 	}
 
 
 	public static void main(final String[] args) {
-        new Parser().process(args);
-    }
+
+		new Parser(
+        	new AccessLogGatewaySqlImpl(),
+        	new BlockOccurrencesGatewaySqlImpl()
+        ).process(args);
+
+	}
 
 
 	private void process(final String[] args) {
