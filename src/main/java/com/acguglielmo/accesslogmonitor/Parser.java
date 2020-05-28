@@ -54,7 +54,7 @@ public class Parser {
 
 	}
 
-	private void process(final String[] args) {
+	void process(final String[] args) {
 
 		commandLineHelper.configureCliOptions(args)
 			.ifPresent(this::processAfterCliParametersConfigured);
