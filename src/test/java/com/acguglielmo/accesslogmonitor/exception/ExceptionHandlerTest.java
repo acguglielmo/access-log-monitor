@@ -1,5 +1,6 @@
 package com.acguglielmo.accesslogmonitor.exception;
 
+import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
@@ -21,7 +22,7 @@ public class ExceptionHandlerTest {
 		
 		ExceptionHandler.printExceptionToConsole(new RuntimeException("hello"));
 		
-		assertEquals("hello\r\n", appender.getOutput());
+		assertEquals(format("hello%n"), appender.getOutput());
 		
 	}
 	
@@ -32,7 +33,7 @@ public class ExceptionHandlerTest {
 		
 		ExceptionHandler.printExceptionToConsole(outer);
 		
-		assertEquals("outer\r\n", appender.getOutput());
+		assertEquals(format("outer%n"), appender.getOutput());
 		
 	}
 	
@@ -43,7 +44,7 @@ public class ExceptionHandlerTest {
 		
 		ExceptionHandler.printExceptionToConsole(outer);
 		
-		assertEquals("outer\r\n", appender.getOutput());
+		assertEquals(format("outer%n"), appender.getOutput());
 		
 	}
 
@@ -54,7 +55,7 @@ public class ExceptionHandlerTest {
 		
 		ExceptionHandler.printExceptionToConsole(outer);
 		
-		assertEquals("An error occurred during a I/O operation: \r\nioException\r\n", appender.getOutput());
+		assertEquals(format("An error occurred during a I/O operation: %nioException%n"), appender.getOutput());
 		
 	}
 
@@ -65,7 +66,7 @@ public class ExceptionHandlerTest {
 		
 		ExceptionHandler.printExceptionToConsole(outer);
 		
-		assertEquals("An error occurred during a database operation: \r\nsqlException\r\n", appender.getOutput());
+		assertEquals(format("An error occurred during a database operation: %nsqlException%n"), appender.getOutput());
 		
 	}
 	

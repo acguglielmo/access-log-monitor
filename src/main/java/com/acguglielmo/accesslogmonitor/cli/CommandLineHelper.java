@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public final class CommandLineHelper {
+public class CommandLineHelper {
 
     public static final String ACCESS_LOG_PATH = "accessLog";
 
