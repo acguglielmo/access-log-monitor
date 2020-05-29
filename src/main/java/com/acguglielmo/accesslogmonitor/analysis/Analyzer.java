@@ -14,10 +14,14 @@ import lombok.RequiredArgsConstructor;
 public final class Analyzer {
 
     private final AccessLogGatewaySqlImpl accessLogGatewaySqlImpl;
+    
+    private final BlockOccurrencesGatewaySqlImpl blockOccurrencesGatewaySqlImpl; 
 
-    public Analyzer () {
+    public Analyzer() {
     	
-    	this.accessLogGatewaySqlImpl = new AccessLogGatewaySqlImpl(); 
+    	this.accessLogGatewaySqlImpl = new AccessLogGatewaySqlImpl();
+    	
+    	this.blockOccurrencesGatewaySqlImpl = new BlockOccurrencesGatewaySqlImpl();
     	
     }
     
@@ -25,7 +29,7 @@ public final class Analyzer {
 
         try {
 			final List<BlockOccurrencesDto> blockOccurrencesDtoList = accessLogGatewaySqlImpl.find(threshold);
-            new BlockOccurrencesGatewaySqlImpl().insert(blockOccurrencesDtoList);
+			blockOccurrencesGatewaySqlImpl.insert(blockOccurrencesDtoList);
             return blockOccurrencesDtoList;
         } catch (final SQLException e) {
             throw new RuntimeException(e);
