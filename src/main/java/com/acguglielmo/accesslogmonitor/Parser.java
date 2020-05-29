@@ -3,6 +3,7 @@ package com.acguglielmo.accesslogmonitor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,25 +56,33 @@ public class Parser {
 
 	private void processAfterCliParametersConfigured(final CommandLine commandLine) {
 			
+		buildProperties(commandLine).ifPresent(e -> {
+			
+			final ExecutorService executor = submitFileParsingTask(commandLine);
+			
+			monitorApplicationStatus(executor);
+			
+			if (!blockOccurrencesDtos.isEmpty()) {
+				System.out.println(String.format("%-15s   %s", "IP", "Count"));
+				blockOccurrencesDtos.forEach(System.out::println);
+			}
+			
+		});
+
+	}
+
+	private Optional<PropertiesHolder> buildProperties(final CommandLine commandLine) {
+		
 		final String configPath = commandLine.getOptionValue(CommandLineHelper.CONFIG_FILE_PATH, CommandLineHelper.CONFIG_FILE_DEFAULT_VALUE);
 		
 		try {
 			PropertiesHolder.createInstance(configPath);
+			return Optional.of(PropertiesHolder.getInstance());
 		} catch (final IOException e) {
 			LOGGER.error(CONFIG_FILE_NOT_FOUND_MESSAGE);
-			return;
-		}
-		
-		final ExecutorService executor = submitFileParsingTask(commandLine);
-		
-		monitorApplicationStatus(executor);
-		
-		if (!blockOccurrencesDtos.isEmpty()) {
-			System.out.println(String.format("%-15s   %s", "IP", "Count"));
-			blockOccurrencesDtos.forEach(System.out::println);
+			return Optional.empty();
 		}
 	}
-
 
 	private ExecutorService submitFileParsingTask(final CommandLine commandLine) {
 		final String accessLogPath = commandLine.getOptionValue(CommandLineHelper.ACCESS_LOG_PATH, CommandLineHelper.FILENAME_DEFAULT_VALUE);
