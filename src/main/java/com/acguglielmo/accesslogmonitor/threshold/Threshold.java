@@ -3,26 +3,20 @@ package com.acguglielmo.accesslogmonitor.threshold;
 import java.time.LocalDateTime;
 
 import com.acguglielmo.accesslogmonitor.enums.Duration;
-import com.acguglielmo.accesslogmonitor.util.DateUtils;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class Threshold {
 
 	@Getter
-	private LocalDateTime startDate;
+	private final LocalDateTime startDate;
 	
-	private Duration duration;
+	private final Duration duration;
 	
 	@Getter
-	private int limit;
-
-	public Threshold(final String startDate, final String duration, final String limit) {
-		this.startDate = LocalDateTime.parse(startDate, DateUtils.DATE_FORMAT_ARGS);
-		this.duration = Duration.getByName(duration);
-		this.limit = Integer.parseInt(limit);
-	}
-	
+	private final int limit;
 	
     public LocalDateTime getEndDate() {
         switch (duration) {
