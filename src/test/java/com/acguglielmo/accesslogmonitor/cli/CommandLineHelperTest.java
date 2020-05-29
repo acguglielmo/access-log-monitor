@@ -22,7 +22,7 @@ public class CommandLineHelperTest {
 
     	final String[] args = new String[] {"--accessLog=access.log", "--configFile=config.properties", "--startDate=2017-01-01.00:00:00", "--duration=daily", "--threshold=500"};
 
-    	final Optional<CommandLine> returnedValue = instance.configureCliOptions(args);
+    	final Optional<ApplicationCommandLine> returnedValue = instance.configureCliOptions(args);
 
         assertNotNull(returnedValue);
         assertTrue(returnedValue.isPresent());
@@ -60,7 +60,7 @@ public class CommandLineHelperTest {
     }
     
 	private void assertOptionalEmptyReturned(final String[] args) {
-		final Optional<CommandLine> returnedValue = instance.configureCliOptions(args);
+		final Optional<ApplicationCommandLine> returnedValue = instance.configureCliOptions(args);
 		
     	assertNotNull(returnedValue);
     	

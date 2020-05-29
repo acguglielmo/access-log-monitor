@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
-import org.apache.commons.cli.CommandLine;
 import org.apache.logging.log4j.LogManager;
 import org.junit.Before;
 import org.junit.Rule;
@@ -17,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.acguglielmo.accesslogmonitor.cli.ApplicationCommandLine;
 import com.acguglielmo.accesslogmonitor.cli.CommandLineHelper;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.BlockOccurrencesGatewaySqlImpl;
@@ -61,7 +61,7 @@ public class ParserTest {
 		final String[] args = 
 			new String[] {"--accessLog=access.log", "--configFile=config.properties", "--startDate=2017-01-01.00:00:00", "--duration=daily", "--threshold=500"};
 
-		final CommandLine commandLine = Mockito.mock(CommandLine.class);
+		final ApplicationCommandLine commandLine = Mockito.mock(ApplicationCommandLine.class);
 		
 		when(commandLineHelper.configureCliOptions(args))
 			.thenReturn(Optional.of(commandLine));
