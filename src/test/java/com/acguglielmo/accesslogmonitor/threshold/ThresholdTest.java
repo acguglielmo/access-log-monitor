@@ -6,13 +6,15 @@ import java.time.LocalDateTime;
 
 import org.junit.Test;
 
+import com.acguglielmo.accesslogmonitor.enums.Duration;
+
 public class ThresholdTest {
 
-    private static final String START_DATE = "2017-12-18.14:01:09";
+    private static final LocalDateTime START_DATE = LocalDateTime.of(2017, 12, 18, 14, 1, 9);
 
     @Test
     public void getStartDateTest() throws Exception {
-        final Threshold threshold = new Threshold(START_DATE, null, "1");
+        final Threshold threshold = new Threshold(START_DATE, null, 1);
     	
     	final LocalDateTime startDate = threshold.getStartDate();
 
@@ -26,7 +28,7 @@ public class ThresholdTest {
 
     @Test
     public void getEndDateTest() throws Exception {
-        final Threshold dailyThreshold = new Threshold(START_DATE, "daily", "1");
+        final Threshold dailyThreshold = new Threshold(START_DATE, Duration.DAILY, 1);
     	
         final LocalDateTime endDateDailyTest = dailyThreshold.getEndDate();
         assertEquals(2017, endDateDailyTest.getYear());
@@ -36,7 +38,7 @@ public class ThresholdTest {
         assertEquals(1, endDateDailyTest.getMinute());
         assertEquals(9, endDateDailyTest.getSecond());
 
-        final Threshold hourlyThreshold = new Threshold(START_DATE, "hourly", "1");
+        final Threshold hourlyThreshold = new Threshold(START_DATE, Duration.HOURLY, 1);
     	
         final LocalDateTime endDateHourlyTest = hourlyThreshold.getEndDate();
         assertEquals(2017, endDateHourlyTest.getYear());
