@@ -17,16 +17,6 @@ public class BlockOccurrencesGatewaySqlImpl {
             + "(ip, start_date, end_date, comment, threshold) VALUES"
             + "(?,?,?,?,?)";
 
-    private static final String TABLE_VERIFICATION_STATEMENT = "SELECT 1 FROM block_occurrences";
-
-    public void tableExists() throws SQLException {
-        try (final Connection dbConnection = ConnectionFactory.getInstance().getConnection()) {
-            try(final PreparedStatement preparedStatement = dbConnection.prepareStatement(TABLE_VERIFICATION_STATEMENT)) {
-                preparedStatement.executeQuery();
-            }
-        }
-    }
-
     public void insert(final List<BlockOccurrencesDto> blockOccurrencesDtoList) throws SQLException {
         int count = 0;
 

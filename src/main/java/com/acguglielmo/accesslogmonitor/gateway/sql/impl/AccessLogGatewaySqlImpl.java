@@ -25,16 +25,6 @@ public class AccessLogGatewaySqlImpl {
             "group by ip having count(1) > ? " +
             "order by count(1) desc;";
 
-    private static final String TABLE_VERIFICATION_STATEMENT = "SELECT 1 FROM access_log";
-
-    public void tableExists() throws SQLException {
-        try (final Connection dbConnection = ConnectionFactory.getInstance().getConnection()) {
-            try(final PreparedStatement preparedStatement = dbConnection.prepareStatement(TABLE_VERIFICATION_STATEMENT)) {
-                preparedStatement.executeQuery();
-            }
-        }
-    }
-
     public void insert(final List<String[]> dataList) throws SQLException {
 
         if (!dataList.isEmpty()) {
