@@ -10,14 +10,28 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.acguglielmo.accesslogmonitor.AbstractComponentTest;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
+import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
+import com.acguglielmo.accesslogmonitor.gateway.sql.impl.BlockOccurrencesGatewaySqlImpl;
 import com.acguglielmo.accesslogmonitor.util.Threshold;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AnalyzerTest extends AbstractComponentTest {
 
-    private Analyzer instance = new Analyzer();
+	@Spy
+    private AccessLogGatewaySqlImpl accessLogGatewaySqlImpl;
+    
+	@Spy
+    private BlockOccurrencesGatewaySqlImpl blockOccurrencesGatewaySqlImpl;
+	
+	@InjectMocks
+    private Analyzer instance;
 
     private static final String startDateString = "2017-01-01.00:00:00";
 
