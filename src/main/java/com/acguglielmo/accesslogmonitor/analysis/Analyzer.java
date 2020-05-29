@@ -8,12 +8,23 @@ import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.BlockOccurrencesGatewaySqlImpl;
 import com.acguglielmo.accesslogmonitor.util.Threshold;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public final class Analyzer {
 
-    public List<BlockOccurrencesDto> blockByThresold(final Threshold threshold) {
+    private final AccessLogGatewaySqlImpl accessLogGatewaySqlImpl;
+
+    public Analyzer () {
+    	
+    	this.accessLogGatewaySqlImpl = new AccessLogGatewaySqlImpl(); 
+    	
+    }
+    
+	public List<BlockOccurrencesDto> blockByThresold(final Threshold threshold) {
 
         try {
-            final List<BlockOccurrencesDto> blockOccurrencesDtoList = new AccessLogGatewaySqlImpl().find(threshold);
+			final List<BlockOccurrencesDto> blockOccurrencesDtoList = accessLogGatewaySqlImpl.find(threshold);
             new BlockOccurrencesGatewaySqlImpl().insert(blockOccurrencesDtoList);
             return blockOccurrencesDtoList;
         } catch (final SQLException e) {
