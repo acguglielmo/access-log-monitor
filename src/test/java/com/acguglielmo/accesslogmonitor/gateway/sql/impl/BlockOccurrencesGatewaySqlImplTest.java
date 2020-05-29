@@ -12,11 +12,6 @@ import com.acguglielmo.accesslogmonitor.util.Threshold;
 public class BlockOccurrencesGatewaySqlImplTest extends AbstractComponentTest {
 
     @Test
-    public void tableExistsTest() throws Exception {
-        new BlockOccurrencesGatewaySqlImpl().tableExists();
-    }
-
-    @Test
     public void insertTest() throws Exception {
     	
     	final Threshold threshold = new Threshold("2017-01-01.13:00:00", "hourly", "34");

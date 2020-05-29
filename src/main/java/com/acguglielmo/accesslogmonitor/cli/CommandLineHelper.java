@@ -24,7 +24,7 @@ public class CommandLineHelper {
     public static final String FILENAME_DEFAULT_VALUE = "access.log";
     public static final String CONFIG_FILE_DEFAULT_VALUE = "config.properties";
 
-    public Optional<CommandLine> configureCliOptions(final String[] args) {
+    public Optional<ApplicationCommandLine> configureCliOptions(final String[] args) {
         final Options options = new Options();
         options.addOption("a", ACCESS_LOG_PATH, true,
                 "Path to log file. Default value is "+ FILENAME_DEFAULT_VALUE +" (in the working directory)");
@@ -44,7 +44,7 @@ public class CommandLineHelper {
         try {
             final CommandLine commandLine = commandLineParser.parse(options, args);
             checkCommandLineArgs(commandLine);
-            return Optional.of(commandLine);
+            return Optional.of(new ApplicationCommandLine(commandLine));
         } catch (org.apache.commons.cli.ParseException | RuntimeException e) {
             printCliHelp(options);
             return Optional.empty();

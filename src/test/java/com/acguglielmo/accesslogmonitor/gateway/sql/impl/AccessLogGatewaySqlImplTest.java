@@ -18,11 +18,6 @@ import com.acguglielmo.accesslogmonitor.util.Threshold;
 public class AccessLogGatewaySqlImplTest extends AbstractComponentTest {
 
     @Test
-    public void tableExistsTest() throws Exception {
-        new AccessLogGatewaySqlImpl().tableExists();
-    }
-
-    @Test
     public void insertTest() throws Exception {
         final Pattern quote = Pattern.compile(Pattern.quote("|"));
         final List<String[]> list = new ArrayList<>();

@@ -1,9 +1,9 @@
 package com.acguglielmo.accesslogmonitor;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,8 +16,6 @@ import org.apache.logging.log4j.Logger;
 import com.acguglielmo.accesslogmonitor.cli.CommandLineHelper;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
 import com.acguglielmo.accesslogmonitor.exception.ExceptionHandler;
-import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
-import com.acguglielmo.accesslogmonitor.gateway.sql.impl.BlockOccurrencesGatewaySqlImpl;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 import com.acguglielmo.accesslogmonitor.util.PropertiesHolder;
 import com.acguglielmo.accesslogmonitor.util.Threshold;
@@ -38,17 +36,11 @@ public class Parser {
 	
     List<BlockOccurrencesDto> blockOccurrencesDtos = new ArrayList<>();
 
-	private final AccessLogGatewaySqlImpl accessLogGatewaySqlImpl;
-
-	private final BlockOccurrencesGatewaySqlImpl blockOccurrencesGatewaySqlImpl;
-
 	private final CommandLineHelper commandLineHelper;
 
 	public static void main(final String[] args) {
 
 		new Parser(
-        	new AccessLogGatewaySqlImpl(),
-        	new BlockOccurrencesGatewaySqlImpl(),
         	new CommandLineHelper()
         ).process(args);
 
@@ -64,27 +56,33 @@ public class Parser {
 
 	private void processAfterCliParametersConfigured(final CommandLine commandLine) {
 			
+		buildProperties(commandLine).ifPresent(e -> {
+			
+			final ExecutorService executor = submitFileParsingTask(commandLine);
+			
+			monitorApplicationStatus(executor);
+			
+			if (!blockOccurrencesDtos.isEmpty()) {
+				System.out.println(String.format("%-15s   %s", "IP", "Count"));
+				blockOccurrencesDtos.forEach(System.out::println);
+			}
+			
+		});
+
+	}
+
+	private Optional<PropertiesHolder> buildProperties(final CommandLine commandLine) {
+		
 		final String configPath = commandLine.getOptionValue(CommandLineHelper.CONFIG_FILE_PATH, CommandLineHelper.CONFIG_FILE_DEFAULT_VALUE);
 		
 		try {
 			PropertiesHolder.createInstance(configPath);
+			return Optional.of(PropertiesHolder.getInstance());
 		} catch (final IOException e) {
 			LOGGER.error(CONFIG_FILE_NOT_FOUND_MESSAGE);
-			return;
-		}
-		
-		checkIfDatabaseTablesExist();
-		
-		final ExecutorService executor = submitFileParsingTask(commandLine);
-		
-		monitorApplicationStatus(executor);
-		
-		if (!blockOccurrencesDtos.isEmpty()) {
-			System.out.println(String.format("%-15s   %s", "IP", "Count"));
-			blockOccurrencesDtos.forEach(System.out::println);
+			return Optional.empty();
 		}
 	}
-
 
 	private ExecutorService submitFileParsingTask(final CommandLine commandLine) {
 		final String accessLogPath = commandLine.getOptionValue(CommandLineHelper.ACCESS_LOG_PATH, CommandLineHelper.FILENAME_DEFAULT_VALUE);
@@ -101,16 +99,6 @@ public class Parser {
 		executor.shutdown();
 		return executor;
 	}
-
-    private void checkIfDatabaseTablesExist() {
-        try {
-        	accessLogGatewaySqlImpl.tableExists();
-        	blockOccurrencesGatewaySqlImpl.tableExists();
-        } catch (final SQLException e) {
-            System.out.println(e.getMessage());
-            System.exit(1);
-        }
-    }
 
     private void monitorApplicationStatus(final ExecutorService executor) {
         while(!executor.isTerminated()) {
