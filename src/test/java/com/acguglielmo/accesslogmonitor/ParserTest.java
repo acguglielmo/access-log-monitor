@@ -1,5 +1,6 @@
 package com.acguglielmo.accesslogmonitor;
 
+import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
@@ -70,7 +71,10 @@ public class ParserTest {
 		
 		instance.process(args);
 		
-		assertEquals(Parser.CONFIG_FILE_NOT_FOUND_MESSAGE + "\r\n", appender.getOutput());
+		assertEquals(
+		  format("%s%n", Parser.CONFIG_FILE_NOT_FOUND_MESSAGE), 
+		  appender.getOutput()
+		);
 		
 	}
 	
