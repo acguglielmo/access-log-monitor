@@ -47,7 +47,7 @@ public class AnalyzerTest extends AbstractComponentTest {
     }
 
     @Test
-    public void blockByHourlyThresoldTest() throws Exception {
+    public void shouldBlockIpAddressThatExceededHourlyThresoldTest() throws Exception {
 
 		final Connection connection = getConnection();
 		final Statement statement = connection.createStatement();
@@ -72,7 +72,7 @@ public class AnalyzerTest extends AbstractComponentTest {
 
 
     @Test
-    public void blockByDailyThresoldTest() throws Exception {
+    public void shouldBlockIpAddressThatExceededDailyThresoldTest() throws Exception {
 
 		final Connection connection = getConnection();
 		final Statement statement = connection.createStatement();
