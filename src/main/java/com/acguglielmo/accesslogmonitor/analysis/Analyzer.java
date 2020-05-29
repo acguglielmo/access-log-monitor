@@ -17,14 +17,6 @@ public final class Analyzer {
     
     private final BlockOccurrencesGatewaySqlImpl blockOccurrencesGatewaySqlImpl; 
 
-    public Analyzer() {
-    	
-    	this.accessLogGatewaySqlImpl = new AccessLogGatewaySqlImpl();
-    	
-    	this.blockOccurrencesGatewaySqlImpl = new BlockOccurrencesGatewaySqlImpl();
-    	
-    }
-    
 	public List<BlockOccurrencesDto> blockByThresold(final Threshold threshold) {
 
         try {

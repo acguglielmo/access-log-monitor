@@ -5,6 +5,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.acguglielmo.accesslogmonitor.analysis.Analyzer;
+import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
+import com.acguglielmo.accesslogmonitor.gateway.sql.impl.BlockOccurrencesGatewaySqlImpl;
 import com.acguglielmo.accesslogmonitor.parser.FileParser;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 import com.acguglielmo.accesslogmonitor.util.Threshold;
@@ -28,7 +30,11 @@ class FileParsingTask implements Runnable {
 
             new FileParser().loadFileToDatabase(file);
 
-            this.parser.blockOccurrencesDtos = new Analyzer().blockByThresold(threshold);
+            this.parser.blockOccurrencesDtos = 
+            	new Analyzer(
+            		new AccessLogGatewaySqlImpl(),
+            		new BlockOccurrencesGatewaySqlImpl())
+            			.blockByThresold(threshold);
             
             ApplicationStatus.getInstance().setProgress(ApplicationStatus.JOB_PROGRESS_AFTER_COMPLETION);
 
