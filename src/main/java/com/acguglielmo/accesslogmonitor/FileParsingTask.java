@@ -8,8 +8,8 @@ import com.acguglielmo.accesslogmonitor.analysis.Analyzer;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.BlockOccurrencesGatewaySqlImpl;
 import com.acguglielmo.accesslogmonitor.parser.FileParser;
+import com.acguglielmo.accesslogmonitor.threshold.Threshold;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
-import com.acguglielmo.accesslogmonitor.util.Threshold;
 
 import lombok.AllArgsConstructor;
 

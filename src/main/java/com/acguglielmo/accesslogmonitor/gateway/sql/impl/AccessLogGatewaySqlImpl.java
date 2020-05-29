@@ -9,9 +9,9 @@ import java.util.List;
 
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
 import com.acguglielmo.accesslogmonitor.gateway.sql.ConnectionFactory;
+import com.acguglielmo.accesslogmonitor.threshold.Threshold;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 import com.acguglielmo.accesslogmonitor.util.DateUtils;
-import com.acguglielmo.accesslogmonitor.util.Threshold;
 
 public class AccessLogGatewaySqlImpl {
 

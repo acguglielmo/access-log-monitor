@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import com.acguglielmo.accesslogmonitor.AbstractComponentTest;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
-import com.acguglielmo.accesslogmonitor.util.Threshold;
+import com.acguglielmo.accesslogmonitor.threshold.Threshold;
 
 public class BlockOccurrencesGatewaySqlImplTest extends AbstractComponentTest {
 
