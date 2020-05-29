@@ -14,7 +14,7 @@ public class ThresholdTest {
 
     @Test
     public void getStartDateTest() throws Exception {
-        final Threshold threshold = new Threshold(START_DATE, null, 1);
+        final Threshold threshold = Threshold.of(null, START_DATE, 1);
     	
     	final LocalDateTime startDate = threshold.getStartDate();
 
@@ -27,8 +27,9 @@ public class ThresholdTest {
     }
 
     @Test
+    //FIXME: make separated tests
     public void getEndDateTest() throws Exception {
-        final Threshold dailyThreshold = new Threshold(START_DATE, Duration.DAILY, 1);
+        final Threshold dailyThreshold = Threshold.of(Duration.DAILY, START_DATE, 1);
     	
         final LocalDateTime endDateDailyTest = dailyThreshold.getEndDate();
         assertEquals(2017, endDateDailyTest.getYear());
@@ -38,7 +39,7 @@ public class ThresholdTest {
         assertEquals(1, endDateDailyTest.getMinute());
         assertEquals(9, endDateDailyTest.getSecond());
 
-        final Threshold hourlyThreshold = new Threshold(START_DATE, Duration.HOURLY, 1);
+        final Threshold hourlyThreshold = Threshold.of(Duration.HOURLY, START_DATE, 1);
     	
         final LocalDateTime endDateHourlyTest = hourlyThreshold.getEndDate();
         assertEquals(2017, endDateHourlyTest.getYear());

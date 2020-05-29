@@ -24,6 +24,8 @@ import com.acguglielmo.accesslogmonitor.AbstractComponentTest;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.BlockOccurrencesGatewaySqlImpl;
+import com.acguglielmo.accesslogmonitor.threshold.DailyThreshold;
+import com.acguglielmo.accesslogmonitor.threshold.HourlyThreshold;
 import com.acguglielmo.accesslogmonitor.threshold.Threshold;
 
 import br.com.six2six.fixturefactory.Fixture;
@@ -73,7 +75,7 @@ public class AnalyzerTest extends AbstractComponentTest {
 		statement.executeUpdate("INSERT INTO access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:05:00.000','192.168.98.20','\"GET / HTTP/1.1\"',200,'\"swcd (unknown version) CFNetwork/808.2.16 Darwin/15.6.0\"');");
 		connection.commit();
 
-		final Threshold threshold = Fixture.from(Threshold.class).gimme("2017-01-01.00:00:00, hourly, 1");
+		final Threshold threshold = Fixture.from(HourlyThreshold.class).gimme("2017-01-01.00:00:00, 1");
 		
         final List<BlockOccurrencesDto> blockOccurrencesDtos =
         	instance.blockByThresold(threshold);
@@ -98,7 +100,7 @@ public class AnalyzerTest extends AbstractComponentTest {
 		statement.executeUpdate("INSERT INTO access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 23:59:59.000','192.168.98.21','\"GET / HTTP/1.1\"',200,'\"swcd (unknown version) CFNetwork/808.2.16 Darwin/15.6.0\"');");
 		connection.commit();
 
-		final Threshold threshold = Fixture.from(Threshold.class).gimme("2017-01-01.00:00:00, daily, 5");
+		final Threshold threshold = Fixture.from(DailyThreshold.class).gimme("2017-01-01.00:00:00, 5");
 
         final List<BlockOccurrencesDto> blockOccurrencesDtos =
         	instance.blockByThresold(threshold);
@@ -118,7 +120,7 @@ public class AnalyzerTest extends AbstractComponentTest {
     	
     	try {
     	
-    		instance.blockByThresold(Fixture.from(Threshold.class).gimme("2017-01-01.00:00:00, daily, 5"));
+    		instance.blockByThresold(Fixture.from(DailyThreshold.class).gimme("2017-01-01.00:00:00, 5"));
     		
     		fail("A RuntimeException should have been thrown!");
     	

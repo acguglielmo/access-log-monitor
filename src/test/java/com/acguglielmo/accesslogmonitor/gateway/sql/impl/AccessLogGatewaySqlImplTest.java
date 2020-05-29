@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import com.acguglielmo.accesslogmonitor.AbstractComponentTest;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
+import com.acguglielmo.accesslogmonitor.threshold.HourlyThreshold;
 import com.acguglielmo.accesslogmonitor.threshold.Threshold;
 
 import br.com.six2six.fixturefactory.Fixture;
@@ -52,7 +53,7 @@ public class AccessLogGatewaySqlImplTest extends AbstractComponentTest {
 		statement.executeUpdate("INSERT INTO access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:00:54.583','192.168.169.194','\"GET / HTTP/1.1\"',200,'\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393\"');");
 		connection.commit();
     	
-        final Threshold threshold = Fixture.from(Threshold.class).gimme("2017-01-01.00:00:00, hourly, 1");
+        final Threshold threshold = Fixture.from(HourlyThreshold.class).gimme("2017-01-01.00:00:00, 1");
 
         final List<BlockOccurrencesDto> blockOccurrencesDtos = new AccessLogGatewaySqlImpl().find(threshold);
         assertNotNull(blockOccurrencesDtos);

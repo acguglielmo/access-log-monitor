@@ -8,22 +8,21 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class Threshold {
+public abstract class Threshold {
 
 	@Getter
-	private final LocalDateTime startDate;
-	
-	private final Duration duration;
+	protected final LocalDateTime startDate;
 	
 	@Getter
-	private final int limit;
+	protected final int limit;
+
+	public static Threshold of(final Duration duration, final LocalDateTime startDate, final int limit) {
+
+		return Duration.DAILY.equals(duration) ? 
+			new DailyThreshold(startDate, limit) : new HourlyThreshold(startDate, limit);
+
+	}
 	
-    public LocalDateTime getEndDate() {
-        switch (duration) {
-            case HOURLY:  return startDate.plusHours(1);
-            case DAILY:   return startDate.plusDays(1);
-            default:      return LocalDateTime.now();
-        }
-    }
+    public abstract LocalDateTime getEndDate();
 
 }

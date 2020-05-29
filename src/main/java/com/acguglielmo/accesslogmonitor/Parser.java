@@ -89,9 +89,9 @@ public class Parser {
 		final String accessLogPath = commandLine.getOptionValue(CommandLineHelper.ACCESS_LOG_PATH, CommandLineHelper.FILENAME_DEFAULT_VALUE);
 
 		final FileParsingTask task = new FileParsingTask(this, accessLogPath,
-			new Threshold(
-				commandLine.getStartDate(),
+			Threshold.of(
 				commandLine.getDuration(),
+				commandLine.getStartDate(),
 				commandLine.getLimit() ));
 		
 		final ExecutorService executor = Executors.newSingleThreadExecutor();

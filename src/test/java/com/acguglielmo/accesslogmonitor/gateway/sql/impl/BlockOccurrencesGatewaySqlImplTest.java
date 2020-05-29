@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.acguglielmo.accesslogmonitor.AbstractComponentTest;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
+import com.acguglielmo.accesslogmonitor.threshold.HourlyThreshold;
 import com.acguglielmo.accesslogmonitor.threshold.Threshold;
 
 import br.com.six2six.fixturefactory.Fixture;
@@ -25,7 +26,7 @@ public class BlockOccurrencesGatewaySqlImplTest extends AbstractComponentTest {
     @Test
     public void insertTest() throws Exception {
     	
-    	final Threshold threshold = Fixture.from(Threshold.class).gimme("2017-01-01.13:00:00, hourly, 34");
+    	final Threshold threshold = Fixture.from(HourlyThreshold.class).gimme("2017-01-01.13:00:00, 34");
     	
         final List<BlockOccurrencesDto> list = new ArrayList<>();
         final BlockOccurrencesDto dto1 = BlockOccurrencesDto.builder()
