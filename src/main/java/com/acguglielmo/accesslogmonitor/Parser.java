@@ -13,12 +13,13 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.acguglielmo.accesslogmonitor.cli.ApplicationCommandLine;
 import com.acguglielmo.accesslogmonitor.cli.CommandLineHelper;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
 import com.acguglielmo.accesslogmonitor.exception.ExceptionHandler;
+import com.acguglielmo.accesslogmonitor.threshold.Threshold;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 import com.acguglielmo.accesslogmonitor.util.PropertiesHolder;
-import com.acguglielmo.accesslogmonitor.util.Threshold;
 
 import lombok.RequiredArgsConstructor;
 
@@ -54,7 +55,7 @@ public class Parser {
     }
 
 
-	private void processAfterCliParametersConfigured(final CommandLine commandLine) {
+	private void processAfterCliParametersConfigured(final ApplicationCommandLine commandLine) {
 			
 		buildProperties(commandLine).ifPresent(e -> {
 			
@@ -84,14 +85,14 @@ public class Parser {
 		}
 	}
 
-	private ExecutorService submitFileParsingTask(final CommandLine commandLine) {
+	private ExecutorService submitFileParsingTask(final ApplicationCommandLine commandLine) {
 		final String accessLogPath = commandLine.getOptionValue(CommandLineHelper.ACCESS_LOG_PATH, CommandLineHelper.FILENAME_DEFAULT_VALUE);
 
 		final FileParsingTask task = new FileParsingTask(this, accessLogPath,
-			new Threshold(
-				commandLine.getOptionValue(CommandLineHelper.START_DATE),
-				commandLine.getOptionValue(CommandLineHelper.DURATION),
-				commandLine.getOptionValue(CommandLineHelper.THRESHOLD) ));
+			Threshold.of(
+				commandLine.getDuration(),
+				commandLine.getStartDate(),
+				commandLine.getLimit() ));
 		
 		final ExecutorService executor = Executors.newSingleThreadExecutor();
 		final Future<?> future = executor.submit(task);

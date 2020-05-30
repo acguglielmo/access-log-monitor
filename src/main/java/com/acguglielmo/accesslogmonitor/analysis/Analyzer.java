@@ -6,7 +6,7 @@ import java.util.List;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.BlockOccurrencesGatewaySqlImpl;
-import com.acguglielmo.accesslogmonitor.util.Threshold;
+import com.acguglielmo.accesslogmonitor.threshold.Threshold;
 
 import lombok.RequiredArgsConstructor;
 

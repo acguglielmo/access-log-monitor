@@ -3,18 +3,30 @@ package com.acguglielmo.accesslogmonitor.gateway.sql.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.acguglielmo.accesslogmonitor.AbstractComponentTest;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
-import com.acguglielmo.accesslogmonitor.util.Threshold;
+import com.acguglielmo.accesslogmonitor.threshold.HourlyThreshold;
+import com.acguglielmo.accesslogmonitor.threshold.Threshold;
+
+import br.com.six2six.fixturefactory.Fixture;
+import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 
 public class BlockOccurrencesGatewaySqlImplTest extends AbstractComponentTest {
 
+	@Before
+	public void before() {
+		
+		FixtureFactoryLoader.loadTemplates("com.acguglielmo.accesslogmonitor.template");
+		
+	}
+	
     @Test
     public void insertTest() throws Exception {
     	
-    	final Threshold threshold = new Threshold("2017-01-01.13:00:00", "hourly", "34");
+    	final Threshold threshold = Fixture.from(HourlyThreshold.class).gimme("2017-01-01.13:00:00, 34");
     	
         final List<BlockOccurrencesDto> list = new ArrayList<>();
         final BlockOccurrencesDto dto1 = BlockOccurrencesDto.builder()
