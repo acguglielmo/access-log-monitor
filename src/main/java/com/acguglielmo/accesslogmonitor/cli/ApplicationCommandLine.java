@@ -1,6 +1,8 @@
 package com.acguglielmo.accesslogmonitor.cli;
 
+import static com.acguglielmo.accesslogmonitor.cli.CommandLineHelper.ACCESS_LOG_PATH;
 import static com.acguglielmo.accesslogmonitor.cli.CommandLineHelper.DURATION;
+import static com.acguglielmo.accesslogmonitor.cli.CommandLineHelper.FILENAME_DEFAULT_VALUE;
 import static com.acguglielmo.accesslogmonitor.cli.CommandLineHelper.START_DATE;
 import static com.acguglielmo.accesslogmonitor.cli.CommandLineHelper.THRESHOLD;
 
@@ -25,6 +27,12 @@ public class ApplicationCommandLine extends CommandLine {
 		
 		return commandLine.getOptionValue(option);
 		
+	}
+	
+	public String getFilePath() {
+
+		return commandLine.getOptionValue(ACCESS_LOG_PATH, FILENAME_DEFAULT_VALUE);
+
 	}
 	
 	public LocalDateTime getStartDate() {
