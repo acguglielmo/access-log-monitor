@@ -49,6 +49,7 @@ public class Parser {
 
 	}
 
+	//FIXME: args could be transformed into a ApplicationCommandLine field before processing
 	void process(final String[] args) {
 
 		commandLineHelper.configureCliOptions(args)
