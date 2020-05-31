@@ -85,11 +85,9 @@ public class Parser {
 	}
 
 	private ExecutorService submitFileParsingTask(final ApplicationCommandLine commandLine) {
-		final String accessLogPath = commandLine.getFilePath();
 
-		final FileParsingTask task = new FileParsingTask(this, accessLogPath,
-			commandLine.to());
-		
+		final FileParsingTask task = new FileParsingTask(this, commandLine);
+
 		final ExecutorService executor = Executors.newSingleThreadExecutor();
 		final Future<?> future = executor.submit(task);
 		ApplicationStatus.getInstance().addFuture(future);

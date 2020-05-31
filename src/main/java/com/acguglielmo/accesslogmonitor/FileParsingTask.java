@@ -5,25 +5,24 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.acguglielmo.accesslogmonitor.analysis.Analyzer;
+import com.acguglielmo.accesslogmonitor.cli.ApplicationCommandLine;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.BlockOccurrencesGatewaySqlImpl;
 import com.acguglielmo.accesslogmonitor.parser.FileParser;
-import com.acguglielmo.accesslogmonitor.threshold.Threshold;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 class FileParsingTask implements Runnable {
 
 	private final Parser parser;
-	private String accessLogPath;
-    private Threshold threshold;
+	private final ApplicationCommandLine commandLine;
 
     @Override
     public void run() {
         try {
-            final Path path = Paths.get(accessLogPath);
+            final Path path = Paths.get(commandLine.getFilePath());
             final File file = new File(path.toUri());
 
             ApplicationStatus.getInstance().configureChunkSize(file, FileParser.MAX_BATCH_CHUNK_SIZE);
@@ -34,7 +33,7 @@ class FileParsingTask implements Runnable {
             	new Analyzer(
             		new AccessLogGatewaySqlImpl(),
             		new BlockOccurrencesGatewaySqlImpl())
-            			.blockByThresold(threshold);
+            			.blockByThresold(commandLine.to());
             
             ApplicationStatus.getInstance().setProgress(ApplicationStatus.JOB_PROGRESS_AFTER_COMPLETION);
 
@@ -42,4 +41,5 @@ class FileParsingTask implements Runnable {
             throw new RuntimeException(e);
         }
     }
+
 }
