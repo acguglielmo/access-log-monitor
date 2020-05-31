@@ -13,6 +13,9 @@ import com.acguglielmo.accesslogmonitor.threshold.Threshold;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 import com.acguglielmo.accesslogmonitor.util.DateUtils;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class AccessLogGatewaySqlImpl {
 
     private static final String INSERT_STATEMENT = "INSERT IGNORE INTO access_log"
@@ -24,6 +27,8 @@ public class AccessLogGatewaySqlImpl {
             " where t.date between ? " + " and ? " +
             "group by ip having count(1) > ? " +
             "order by count(1) desc;";
+
+	private final ApplicationStatus applicationStatus;
 
     public void insert(final List<String[]> dataList) throws SQLException {
 
@@ -44,7 +49,7 @@ public class AccessLogGatewaySqlImpl {
                     preparedStatement.executeBatch();
                 }
             } finally {
-                ApplicationStatus.getInstance().updateProgressByChunk();
+                applicationStatus.updateProgressByChunk();
             }
         }
     }

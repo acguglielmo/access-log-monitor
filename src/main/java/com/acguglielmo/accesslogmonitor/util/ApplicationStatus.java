@@ -14,25 +14,12 @@ public class ApplicationStatus {
 
     public static final Integer JOB_PROGRESS_AFTER_COMPLETION = 100;
 
-
-    private static volatile ApplicationStatus instance;
-
     private List<Future<?>> futureList;
 
-    private ApplicationStatus() {
+    public ApplicationStatus() {
         futureList = new ArrayList<>();
     }
 
-    public static ApplicationStatus getInstance() {
-        if (instance == null) {
-            synchronized (ApplicationStatus.class) {
-                if (instance == null) {
-                    instance = new ApplicationStatus();
-                }
-            }
-        }
-        return instance;
-    }
 
     public synchronized void updateProgressByChunk() {
         this.progress += chunkSize;

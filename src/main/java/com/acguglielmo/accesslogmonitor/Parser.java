@@ -38,10 +38,13 @@ public class Parser {
 
 	private final CommandLineHelper commandLineHelper;
 
+	private final ApplicationStatus applicationStatus;
+
 	public static void main(final String[] args) {
 
 		new Parser(
-        	new CommandLineHelper()
+        	new CommandLineHelper(),
+        	new ApplicationStatus()
         ).process(args);
 
 	}
@@ -86,11 +89,11 @@ public class Parser {
 
 	private ExecutorService submitFileParsingTask(final ApplicationCommandLine commandLine) {
 
-		final FileParsingTask task = new FileParsingTask(this, commandLine);
+		final FileParsingTask task = new FileParsingTask(this, commandLine, applicationStatus);
 
 		final ExecutorService executor = Executors.newSingleThreadExecutor();
 		final Future<?> future = executor.submit(task);
-		ApplicationStatus.getInstance().addFuture(future);
+		applicationStatus.addFuture(future);
 		executor.shutdown();
 		return executor;
 	}
@@ -99,20 +102,20 @@ public class Parser {
         while(!executor.isTerminated()) {
             try {
                 Thread.sleep(200);
-                ApplicationStatus.getInstance().getProgressBar();
-                System.out.printf("\r%s ", ApplicationStatus.getInstance().getProgressBar());
+                applicationStatus.getProgressBar();
+                System.out.printf("\r%s ", applicationStatus.getProgressBar());
 
                 verifyApplicationStatus(executor);
             } catch (final InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        System.out.printf("\r%s ", ApplicationStatus.getInstance().getProgressBar());
+        System.out.printf("\r%s ", applicationStatus.getProgressBar());
         System.out.println();
     }
 
     private void verifyApplicationStatus(final ExecutorService executor) {
-        final List<Future<?>> futureList = ApplicationStatus.getInstance().getFutureList();
+        final List<Future<?>> futureList = applicationStatus.getFutureList();
         for (final Future<?> future : futureList) {
             if (future.isDone()) {
                 try {

@@ -18,6 +18,7 @@ class FileParsingTask implements Runnable {
 
 	private final Parser parser;
 	private final ApplicationCommandLine commandLine;
+	private final ApplicationStatus applicationStatus;
 
     @Override
     public void run() {
@@ -25,17 +26,17 @@ class FileParsingTask implements Runnable {
             final Path path = Paths.get(commandLine.getFilePath());
             final File file = new File(path.toUri());
 
-            ApplicationStatus.getInstance().configureChunkSize(file, FileParser.MAX_BATCH_CHUNK_SIZE);
+            applicationStatus.configureChunkSize(file, FileParser.MAX_BATCH_CHUNK_SIZE);
 
-            new FileParser().loadFileToDatabase(file);
+            new FileParser(applicationStatus).loadFileToDatabase(file);
 
             this.parser.blockOccurrencesDtos = 
             	new Analyzer(
-            		new AccessLogGatewaySqlImpl(),
+            		new AccessLogGatewaySqlImpl(applicationStatus),
             		new BlockOccurrencesGatewaySqlImpl())
             			.blockByThresold(commandLine.to());
             
-            ApplicationStatus.getInstance().setProgress(ApplicationStatus.JOB_PROGRESS_AFTER_COMPLETION);
+            applicationStatus.setProgress(ApplicationStatus.JOB_PROGRESS_AFTER_COMPLETION);
 
         } catch (final Throwable e) {
             throw new RuntimeException(e);

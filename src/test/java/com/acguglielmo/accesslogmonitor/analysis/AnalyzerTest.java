@@ -27,6 +27,7 @@ import com.acguglielmo.accesslogmonitor.gateway.sql.impl.BlockOccurrencesGateway
 import com.acguglielmo.accesslogmonitor.threshold.DailyThreshold;
 import com.acguglielmo.accesslogmonitor.threshold.HourlyThreshold;
 import com.acguglielmo.accesslogmonitor.threshold.Threshold;
+import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
@@ -35,7 +36,8 @@ import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 public class AnalyzerTest extends AbstractComponentTest {
 
 	@Spy
-    private AccessLogGatewaySqlImpl accessLogGatewaySqlImpl;
+    private AccessLogGatewaySqlImpl accessLogGatewaySqlImpl = 
+    	new AccessLogGatewaySqlImpl(new ApplicationStatus());
     
 	@Spy
     private BlockOccurrencesGatewaySqlImpl blockOccurrencesGatewaySqlImpl;

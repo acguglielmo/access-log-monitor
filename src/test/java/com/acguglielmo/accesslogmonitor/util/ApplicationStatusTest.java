@@ -8,7 +8,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 public class ApplicationStatusTest {
@@ -17,23 +16,10 @@ public class ApplicationStatusTest {
     
     private int linesWrittenToTheFile = 1000;
 
-    @Before
-    public void before() {
-    	ApplicationStatus.getInstance().clearFutureList();
-    }
-    
-    @Test
-    public void getInstanceTest() throws Exception {
-        final ApplicationStatus instance = ApplicationStatus.getInstance();
-
-        Assert.assertNotNull(instance);
-        Assert.assertEquals(instance, ApplicationStatus.getInstance());
-    }
-
     @Test
     public void updateProgressByChunkTest() throws Exception {
 
-        final ApplicationStatus instance = ApplicationStatus.getInstance();
+        final ApplicationStatus instance = new ApplicationStatus();
         instance.setProgress(0);
 
         instance.configureChunkSize(file, 10);
@@ -55,7 +41,7 @@ public class ApplicationStatusTest {
 
     @Test
     public void configureChunkSizeTest() throws Exception {
-        final ApplicationStatus instance = ApplicationStatus.getInstance();
+        final ApplicationStatus instance = new ApplicationStatus();
 
         int batchChunkSize = 10;
         instance.configureChunkSize(file, batchChunkSize);
@@ -80,21 +66,21 @@ public class ApplicationStatusTest {
 
     @Test
     public void getProgressBarTest() throws Exception {
-        final ApplicationStatus instance = ApplicationStatus.getInstance();
+        final ApplicationStatus instance = new ApplicationStatus();
 
         instance.setProgress(10.0);
-        Assert.assertEquals("|=====                                             | 10% Done", ApplicationStatus.getInstance().getProgressBar());
+        Assert.assertEquals("|=====                                             | 10% Done", instance.getProgressBar());
 
         instance.setProgress(15.0);
-        Assert.assertEquals("|=======                                           | 15% Done", ApplicationStatus.getInstance().getProgressBar());
+        Assert.assertEquals("|=======                                           | 15% Done", instance.getProgressBar());
 
         instance.setProgress(70.0);
-        Assert.assertEquals("|===================================               | 70% Done", ApplicationStatus.getInstance().getProgressBar());
+        Assert.assertEquals("|===================================               | 70% Done", instance.getProgressBar());
     }
 
     @Test
     public void addFutureTest() throws Exception {
-        final ApplicationStatus instance = ApplicationStatus.getInstance();
+        final ApplicationStatus instance = new ApplicationStatus();
 
         final ExecutorService executorService = Executors.newSingleThreadExecutor();
         final Future<?> future = executorService.submit(new Thread());
@@ -107,7 +93,7 @@ public class ApplicationStatusTest {
     @Test
     public void getFutureListTest() throws Exception {
 
-        final ApplicationStatus instance = ApplicationStatus.getInstance();
+        final ApplicationStatus instance = new ApplicationStatus();
 
         final ExecutorService executorService = Executors.newFixedThreadPool(2);
         final Future<?> future = executorService.submit( () -> System.out.println());

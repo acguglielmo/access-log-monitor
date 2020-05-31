@@ -11,16 +11,28 @@ import java.util.regex.Pattern;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.acguglielmo.accesslogmonitor.AbstractComponentTest;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
 import com.acguglielmo.accesslogmonitor.threshold.HourlyThreshold;
 import com.acguglielmo.accesslogmonitor.threshold.Threshold;
+import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AccessLogGatewaySqlImplTest extends AbstractComponentTest {
+
+	@Spy
+	private ApplicationStatus applicationStatus;
+
+	@InjectMocks
+	private AccessLogGatewaySqlImpl instance;
 
 	@Before
 	public void before() {
@@ -38,7 +50,7 @@ public class AccessLogGatewaySqlImplTest extends AbstractComponentTest {
         list.add(quote.split("2017-01-01 23:59:58.735|192.168.114.222|\"GET / HTTP/1.1\"|200|\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:55.0) Gecko/20100101 Firefox/55.0\""));
         list.add(quote.split("2017-01-01 23:59:58.777|192.168.229.251|\"GET / HTTP/1.1\"|200|\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.81 Safari/537.36\""));
         list.add(quote.split("2017-01-01 23:59:58.791|192.168.229.98|\"GET / HTTP/1.1\"|200|\"Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36\""));
-        new AccessLogGatewaySqlImpl().insert(list);
+        instance.insert(list);
     }
 
     @Test
@@ -55,7 +67,7 @@ public class AccessLogGatewaySqlImplTest extends AbstractComponentTest {
     	
         final Threshold threshold = Fixture.from(HourlyThreshold.class).gimme("2017-01-01.00:00:00, 1");
 
-        final List<BlockOccurrencesDto> blockOccurrencesDtos = new AccessLogGatewaySqlImpl().find(threshold);
+        final List<BlockOccurrencesDto> blockOccurrencesDtos = instance.find(threshold);
         assertNotNull(blockOccurrencesDtos);
         assertEquals(2, blockOccurrencesDtos.size());
         assertEquals("192.168.234.82", blockOccurrencesDtos.get(0).getIp());
