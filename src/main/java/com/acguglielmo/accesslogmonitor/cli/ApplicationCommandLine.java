@@ -1,6 +1,8 @@
 package com.acguglielmo.accesslogmonitor.cli;
 
+import static com.acguglielmo.accesslogmonitor.cli.CommandLineHelper.ACCESS_LOG_PATH;
 import static com.acguglielmo.accesslogmonitor.cli.CommandLineHelper.DURATION;
+import static com.acguglielmo.accesslogmonitor.cli.CommandLineHelper.FILENAME_DEFAULT_VALUE;
 import static com.acguglielmo.accesslogmonitor.cli.CommandLineHelper.START_DATE;
 import static com.acguglielmo.accesslogmonitor.cli.CommandLineHelper.THRESHOLD;
 
@@ -9,6 +11,7 @@ import java.time.LocalDateTime;
 import org.apache.commons.cli.CommandLine;
 
 import com.acguglielmo.accesslogmonitor.enums.Duration;
+import com.acguglielmo.accesslogmonitor.threshold.Threshold;
 import com.acguglielmo.accesslogmonitor.util.DateUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -26,16 +29,28 @@ public class ApplicationCommandLine extends CommandLine {
 		return commandLine.getOptionValue(option);
 		
 	}
-	
-	public LocalDateTime getStartDate() {
+
+	public Threshold to() {
+
+		return Threshold.of(getDuration(), getStartDate(), getLimit());
+
+	}
+
+	public String getFilePath() {
+
+		return commandLine.getOptionValue(ACCESS_LOG_PATH, FILENAME_DEFAULT_VALUE);
+
+	}
+
+	private LocalDateTime getStartDate() {
 		
 		final String startDate = commandLine.getOptionValue(START_DATE);
 		
 		return LocalDateTime.parse(startDate, DateUtils.DATE_FORMAT_ARGS);
 		
 	}
-	
-	public Duration getDuration() {
+
+	private Duration getDuration() {
 		
 		final String duration = commandLine.getOptionValue(DURATION);
 		
@@ -43,7 +58,7 @@ public class ApplicationCommandLine extends CommandLine {
 		
 	}
 
-	public int getLimit() {
+	private int getLimit() {
 		
 		final String limit = commandLine.getOptionValue(THRESHOLD);
 		

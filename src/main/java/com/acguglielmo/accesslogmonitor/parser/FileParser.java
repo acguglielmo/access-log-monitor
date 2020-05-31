@@ -3,6 +3,8 @@ package com.acguglielmo.accesslogmonitor.parser;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 
+import lombok.RequiredArgsConstructor;
+
 import java.io.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,13 +15,16 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
+@RequiredArgsConstructor
 public final class FileParser {
 
     public static final Integer MAX_BATCH_CHUNK_SIZE = 1000;
 
     private Pattern regex = Pattern.compile(Pattern.quote("|"));
 
-    public void loadFileToDatabase(final File file) throws IOException, InterruptedException, SQLException {
+	private final ApplicationStatus applicationStatus;
+
+	public void loadFileToDatabase(final File file) throws IOException, InterruptedException, SQLException {
 
         final FileReader fileReader = new FileReader(file);
         final BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -34,13 +39,13 @@ public final class FileParser {
 
             if (readLines.size() == MAX_BATCH_CHUNK_SIZE) {
                 Future<?> future = executor.submit(new GatewayClient(readLines));
-                ApplicationStatus.getInstance().addFuture(future);
+                applicationStatus.addFuture(future);
                 readLines = new ArrayList<>();
             }
         }
         fileReader.close();
         Future<?> future = executor.submit(new GatewayClient(readLines));
-        ApplicationStatus.getInstance().addFuture(future);
+        applicationStatus.addFuture(future);
 
         executor.shutdown();
         executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
@@ -63,7 +68,7 @@ public final class FileParser {
                     stringArrayList.add(doStringPolling(stringArray));
                 }
 
-                new AccessLogGatewaySqlImpl().insert(stringArrayList);
+                new AccessLogGatewaySqlImpl(applicationStatus).insert(stringArrayList);
             } catch (final SQLException e) {
                 throw new RuntimeException(e);
             }
