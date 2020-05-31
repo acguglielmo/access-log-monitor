@@ -17,7 +17,6 @@ import com.acguglielmo.accesslogmonitor.cli.ApplicationCommandLine;
 import com.acguglielmo.accesslogmonitor.cli.CommandLineHelper;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
 import com.acguglielmo.accesslogmonitor.exception.ExceptionHandler;
-import com.acguglielmo.accesslogmonitor.threshold.Threshold;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 import com.acguglielmo.accesslogmonitor.util.PropertiesHolder;
 
@@ -89,10 +88,7 @@ public class Parser {
 		final String accessLogPath = commandLine.getFilePath();
 
 		final FileParsingTask task = new FileParsingTask(this, accessLogPath,
-			Threshold.of(
-				commandLine.getDuration(),
-				commandLine.getStartDate(),
-				commandLine.getLimit() ));
+			commandLine.to());
 		
 		final ExecutorService executor = Executors.newSingleThreadExecutor();
 		final Future<?> future = executor.submit(task);
