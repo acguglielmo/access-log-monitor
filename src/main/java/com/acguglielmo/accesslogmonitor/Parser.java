@@ -36,29 +36,16 @@ public class Parser {
 	
     List<BlockOccurrencesDto> blockOccurrencesDtos = new ArrayList<>();
 
-	private final CommandLineHelper commandLineHelper;
-
 	private final ApplicationStatus applicationStatus;
 
 	public static void main(final String[] args) {
 
-		new Parser(
-        	new CommandLineHelper(),
-        	new ApplicationStatus()
-        ).process(args);
+		new CommandLineHelper().configureCliOptions(args)
+			.ifPresent(cli -> new Parser(new ApplicationStatus()).process(cli));
 
 	}
 
-	//FIXME: args could be transformed into a ApplicationCommandLine field before processing
-	void process(final String[] args) {
-
-		commandLineHelper.configureCliOptions(args)
-			.ifPresent(this::processAfterCliParametersConfigured);
-
-    }
-
-
-	private void processAfterCliParametersConfigured(final ApplicationCommandLine commandLine) {
+	void process(final ApplicationCommandLine commandLine) {
 			
 		buildProperties(commandLine).ifPresent(e -> {
 			
