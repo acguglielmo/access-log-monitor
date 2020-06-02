@@ -51,6 +51,13 @@ public final class FileParser {
         executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
     }
 
+    private String[] doStringPolling(final String[] strings) {
+        for (int i = 0; i < strings.length ; i++) {
+            strings[i] = strings[i].intern();
+        }
+        return strings;
+    }
+
     class GatewayClient implements Runnable {
         private List<String> readLines;
 
@@ -74,11 +81,5 @@ public final class FileParser {
             }
         }
 
-        private String[] doStringPolling(final String[] strings) {
-            for (int i =0; i < strings.length ; i++) {
-                strings[i] = strings[i].intern();
-            }
-            return strings;
-        }
     }
 }
