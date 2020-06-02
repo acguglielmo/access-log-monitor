@@ -21,7 +21,7 @@
         <mysql-connector-java.version>6.0.6</mysql-connector-java.version>
         <junit.version>4.12</junit.version>
         <hsqldb.version>2.4.0</hsqldb.version>
-        <jacoco.version>0.8.2</jacoco.version>
+        <jacoco.version>0.8.5</jacoco.version>
         <lombok.version>1.18.12</lombok.version>
         <mockito.version>3.3.3</mockito.version>
         <log4j.version>2.13.3</log4j.version>
