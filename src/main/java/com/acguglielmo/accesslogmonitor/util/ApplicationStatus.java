@@ -50,17 +50,7 @@ public class ApplicationStatus {
 
     public String getProgressBar()
     {
-        final StringBuilder sb = new StringBuilder();
-
-        long x = (long) progress / 2;
-        sb.append("|");
-        for (int k = 0; k < 50; k++)
-            sb.append((x <= k) ? " " : "=");
-        sb.append("| ");
-        sb.append((long) progress);
-        sb.append("% Done");
-
-        return sb.toString();
+        return ProgressBar.of(progress).toString();
     }
 
     public synchronized void addFuture(final Future<?> future) {
