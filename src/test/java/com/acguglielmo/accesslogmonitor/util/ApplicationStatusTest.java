@@ -65,20 +65,6 @@ public class ApplicationStatusTest {
     }
 
     @Test
-    public void getProgressBarTest() throws Exception {
-        final ApplicationStatus instance = new ApplicationStatus();
-
-        instance.setProgress(10.0);
-        Assert.assertEquals("|=====                                             | 10% Done", instance.getProgressBar());
-
-        instance.setProgress(15.0);
-        Assert.assertEquals("|=======                                           | 15% Done", instance.getProgressBar());
-
-        instance.setProgress(70.0);
-        Assert.assertEquals("|===================================               | 70% Done", instance.getProgressBar());
-    }
-
-    @Test
     public void addFutureTest() throws Exception {
         final ApplicationStatus instance = new ApplicationStatus();
 
