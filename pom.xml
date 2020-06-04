@@ -18,21 +18,33 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <commons-cli.version>1.4</commons-cli.version>
-        <mysql-connector-java.version>8.0.20</mysql-connector-java.version>
-        <junit.version>4.12</junit.version>
         <hsqldb.version>2.4.0</hsqldb.version>
         <jacoco.version>0.8.5</jacoco.version>
         <lombok.version>1.18.12</lombok.version>
         <mockito.version>3.3.3</mockito.version>
         <log4j.version>2.13.3</log4j.version>
         <fixture-factory.version>3.1.0</fixture-factory.version>
+        <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
+        <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
+        <quarkus.platform.version>1.5.0.Final</quarkus.platform.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>${quarkus.platform.group-id}</groupId>
+                <artifactId>${quarkus.platform.artifact-id}</artifactId>
+                <version>${quarkus.platform.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql-connector-java.version}</version>
         </dependency>
 
         <dependency>
@@ -57,14 +69,12 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
 		<dependency>
 		    <groupId>org.mockito</groupId>
 		    <artifactId>mockito-core</artifactId>
-		    <version>${mockito.version}</version>
 		    <scope>test</scope>
 		</dependency>
 
