@@ -20,10 +20,13 @@ import com.acguglielmo.accesslogmonitor.exception.ExceptionHandler;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 import com.acguglielmo.accesslogmonitor.util.PropertiesHolder;
 
+import io.quarkus.runtime.QuarkusApplication;
+import io.quarkus.runtime.annotations.QuarkusMain;
 import lombok.RequiredArgsConstructor;
 
+@QuarkusMain
 @RequiredArgsConstructor
-public class Parser {
+public class Parser implements QuarkusApplication {
 
 	private static final Logger LOGGER = LogManager.getLogger(Parser.class);
 	
@@ -38,10 +41,13 @@ public class Parser {
 
 	private final ApplicationStatus applicationStatus;
 
-	public static void main(final String[] args) {
+	@Override
+	public int run(final String... args) {
 
 		new CommandLineHelper().configureCliOptions(args)
 			.ifPresent(cli -> new Parser(new ApplicationStatus()).process(cli));
+
+		return 1;
 
 	}
 
