@@ -1,17 +1,27 @@
 package com.acguglielmo.accesslogmonitor.util;
 
-import org.junit.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import io.quarkus.test.junit.QuarkusTest;
 
 import java.io.BufferedWriter;
 import java.nio.file.*;
 
+import javax.inject.Inject;
+
 import static org.junit.Assert.*;
 
+@QuarkusTest
 public class PropertiesHolderTest {
+    
+    @Inject
+    PropertiesHolder propertiesHolder;
 
     private static final String CONFIG_FILENAME = "config.properties";
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws Exception {
         final Path path = Paths.get(CONFIG_FILENAME);
         if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
@@ -28,10 +38,19 @@ public class PropertiesHolderTest {
         bufferedWriter.close();
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void getInstanceWithoutCreatingFirstTest() throws Exception {
         PropertiesHolder.destroyInstance();
-        PropertiesHolder.getInstance();
+        
+        try {
+            
+            PropertiesHolder.getInstance();
+        
+        } catch (final RuntimeException e) {
+            
+            assertNotNull(e.getMessage());
+        
+        }
     }
 
     @Test
@@ -59,7 +78,7 @@ public class PropertiesHolderTest {
         assertEquals("passwd", propertiesHolder.getProperty(PropertiesHolder.DB_CONNECTION_PASSWORD));
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         final Path path = Paths.get(CONFIG_FILENAME);
         if (Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
