@@ -7,11 +7,11 @@ import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.core.StringLayout;
 import org.apache.logging.log4j.core.appender.WriterAppender;
 import org.apache.logging.log4j.core.layout.PatternLayout;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.rules.ExternalResource;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
-public class ConsoleWatcherSupport extends ExternalResource {
+public class ConsoleWatcherSupport implements BeforeEachCallback, AfterEachCallback {
 	
 	private static final String PATTERN = "%msg%n";
 	
@@ -27,8 +27,8 @@ public class ConsoleWatcherSupport extends ExternalResource {
         this.logger = ( org.apache.logging.log4j.core.Logger) logger2;
     }
 	
-    @Before
-    protected void before() {
+    @Override
+    public void beforeEach(ExtensionContext context) throws Exception {
         StringLayout layout = PatternLayout.newBuilder().withPattern(PATTERN).build();
         appender = WriterAppender.newBuilder()
                 .setTarget(outContent)
@@ -38,8 +38,8 @@ public class ConsoleWatcherSupport extends ExternalResource {
         logger.addAppender(appender);
     }
  
-    @After
-    protected void after() {
+    @Override
+    public void afterEach(ExtensionContext context) throws Exception {
         logger.removeAppender(appender);
     }
  

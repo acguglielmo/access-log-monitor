@@ -1,9 +1,9 @@
 package com.acguglielmo.accesslogmonitor.analysis;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 
@@ -12,13 +12,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.acguglielmo.accesslogmonitor.AbstractComponentTest;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
@@ -32,7 +32,7 @@ import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AnalyzerTest extends AbstractComponentTest {
 
 	@Spy
@@ -45,8 +45,8 @@ public class AnalyzerTest extends AbstractComponentTest {
 	@InjectMocks
     private Analyzer instance;
 
-    @After
-    @Before
+    @AfterEach
+    @BeforeEach
     public void cleanUp() throws Exception {
     	
 		final Connection connection = getConnection();
@@ -56,8 +56,8 @@ public class AnalyzerTest extends AbstractComponentTest {
 		connection.commit();
 		
     }
-    
-	@Before
+
+    @BeforeEach
 	public void before() {
 		
 		FixtureFactoryLoader.loadTemplates("com.acguglielmo.accesslogmonitor.template");

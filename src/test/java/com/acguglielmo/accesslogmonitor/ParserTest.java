@@ -1,7 +1,7 @@
 package com.acguglielmo.accesslogmonitor;
 
 import static java.lang.String.format;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -11,21 +11,21 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import org.apache.logging.log4j.LogManager;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.acguglielmo.accesslogmonitor.cli.ApplicationCommandLine;
 import com.acguglielmo.accesslogmonitor.cli.CommandLineHelper;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 import com.acguglielmo.accesslogmonitor.util.PropertiesHolder;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ParserTest {
 
 	@Spy
@@ -34,10 +34,10 @@ public class ParserTest {
 	@InjectMocks
 	private Parser instance;
 
-	@Rule
+	@RegisterExtension
     public ConsoleWatcherSupport appender = new ConsoleWatcherSupport(LogManager.getLogger(Parser.class));
 	
-    @Before
+    @BeforeEach
     public void before() throws Exception {
     	
     	PropertiesHolder.destroyInstance();
@@ -59,7 +59,7 @@ public class ParserTest {
 	}
 
 	@Test
-	@Ignore("This test forces a call to System.exit, breaking the build")
+	@Disabled("This test forces a call to System.exit, breaking the build")
 	public void shouldHaltApplicationIfAnExceptionIsThrownByFileParsingTask() throws Exception {
 
 		final Future<?> aFuture = mock(Future.class);

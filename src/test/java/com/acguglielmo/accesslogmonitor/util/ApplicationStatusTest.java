@@ -1,5 +1,9 @@
 package com.acguglielmo.accesslogmonitor.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.nio.file.Paths;
 import java.util.List;
@@ -7,8 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ApplicationStatusTest {
 
@@ -25,17 +28,17 @@ public class ApplicationStatusTest {
         instance.configureChunkSize(file, 10);
 
         instance.updateProgressByChunk();
-        Assert.assertEquals(1.0 * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE / 100,
+        assertEquals(1.0 * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE / 100,
                 instance.getProgress(), 0.001);
 
         for (int i = 1; i < 50; i++) {
             instance.updateProgressByChunk();
         }
-        Assert.assertEquals(50.0 * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE / 100,
+        assertEquals(50.0 * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE / 100,
                 instance.getProgress(), 0.1);
 
         instance.updateProgressByChunk();
-        Assert.assertEquals(51.0 * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE / 100,
+        assertEquals(51.0 * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE / 100,
                 instance.getProgress(), 0.1);
     }
 
@@ -45,22 +48,22 @@ public class ApplicationStatusTest {
 
         int batchChunkSize = 10;
         instance.configureChunkSize(file, batchChunkSize);
-        Assert.assertEquals((double) batchChunkSize / linesWrittenToTheFile * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE,
+        assertEquals((double) batchChunkSize / linesWrittenToTheFile * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE,
                 instance.getChunkSize(), 0.1);
 
         batchChunkSize = 20;
         instance.configureChunkSize(file, batchChunkSize);
-        Assert.assertEquals((double) batchChunkSize / linesWrittenToTheFile * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE,
+        assertEquals((double) batchChunkSize / linesWrittenToTheFile * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE,
                 instance.getChunkSize(), 0.1);
 
         batchChunkSize = 30;
         instance.configureChunkSize(file, batchChunkSize);
-        Assert.assertEquals((double) batchChunkSize / linesWrittenToTheFile * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE,
+        assertEquals((double) batchChunkSize / linesWrittenToTheFile * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE,
                 instance.getChunkSize(), 0.1);
 
         batchChunkSize = 400;
         instance.configureChunkSize(file, batchChunkSize);
-        Assert.assertEquals((double) batchChunkSize / linesWrittenToTheFile * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE,
+        assertEquals((double) batchChunkSize / linesWrittenToTheFile * ApplicationStatus.ESTIMATED_FILE_LOADING_TO_DATABASE_JOB_PERCENTAGE,
                 instance.getChunkSize(), 0.1);
     }
 
@@ -73,7 +76,7 @@ public class ApplicationStatusTest {
         executorService.shutdownNow();
         instance.addFuture(future);
 
-        Assert.assertTrue(instance.getFutureList().contains(future));
+        assertTrue(instance.getFutureList().contains(future));
     }
 
     @Test
@@ -86,17 +89,17 @@ public class ApplicationStatusTest {
         instance.addFuture(future);
 
         final List<Future<?>> futureList = instance.getFutureList();
-        Assert.assertTrue(futureList.contains(future));
-        Assert.assertEquals(1, futureList.size());
+        assertTrue(futureList.contains(future));
+        assertEquals(1, futureList.size());
 
         final Future<?> future2 = executorService.submit(() -> System.out.println());
         instance.addFuture(future2);
 
-        Assert.assertFalse(futureList.contains(future2));
-        Assert.assertEquals(1, futureList.size());
+        assertFalse(futureList.contains(future2));
+        assertEquals(1, futureList.size());
 
-        Assert.assertTrue(instance.getFutureList().contains(future2));
-        Assert.assertEquals(2, instance.getFutureList().size());
+        assertTrue(instance.getFutureList().contains(future2));
+        assertEquals(2, instance.getFutureList().size());
         executorService.shutdownNow();
     }
 

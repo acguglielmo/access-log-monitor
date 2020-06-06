@@ -1,25 +1,26 @@
 package com.acguglielmo.accesslogmonitor.cli;
 
+import static com.acguglielmo.accesslogmonitor.cli.CommandLineHelper.DURATION;
 import static com.acguglielmo.accesslogmonitor.cli.CommandLineHelper.START_DATE;
 import static com.acguglielmo.accesslogmonitor.cli.CommandLineHelper.THRESHOLD;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 
 import org.apache.commons.cli.CommandLine;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.acguglielmo.accesslogmonitor.threshold.HourlyThreshold;
 import com.acguglielmo.accesslogmonitor.threshold.Threshold;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class ApplicationCommandLineTest {
 
     @Mock
@@ -31,6 +32,9 @@ public class ApplicationCommandLineTest {
     @Test
     public void shouldReturnCorrectlyConfiguredThresold() throws Exception {
 
+        when( commandLine.getOptionValue(DURATION) )
+        	.thenReturn("hourly");
+    	
         when( commandLine.getOptionValue(START_DATE) )
             .thenReturn("2018-01-01.00:00:00");
         
