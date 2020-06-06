@@ -4,21 +4,14 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import io.quarkus.test.junit.QuarkusTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.BufferedWriter;
 import java.nio.file.*;
 
-import javax.inject.Inject;
-
-import static org.junit.Assert.*;
-
-@QuarkusTest
 public class PropertiesHolderTest {
     
-    @Inject
-    PropertiesHolder propertiesHolder;
-
     private static final String CONFIG_FILENAME = "config.properties";
 
     @BeforeAll

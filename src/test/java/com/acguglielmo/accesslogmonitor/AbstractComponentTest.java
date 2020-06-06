@@ -6,7 +6,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 
 import com.acguglielmo.accesslogmonitor.util.PropertiesHolder;
 
@@ -16,7 +16,7 @@ public class AbstractComponentTest {
     
     private static boolean blockOccurencesTableCreated = false;
 
-	@BeforeClass
+	@BeforeAll
     public static void beforeClass() throws IOException, ClassNotFoundException, SQLException {
     	
     	PropertiesHolder.createInstance("src/test/resources/application.properties");

@@ -1,7 +1,7 @@
 package com.acguglielmo.accesslogmonitor.gateway.sql.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.acguglielmo.accesslogmonitor.AbstractComponentTest;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
@@ -25,7 +25,7 @@ import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class AccessLogGatewaySqlImplTest extends AbstractComponentTest {
 
 	@Spy
@@ -34,7 +34,7 @@ public class AccessLogGatewaySqlImplTest extends AbstractComponentTest {
 	@InjectMocks
 	private AccessLogGatewaySqlImpl instance;
 
-	@Before
+	@BeforeEach
 	public void before() {
 		
 		FixtureFactoryLoader.loadTemplates("com.acguglielmo.accesslogmonitor.template");

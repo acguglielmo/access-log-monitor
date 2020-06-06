@@ -1,20 +1,20 @@
 package com.acguglielmo.accesslogmonitor.exception;
 
 import static java.lang.String.format;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
 import org.apache.logging.log4j.LogManager;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 import com.acguglielmo.accesslogmonitor.ConsoleWatcherSupport;
 
 public class ExceptionHandlerTest {
 
-    @Rule 
+	@RegisterExtension 
     public ConsoleWatcherSupport appender = new ConsoleWatcherSupport(LogManager.getLogger(ExceptionHandler.class));
 	
 	@Test

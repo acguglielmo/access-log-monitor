@@ -3,8 +3,8 @@ package com.acguglielmo.accesslogmonitor.gateway.sql.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.acguglielmo.accesslogmonitor.AbstractComponentTest;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
@@ -16,7 +16,7 @@ import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 
 public class BlockOccurrencesGatewaySqlImplTest extends AbstractComponentTest {
 
-	@Before
+	@BeforeEach
 	public void before() {
 		
 		FixtureFactoryLoader.loadTemplates("com.acguglielmo.accesslogmonitor.template");
