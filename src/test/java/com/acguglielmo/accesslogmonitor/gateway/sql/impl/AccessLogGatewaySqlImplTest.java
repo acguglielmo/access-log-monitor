@@ -71,9 +71,9 @@ public class AccessLogGatewaySqlImplTest extends AbstractComponentTest {
         assertNotNull(blockOccurrencesDtos);
         assertEquals(2, blockOccurrencesDtos.size());
         assertEquals("192.168.234.82", blockOccurrencesDtos.get(0).getIp());
-        assertEquals(new Integer(3), blockOccurrencesDtos.get(0).getCount());
+        assertEquals(Integer.valueOf(3), blockOccurrencesDtos.get(0).getCount());
         assertEquals("192.168.169.194", blockOccurrencesDtos.get(1).getIp());
-        assertEquals(new Integer(2), blockOccurrencesDtos.get(1).getCount());
+        assertEquals(Integer.valueOf(2), blockOccurrencesDtos.get(1).getCount());
     }
 
 }
