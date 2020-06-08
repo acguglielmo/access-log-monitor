@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import javax.inject.Singleton;
+
+@Singleton
 public class ApplicationStatus {
 
     private double progress;

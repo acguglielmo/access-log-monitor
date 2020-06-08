@@ -9,6 +9,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+@ApplicationScoped
 public class BlockOccurrencesGatewaySqlImpl {
 
     private static final int BATCH_CHUNK_SIZE = 1000;
@@ -17,10 +21,13 @@ public class BlockOccurrencesGatewaySqlImpl {
             + "(ip, start_date, end_date, comment, threshold) VALUES"
             + "(?,?,?,?,?)";
 
+    @Inject
+    ConnectionFactory connectionFactory;
+    
     public void insert(final List<BlockOccurrencesDto> blockOccurrencesDtoList) throws SQLException {
         int count = 0;
 
-        try (Connection dbConnection = ConnectionFactory.getInstance().getConnection()) {
+        try (Connection dbConnection = connectionFactory.getConnection()) {
             try (PreparedStatement preparedStatement = dbConnection.prepareStatement(INSERT_STATEMENT)) {
 
                 for (final BlockOccurrencesDto blockOccurrencesDto : blockOccurrencesDtoList) {

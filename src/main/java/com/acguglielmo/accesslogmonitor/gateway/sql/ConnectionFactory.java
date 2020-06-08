@@ -4,36 +4,28 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import com.acguglielmo.accesslogmonitor.util.PropertiesHolder;
+import javax.enterprise.context.ApplicationScoped;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+import lombok.Setter;
+
+@Setter
+@ApplicationScoped
 public class ConnectionFactory {
 
-    private String dbConnectionUrl;
-    private String dbUser;
-    private String dbPassword;
+    @ConfigProperty(name = "db.connection.password")
+    String dbConnectionPassword;
 
-    private volatile static ConnectionFactory instance;
+    @ConfigProperty(name = "db.connection.username")
+    String dbConnectionUsername;
 
-    private ConnectionFactory() {
-        final PropertiesHolder propertiesHolder = PropertiesHolder.getInstance();
-        dbConnectionUrl = propertiesHolder.getProperty(PropertiesHolder.DB_CONNECTION_URL);
-        dbUser = propertiesHolder.getProperty(PropertiesHolder.DB_CONNECTION_USERNAME);
-        dbPassword = propertiesHolder.getProperty(PropertiesHolder.DB_CONNECTION_PASSWORD);
-    }
-
-    public static ConnectionFactory getInstance() {
-        if (instance == null) {
-            synchronized (ConnectionFactory.class) {
-                if (instance == null)
-                    instance = new ConnectionFactory();
-            }
-        }
-        return instance;
-    }
-
+    @ConfigProperty(name = "db.connection.url")
+    String dbConnectionUrl;
+    
     public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(
-                dbConnectionUrl.contains("mysql") ? dbConnectionUrl.concat("?useTimezone=true&serverTimezone=UTC&useSSL=false")
-                : dbConnectionUrl, dbUser, dbPassword);
+        		dbConnectionUrl.contains("mysql") ? dbConnectionUrl.concat("?useTimezone=true&serverTimezone=UTC&useSSL=false")
+                : dbConnectionUrl, dbConnectionUsername, dbConnectionPassword);
     }
 }

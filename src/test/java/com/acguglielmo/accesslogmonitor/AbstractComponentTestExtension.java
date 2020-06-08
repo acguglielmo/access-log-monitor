@@ -1,37 +1,39 @@
 package com.acguglielmo.accesslogmonitor;
 
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
-import com.acguglielmo.accesslogmonitor.util.PropertiesHolder;
+import com.acguglielmo.accesslogmonitor.gateway.sql.ConnectionFactory;
 
-public class AbstractComponentTest {
+import lombok.RequiredArgsConstructor;
 
-    private static boolean accessLogTableCreated = false;
+@RequiredArgsConstructor
+public class AbstractComponentTestExtension implements BeforeAllCallback {
+
+    private boolean accessLogTableCreated = false;
     
-    private static boolean blockOccurencesTableCreated = false;
+    private boolean blockOccurencesTableCreated = false;
 
-	@BeforeAll
-    public static void beforeClass() throws IOException, ClassNotFoundException, SQLException {
-    	
-    	PropertiesHolder.createInstance("src/test/resources/application.properties");
-    	
+    final ConnectionFactory connectionFactory;
+    
+	@Override
+	public void beforeAll(ExtensionContext context) throws Exception {
+
     	createAccessLogTable();
-        
+
         createBlockOcurrencesTable();
-    
+
     }
 
-	private static void createAccessLogTable() throws SQLException, ClassNotFoundException {
+	private void createAccessLogTable() throws SQLException, ClassNotFoundException {
 		
 		if ( !accessLogTableCreated  ) {
 			
-			final Connection connection = getConnection();
+			final Connection connection = connectionFactory.getConnection();
 			final Statement statement = connection.createStatement();
 			statement.execute("SET DATABASE SQL SYNTAX MYS TRUE");
 			statement.execute("CREATE TABLE access_log (\n" +
@@ -49,11 +51,11 @@ public class AbstractComponentTest {
 		
 	}
 
-	private static void createBlockOcurrencesTable() throws SQLException, ClassNotFoundException {
+	private void createBlockOcurrencesTable() throws SQLException, ClassNotFoundException {
 		
 		if ( !blockOccurencesTableCreated ) {
 			
-			final Connection connection = getConnection();
+			final Connection connection = connectionFactory.getConnection();
 			final Statement statement = connection.createStatement();
 			statement.execute("SET DATABASE SQL SYNTAX MYS TRUE");
 			statement.execute("CREATE TABLE block_occurrences (\n" +
@@ -71,10 +73,5 @@ public class AbstractComponentTest {
 		}
 		
 	}
-    
-    protected static Connection getConnection() throws SQLException, ClassNotFoundException {
-        Class.forName("org.hsqldb.jdbcDriver");
-        return DriverManager.getConnection("jdbc:hsqldb:mem:test", "sa", "");
-    }
 
 }

@@ -7,15 +7,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
 import com.acguglielmo.accesslogmonitor.gateway.sql.ConnectionFactory;
 import com.acguglielmo.accesslogmonitor.threshold.Threshold;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 import com.acguglielmo.accesslogmonitor.util.DateUtils;
 
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
+@ApplicationScoped
 public class AccessLogGatewaySqlImpl {
 
     private static final String INSERT_STATEMENT = "INSERT IGNORE INTO access_log"
@@ -28,13 +29,17 @@ public class AccessLogGatewaySqlImpl {
             "group by ip having count(1) > ? " +
             "order by count(1) desc;";
 
-	private final ApplicationStatus applicationStatus;
+    @Inject
+	ApplicationStatus applicationStatus;
 
+    @Inject
+    ConnectionFactory connectionFactory;
+    
     public void insert(final List<String[]> dataList) throws SQLException {
 
         if (!dataList.isEmpty()) {
 
-            try (Connection connection = ConnectionFactory.getInstance().getConnection()) {
+            try (Connection connection = connectionFactory.getConnection()) {
 
                 try (final PreparedStatement preparedStatement = connection.prepareStatement(INSERT_STATEMENT)) {
 
@@ -58,7 +63,7 @@ public class AccessLogGatewaySqlImpl {
         
     	final List<BlockOccurrencesDto> result = new ArrayList<>();
 
-        try (Connection connection = ConnectionFactory.getInstance().getConnection()) {
+        try (Connection connection = connectionFactory.getConnection()) {
 
             try (final PreparedStatement preparedStatement = connection.prepareStatement(FIND_BLOCK_OCCURRENCES_STATEMENT)) {
 

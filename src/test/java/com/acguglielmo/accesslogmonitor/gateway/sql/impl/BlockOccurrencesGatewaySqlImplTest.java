@@ -1,26 +1,43 @@
 package com.acguglielmo.accesslogmonitor.gateway.sql.impl;
 
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
-import com.acguglielmo.accesslogmonitor.AbstractComponentTest;
+import com.acguglielmo.accesslogmonitor.AbstractComponentTestExtension;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
+import com.acguglielmo.accesslogmonitor.gateway.sql.ConnectionFactory;
 import com.acguglielmo.accesslogmonitor.threshold.HourlyThreshold;
 import com.acguglielmo.accesslogmonitor.threshold.Threshold;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
+import io.quarkus.test.junit.QuarkusTest;
 
-public class BlockOccurrencesGatewaySqlImplTest extends AbstractComponentTest {
+@QuarkusTest
+public class BlockOccurrencesGatewaySqlImplTest {
 
+	@Inject
+	ConnectionFactory connectionFactory;
+
+	@RegisterExtension
+	AbstractComponentTestExtension extension = new AbstractComponentTestExtension(connectionFactory);
+	
+	@Inject
+	BlockOccurrencesGatewaySqlImpl instance;
+	
 	@BeforeEach
-	public void before() {
-		
+	public void beforeEach() throws Exception {
+
 		FixtureFactoryLoader.loadTemplates("com.acguglielmo.accesslogmonitor.template");
-		
+
 	}
 	
     @Test
@@ -49,7 +66,20 @@ public class BlockOccurrencesGatewaySqlImplTest extends AbstractComponentTest {
             list.add(dto);
         }
 
-        new BlockOccurrencesGatewaySqlImpl().insert(list);
+		final Connection connection = connectionFactory.getConnection();
+		final Statement statement = connection.createStatement();
+		statement.execute("SET DATABASE SQL SYNTAX MYS TRUE");
+		statement.execute("CREATE TABLE block_occurrences (\n" +
+				"  ip varchar(15) NOT NULL,\n" +
+				"  start_date datetime(3) NOT NULL,\n" +
+				"  end_date datetime(3) NOT NULL,\n" +
+				"  threshold int(11) NOT NULL,\n" +
+				"  comment varchar(200) NOT NULL,\n" +
+				"  PRIMARY KEY (ip)\n" +
+				");");
+		connection.commit();
+		
+        instance.insert(list);
     }
 
 }

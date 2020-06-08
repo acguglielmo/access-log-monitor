@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,8 +18,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.acguglielmo.accesslogmonitor.AbstractComponentTest;
+import com.acguglielmo.accesslogmonitor.AbstractComponentTestExtension;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
+import com.acguglielmo.accesslogmonitor.gateway.sql.ConnectionFactory;
 import com.acguglielmo.accesslogmonitor.threshold.HourlyThreshold;
 import com.acguglielmo.accesslogmonitor.threshold.Threshold;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
@@ -25,9 +28,12 @@ import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 
-@ExtendWith(MockitoExtension.class)
-public class AccessLogGatewaySqlImplTest extends AbstractComponentTest {
+@ExtendWith({ MockitoExtension.class, AbstractComponentTestExtension.class} )
+public class AccessLogGatewaySqlImplTest {
 
+	@Inject
+	ConnectionFactory connectionFactory;  
+	
 	@Spy
 	private ApplicationStatus applicationStatus;
 
@@ -56,7 +62,7 @@ public class AccessLogGatewaySqlImplTest extends AbstractComponentTest {
     @Test
     public void findTest() throws Exception {
         
-		final Connection connection = getConnection();
+		final Connection connection = connectionFactory.getConnection();
 		final Statement statement = connection.createStatement();
 		statement.executeUpdate("INSERT INTO access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:00:11.763','192.168.234.82','\"GET / HTTP/1.1\"',200,'\"swcd (unknown version) CFNetwork/808.2.16 Darwin/15.6.0\"');");
 		statement.executeUpdate("INSERT INTO access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:00:21.164','192.168.234.82','\"GET / HTTP/1.1\"',200,'\"swcd (unknown version) CFNetwork/808.2.16 Darwin/15.6.0\"');");

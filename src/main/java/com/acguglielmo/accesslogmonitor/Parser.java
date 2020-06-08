@@ -1,35 +1,30 @@
 package com.acguglielmo.accesslogmonitor;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Instance;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import com.acguglielmo.accesslogmonitor.cli.ApplicationCommandLine;
 import com.acguglielmo.accesslogmonitor.cli.CommandLineHelper;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
 import com.acguglielmo.accesslogmonitor.exception.ExceptionHandler;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
-import com.acguglielmo.accesslogmonitor.util.PropertiesHolder;
 
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
-import lombok.RequiredArgsConstructor;
 
+@Singleton
 @QuarkusMain
-@RequiredArgsConstructor
 public class Parser implements QuarkusApplication {
 
-	private static final Logger LOGGER = LogManager.getLogger(Parser.class);
-	
     protected static final String CONFIG_FILE_NOT_FOUND_MESSAGE = "Please provide a path to a config file or create a " +
 	        "\"config.properties\" file in the working directory with the " +
 	        "following properties filled according to your environment settings:" +
@@ -39,13 +34,18 @@ public class Parser implements QuarkusApplication {
 	
     List<BlockOccurrencesDto> blockOccurrencesDtos = new ArrayList<>();
 
-	private final ApplicationStatus applicationStatus;
+    @Inject
+	ApplicationStatus applicationStatus;
+    
+    @Inject
+    @Any
+    Instance<FileParsingTask> fileParsingTasks;
 
 	@Override
 	public int run(final String... args) {
 
 		new CommandLineHelper().configureCliOptions(args)
-			.ifPresent(cli -> new Parser(new ApplicationStatus()).process(cli));
+			.ifPresent( this::process );
 
 		return 1;
 
@@ -53,7 +53,7 @@ public class Parser implements QuarkusApplication {
 
 	void process(final ApplicationCommandLine commandLine) {
 			
-		buildProperties(commandLine).ifPresent(e -> {
+//		buildProperties(commandLine).ifPresent(e -> {
 			
 			final ExecutorService executor = submitFileParsingTask(commandLine);
 			
@@ -64,26 +64,26 @@ public class Parser implements QuarkusApplication {
 				blockOccurrencesDtos.forEach(System.out::println);
 			}
 			
-		});
+//		});
 
 	}
 
-	private Optional<PropertiesHolder> buildProperties(final CommandLine commandLine) {
-		
-		final String configPath = commandLine.getOptionValue(CommandLineHelper.CONFIG_FILE_PATH, CommandLineHelper.CONFIG_FILE_DEFAULT_VALUE);
-		
-		try {
-			PropertiesHolder.createInstance(configPath);
-			return Optional.of(PropertiesHolder.getInstance());
-		} catch (final IOException e) {
-			LOGGER.error(CONFIG_FILE_NOT_FOUND_MESSAGE);
-			return Optional.empty();
-		}
-	}
+//	private Optional<PropertiesHolder> buildProperties(final CommandLine commandLine) {
+//		
+//		final String configPath = commandLine.getOptionValue(CommandLineHelper.CONFIG_FILE_PATH, CommandLineHelper.CONFIG_FILE_DEFAULT_VALUE);
+//		
+//		try {
+//			PropertiesHolder.createInstance(configPath);
+//			return Optional.of(PropertiesHolder.getInstance());
+//		} catch (final IOException e) {
+//			LOGGER.error(CONFIG_FILE_NOT_FOUND_MESSAGE);
+//			return Optional.empty();
+//		}
+//	}
 
 	private ExecutorService submitFileParsingTask(final ApplicationCommandLine commandLine) {
 
-		final FileParsingTask task = new FileParsingTask(this, commandLine, applicationStatus);
+		final FileParsingTask task = fileParsingTasks.get().configure(commandLine);
 
 		final ExecutorService executor = Executors.newSingleThreadExecutor();
 		final Future<?> future = executor.submit(task);

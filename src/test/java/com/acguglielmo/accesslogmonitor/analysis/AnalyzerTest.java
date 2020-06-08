@@ -12,6 +12,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,24 +22,26 @@ import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.acguglielmo.accesslogmonitor.AbstractComponentTest;
+import com.acguglielmo.accesslogmonitor.AbstractComponentTestExtension;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
+import com.acguglielmo.accesslogmonitor.gateway.sql.ConnectionFactory;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.BlockOccurrencesGatewaySqlImpl;
 import com.acguglielmo.accesslogmonitor.threshold.DailyThreshold;
 import com.acguglielmo.accesslogmonitor.threshold.HourlyThreshold;
 import com.acguglielmo.accesslogmonitor.threshold.Threshold;
-import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
 
-@ExtendWith(MockitoExtension.class)
-public class AnalyzerTest extends AbstractComponentTest {
+@ExtendWith({ MockitoExtension.class, AbstractComponentTestExtension.class })
+public class AnalyzerTest {
 
+	@Inject
+	ConnectionFactory connectionFactory;
+	
 	@Spy
-    private AccessLogGatewaySqlImpl accessLogGatewaySqlImpl = 
-    	new AccessLogGatewaySqlImpl(new ApplicationStatus());
+    private AccessLogGatewaySqlImpl accessLogGatewaySqlImpl;
     
 	@Spy
     private BlockOccurrencesGatewaySqlImpl blockOccurrencesGatewaySqlImpl;
@@ -49,7 +53,7 @@ public class AnalyzerTest extends AbstractComponentTest {
     @BeforeEach
     public void cleanUp() throws Exception {
     	
-		final Connection connection = getConnection();
+		final Connection connection = connectionFactory.getConnection();
 		final Statement statement = connection.createStatement();
     	
 		statement.executeUpdate("DELETE FROM access_log;");
@@ -67,7 +71,7 @@ public class AnalyzerTest extends AbstractComponentTest {
     @Test
     public void shouldBlockIpAddressThatExceededHourlyThresoldTest() throws Exception {
 
-		final Connection connection = getConnection();
+		final Connection connection = connectionFactory.getConnection();
 		final Statement statement = connection.createStatement();
 		statement.executeUpdate("INSERT INTO access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:00:11.000','192.168.98.20','\"GET / HTTP/1.1\"',200,'\"swcd (unknown version) CFNetwork/808.2.16 Darwin/15.6.0\"');");
 		statement.executeUpdate("INSERT INTO access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:01:11.000','192.168.98.20','\"GET / HTTP/1.1\"',200,'\"swcd (unknown version) CFNetwork/808.2.16 Darwin/15.6.0\"');");
@@ -92,7 +96,7 @@ public class AnalyzerTest extends AbstractComponentTest {
     @Test
     public void shouldBlockIpAddressThatExceededDailyThresoldTest() throws Exception {
 
-		final Connection connection = getConnection();
+		final Connection connection = connectionFactory.getConnection();
 		final Statement statement = connection.createStatement();
 		statement.executeUpdate("INSERT INTO access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:00:11.000','192.168.98.21','\"GET / HTTP/1.1\"',200,'\"swcd (unknown version) CFNetwork/808.2.16 Darwin/15.6.0\"');");
 		statement.executeUpdate("INSERT INTO access_log (date,ip,request,status,user_agent) VALUES ('2017-01-01 00:01:11.000','192.168.98.21','\"GET / HTTP/1.1\"',200,'\"swcd (unknown version) CFNetwork/808.2.16 Darwin/15.6.0\"');");

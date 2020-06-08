@@ -1,11 +1,9 @@
 package com.acguglielmo.accesslogmonitor.parser;
 
-import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
-import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
-
-import lombok.RequiredArgsConstructor;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,15 +13,25 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-@RequiredArgsConstructor
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
+import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
+
+@ApplicationScoped
 public final class FileParser {
 
     public static final Integer MAX_BATCH_CHUNK_SIZE = 1000;
 
     private Pattern regex = Pattern.compile(Pattern.quote("|"));
 
-	private final ApplicationStatus applicationStatus;
+    @Inject
+	ApplicationStatus applicationStatus;
 
+    @Inject
+    AccessLogGatewaySqlImpl accessLogGatewaySqlImpl;
+    
 	public void loadFileToDatabase(final File file) throws IOException, InterruptedException, SQLException {
 
         final FileReader fileReader = new FileReader(file);
@@ -75,7 +83,7 @@ public final class FileParser {
                     stringArrayList.add(doStringPolling(stringArray));
                 }
 
-                new AccessLogGatewaySqlImpl(applicationStatus).insert(stringArrayList);
+                accessLogGatewaySqlImpl.insert(stringArrayList);
             } catch (final SQLException e) {
                 throw new RuntimeException(e);
             }
