@@ -45,7 +45,7 @@ public class AnalyzerTest {
     private BlockOccurrencesGatewaySqlImpl blockOccurrencesGatewaySqlImpl;
 	
 	@Inject
-    private Analyzer instance;
+    Analyzer instance;
 
     @AfterEach
     @BeforeEach
