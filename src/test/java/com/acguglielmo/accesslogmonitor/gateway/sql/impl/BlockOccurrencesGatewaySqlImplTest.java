@@ -3,25 +3,34 @@ package com.acguglielmo.accesslogmonitor.gateway.sql.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.acguglielmo.accesslogmonitor.AbstractComponentTest;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
 import com.acguglielmo.accesslogmonitor.threshold.HourlyThreshold;
 import com.acguglielmo.accesslogmonitor.threshold.Threshold;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.h2.H2DatabaseTestResource;
+import io.quarkus.test.junit.QuarkusTest;
 
-public class BlockOccurrencesGatewaySqlImplTest extends AbstractComponentTest {
+@QuarkusTest
+@QuarkusTestResource(value = H2DatabaseTestResource.class)
+public class BlockOccurrencesGatewaySqlImplTest {
 
+	@Inject
+	BlockOccurrencesGatewaySqlImpl instance;
+	
 	@BeforeEach
-	public void before() {
-		
-		FixtureFactoryLoader.loadTemplates("com.acguglielmo.accesslogmonitor.template");
-		
-	}
+    public void beforeEach() throws Exception {
+
+        FixtureFactoryLoader.loadTemplates("com.acguglielmo.accesslogmonitor.template");
+        
+    }
 	
     @Test
     public void insertTest() throws Exception {
@@ -49,7 +58,7 @@ public class BlockOccurrencesGatewaySqlImplTest extends AbstractComponentTest {
             list.add(dto);
         }
 
-        new BlockOccurrencesGatewaySqlImpl().insert(list);
+        instance.insert(list);
     }
 
 }

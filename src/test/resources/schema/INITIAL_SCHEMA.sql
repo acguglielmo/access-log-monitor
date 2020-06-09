@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS `access_log` (
   `ip` varchar(15) NOT NULL,
   `request` varchar(1000) NOT NULL,
   `status` varchar(20) NOT NULL,
-  `user_agent` varchar(300) NOT NULL
+  `user_agent` varchar(150) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=UTF8;
 
 CREATE TABLE IF NOT EXISTS `block_occurrences` (
