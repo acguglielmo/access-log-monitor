@@ -17,12 +17,8 @@ import javax.inject.Inject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.MockitoAnnotations;
 
-import com.acguglielmo.accesslogmonitor.AbstractComponentTestExtension;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
 import com.acguglielmo.accesslogmonitor.gateway.sql.ConnectionFactory;
 import com.acguglielmo.accesslogmonitor.gateway.sql.impl.AccessLogGatewaySqlImpl;
@@ -33,20 +29,22 @@ import com.acguglielmo.accesslogmonitor.threshold.Threshold;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
+import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.mockito.InjectSpy;
 
-@ExtendWith({ MockitoExtension.class, AbstractComponentTestExtension.class })
+@QuarkusTest
 public class AnalyzerTest {
 
 	@Inject
 	ConnectionFactory connectionFactory;
 	
-	@Spy
+	@InjectSpy
     private AccessLogGatewaySqlImpl accessLogGatewaySqlImpl;
     
-	@Spy
+	@InjectSpy
     private BlockOccurrencesGatewaySqlImpl blockOccurrencesGatewaySqlImpl;
 	
-	@InjectMocks
+	@Inject
     private Analyzer instance;
 
     @AfterEach
@@ -65,7 +63,9 @@ public class AnalyzerTest {
 	public void before() {
 		
 		FixtureFactoryLoader.loadTemplates("com.acguglielmo.accesslogmonitor.template");
-		
+
+		MockitoAnnotations.initMocks(this);
+
 	}
 
     @Test

@@ -13,31 +13,23 @@ import javax.inject.Inject;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.acguglielmo.accesslogmonitor.AbstractComponentTestExtension;
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
 import com.acguglielmo.accesslogmonitor.gateway.sql.ConnectionFactory;
 import com.acguglielmo.accesslogmonitor.threshold.HourlyThreshold;
 import com.acguglielmo.accesslogmonitor.threshold.Threshold;
-import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.loader.FixtureFactoryLoader;
+import io.quarkus.test.junit.QuarkusTest;
 
-@ExtendWith({ MockitoExtension.class, AbstractComponentTestExtension.class} )
+@QuarkusTest
 public class AccessLogGatewaySqlImplTest {
 
 	@Inject
 	ConnectionFactory connectionFactory;  
 	
-	@Spy
-	private ApplicationStatus applicationStatus;
-
-	@InjectMocks
+	@Inject
 	private AccessLogGatewaySqlImpl instance;
 
 	@BeforeEach
