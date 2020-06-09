@@ -7,7 +7,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -18,6 +17,7 @@ import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
 import com.acguglielmo.accesslogmonitor.exception.ExceptionHandler;
 import com.acguglielmo.accesslogmonitor.util.ApplicationStatus;
 
+import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 
@@ -38,9 +38,14 @@ public class Parser implements QuarkusApplication {
 	ApplicationStatus applicationStatus;
     
     @Inject
-    @Any
     Instance<FileParsingTask> fileParsingTasks;
 
+    public static void main(String[] args) {
+        
+        Quarkus.run(Parser.class, args);
+        
+    }
+    
 	@Override
 	public int run(final String... args) {
 
