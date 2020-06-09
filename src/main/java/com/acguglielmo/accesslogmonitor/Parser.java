@@ -44,6 +44,8 @@ public class Parser implements QuarkusApplication {
         
         Quarkus.run(Parser.class, args);
         
+        Quarkus.waitForExit();
+        
     }
     
 	@Override
@@ -52,6 +54,8 @@ public class Parser implements QuarkusApplication {
 		new CommandLineHelper().configureCliOptions(args)
 			.ifPresent( this::process );
 
+		Quarkus.asyncExit();
+		
 		return 1;
 
 	}
@@ -112,7 +116,7 @@ public class Parser implements QuarkusApplication {
 
                         System.out.println("The application will now exit.");
                         executor.shutdownNow();
-                        System.exit(1);
+                        Quarkus.asyncExit();
                     }
                 }
             }
