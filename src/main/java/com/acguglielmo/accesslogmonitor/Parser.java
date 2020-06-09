@@ -2,7 +2,6 @@ package com.acguglielmo.accesslogmonitor;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -10,6 +9,9 @@ import java.util.concurrent.Future;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.acguglielmo.accesslogmonitor.cli.ApplicationCommandLine;
 import com.acguglielmo.accesslogmonitor.cli.CommandLineHelper;
@@ -25,6 +27,8 @@ import io.quarkus.runtime.annotations.QuarkusMain;
 @QuarkusMain
 public class Parser implements QuarkusApplication {
 
+    private static final Logger LOGGER = LogManager.getLogger(Parser.class);
+    
     protected static final String CONFIG_FILE_NOT_FOUND_MESSAGE = "Please provide a path to a config file or create a " +
 	        "\"config.properties\" file in the working directory with the " +
 	        "following properties filled according to your environment settings:" +
@@ -69,8 +73,8 @@ public class Parser implements QuarkusApplication {
 			monitorApplicationStatus(executor);
 			
 			if (!blockOccurrencesDtos.isEmpty()) {
-				System.out.println(String.format("%-15s   %s", "IP", "Count"));
-				blockOccurrencesDtos.forEach(System.out::println);
+			    LOGGER.info(String.format("%-15s   %s", "IP", "Count"));
+				blockOccurrencesDtos.forEach(LOGGER::info);
 			}
 			
 //		});
@@ -105,26 +109,31 @@ public class Parser implements QuarkusApplication {
 
     	while(!executor.isTerminated()) {
 
-            System.out.printf("\r%s ", applicationStatus.getProgressBar());
+    	    LOGGER.info("{}", applicationStatus.getProgressBar());
 
             for (final Future<?> future : applicationStatus.getFutureList()) {
                 if (future.isDone()) {
+                    
                     try {
+                    
                         future.get();
-                    } catch (InterruptedException | ExecutionException e) {
-                    	ExceptionHandler.printExceptionToConsole(e);
+                    
+                    } catch (Exception e) {
 
-                        System.out.println("The application will now exit.");
+                        ExceptionHandler.printExceptionToConsole(e);
+
+                    	LOGGER.info("The application will now exit.");
                         executor.shutdownNow();
                         Quarkus.asyncExit();
+
                     }
                 }
             }
 
         }
 
-    	System.out.printf("\r%s ", applicationStatus.getProgressBar());
-        System.out.println();
+    	LOGGER.info("{}", applicationStatus.getProgressBar());
+
     }
 
 }
