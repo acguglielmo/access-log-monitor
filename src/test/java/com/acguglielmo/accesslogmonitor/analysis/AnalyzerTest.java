@@ -17,7 +17,6 @@ import javax.inject.Inject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
 
 import com.acguglielmo.accesslogmonitor.dto.BlockOccurrencesDto;
 import com.acguglielmo.accesslogmonitor.gateway.sql.ConnectionFactory;
@@ -45,7 +44,7 @@ public class AnalyzerTest {
     private BlockOccurrencesGatewaySqlImpl blockOccurrencesGatewaySqlImpl;
 	
 	@Inject
-    private Analyzer instance;
+    Analyzer instance;
 
     @AfterEach
     @BeforeEach
@@ -63,8 +62,6 @@ public class AnalyzerTest {
 	public void before() {
 		
 		FixtureFactoryLoader.loadTemplates("com.acguglielmo.accesslogmonitor.template");
-
-		MockitoAnnotations.initMocks(this);
 
 	}
 

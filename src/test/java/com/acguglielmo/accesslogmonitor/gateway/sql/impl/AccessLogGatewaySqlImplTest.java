@@ -30,7 +30,7 @@ public class AccessLogGatewaySqlImplTest {
 	ConnectionFactory connectionFactory;  
 	
 	@Inject
-	private AccessLogGatewaySqlImpl instance;
+	AccessLogGatewaySqlImpl instance;
 
 	@BeforeEach
 	public void before() {
